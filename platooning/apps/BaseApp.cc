@@ -90,6 +90,8 @@ BaseApp::~BaseApp()
     //================================ Ahad :: Start of Runtime Manager ============================//
     cancelAndDelete(callBackRuntimeManager);
     callBackRuntimeManager = nullptr;
+
+    delete runtimeManager;
     //================================ Ahad :: End of Runtime Manager ==============================//
 }
 
@@ -163,8 +165,8 @@ void BaseApp::handleSelfMsg(cMessage* msg)
         // Runtime manager analyze safety requirements to decide whether the current state is stable or not
         // And take appropriate measures
 
-        //runtimeManager->monitor(); // DON'T NEED THIS.... MOST PROBABLY.... NEED TO DISCUSS
-
+        //TODO :: call runtime manager periodically to monitor beaconRecordData for the current state
+        runtimeManager->monitor();
         // re-schedule the self message
         // TODO :: Callback time should come from configuration file
         scheduleAt(simTime() + SimTime(50, SIMTIME_MS), callBackRuntimeManager);
@@ -193,7 +195,11 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
 
             //================================ Ahad :: Start of Runtime Manager ============================//
 
-             runtimeManager->monitor();
+             // runtimeManager->monitor();
+
+             // update state machine
+                //runtimeManager->updateStateMachine(pb->getVehicleId());
+             // update beaconRecordData
 
             //================================ Ahad :: End of Runtime Manager ==============================//
 
@@ -201,11 +207,18 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
 
         //================================================== Ahad:: Debug Start ==================================================//
         // TODO :: Need to keep record
+        //std::cout << "Source Vehicle ID: " << pb->getVehicleId() << std::endl;
         if (pb->getVehicleId() != positionHelper->getLeaderId() && pb->getVehicleId() != positionHelper->getFrontId()) {
             //EV << "I am neither vehicle in front nor the leader!!!" << std::endl;
         }
         //=================================================== Ahad:: Debug Start =================================================//
 
+
+        //================================ Ahad :: Start of Runtime Manager ============================//
+
+        runtimeManager->record(pb->getVehicleId());
+
+        //================================ Ahad :: End of Runtime Manager ==============================//
 
         // send data about every vehicle to the CACC. this is needed by the consensus controller
         struct Plexe::VEHICLE_DATA vehicleData;

@@ -18,6 +18,12 @@
 #ifndef BASEAPP_H_
 #define BASEAPP_H_
 
+
+//================================ Ahad :: Start of Runtime Manager ============================//
+#include <iostream>
+//================================ Ahad :: Start of Runtime Manager ============================//
+
+
 #include "veins/base/modules/BaseApplLayer.h"
 
 #include "veins/modules/application/platooning/UnicastProtocol.h"

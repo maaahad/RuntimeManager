@@ -11,6 +11,8 @@
 // The runtime manager requires to have a reference to the Application under observation
 class BaseApp;
 
+
+#include <string>
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 
@@ -25,22 +27,49 @@ public:
     // This is a virtual method. Complex derived class of RuntimeManager can implement their own version (May be!!!!! Not sure yet)
     virtual void monitor();
 
+    // this method is called every time a beacon is received and used to update StateMachine and beaconRecordData
+    virtual void record(int vehicleId);
+
 protected:
 
-    enum class ControllerStabilityState {
-        NOT_SET_YET,
-        STABLE,
-        UNSTABLE,
+//    enum class ControllerStabilityState {
+//        NOT_INITIALIZED,
+//        STABLE,
+//        UNSTABLE,
+//    };
+
+
+    // this method update the state machine
+    virtual void updateStateMachine();
+    // this method update the beacon record
+    virtual void updateBeaconRecord(const std::string &key);
+
+    struct BeaconData {
+        int vehicleId;
+        SimTime previousBeaconArrivalTime;
+        SimTime timeIntervalBetweenBeacon;
+        double packetLossRate;
     };
 
     enum class StateMachine {
-        NOT_SET_YET,
-        CONNECTED_TO_FRONT_VEHICLE,
-        COMPROMISED_WITH_FRONT_VEHICLE,
-        CACC_ESTABLISHED,
-        CONNECDTED_TO_PLATOON_LEADER,
+        NOT_INITIALIZED,
+        CAR2X_ENGAGED,
+        CAR2X_DISENGAGED,
         PLATOON_ESTABLISHED,
-        CONNECTED_TO_BOTH_FRONT_VEHILE_AND_PLATOON_LEADER,
+        CAR2X_ENGAGED_AND_PLATOON_ESTABLISHED,
+        PLATOON_LEAVE,
+        LEADER_LOST,
+        COMMUNICATION_FAILURE,
+        LOCAL_CONTROL_FAILURE
+    };
+
+    enum class SwitchController {
+        NOT_INITIALIZED,
+        ACC_TO_CACC,
+        CACC_TO_ACC,
+        CACC_TO_PLATOON,
+        PLATOON_TO_CACC,
+        PLATOON_TO_ACC,
     };
 
     class StateManager {
@@ -66,10 +95,13 @@ protected:
     };
 
     // Controller state
-    ControllerStabilityState controllerStabilityState;
+//    ControllerStabilityState controllerStabilityState;
 
-    //record the current state of the vehicle within the StateMachine
-    enum StateMachine currentState;
+    // record the current state of the vehicle within the StateMachine
+    StateMachine currentState;
+
+    // This will keep track to which state to transit from which state for the state controller
+    SwitchController switchController;
 
     // StateManager:: It's responsibility is to check the safety requirements and propose the transition if required
     StateManager* stateManager;
@@ -78,6 +110,9 @@ protected:
     // And take appropriate action for stable state transition
     StateController* stateController;
 
+    // this struct variable store the information related to received beacon for all vehicles
+    std::multimap<std::string, BeaconData> beaconData;
+
     // required module. for example: PositionHelper, TraCI interface etc
     BaseApp* app;
     BasePositionHelper* positionHelper;
@@ -85,9 +120,6 @@ protected:
     Veins::TraCICommandInterface* traci;
     Veins::TraCICommandInterface::Vehicle* traciVehicle;
 
-
-    //friend class StateManager;
-    //friend class StateController;
 };
 
 
