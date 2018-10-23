@@ -42,7 +42,7 @@ void RuntimeManager::monitor() {
             stateManager->accStateManager();
             break;
         case Plexe::CACC:
-            //stateManager->caccStateManager();
+            stateManager->caccStateManager();
             break;
         default:
             std::cerr << "RuntimeManager could not recognize the active controller" << std::endl;
@@ -50,7 +50,7 @@ void RuntimeManager::monitor() {
     }
 }
 
-void RuntimeManager::record(int vehicleId) {
+void RuntimeManager::record(int vehicleId, simtime_t currentSimTime) {
     if (vehicleId == positionHelper->getLeaderId()) {
         // this is the leader
 
@@ -61,10 +61,12 @@ void RuntimeManager::record(int vehicleId) {
             updateStateMachine();
         }
         // now keep record of the beacon in the beaconRecordData
-
+        updateBeaconRecord("front", currentSimTime);
     } else {
         // this is other vehicle
-        // these records are used to determine whether a vehicle encounters a communication faulire
+        // these records are used to determine whether a vehicle encounters a communication failure
+        std::string key = std::string("vehicle_") + std::to_string(vehicleId);
+        updateBeaconRecord(key, currentSimTime);
     }
 }
 
@@ -86,9 +88,30 @@ void RuntimeManager::updateStateMachine() {
 
 
 
-void RuntimeManager::updateBeaconRecord(const std::string &key) {
-    //RuntimeManager::BeaconData tmp; // TODO :: TRY WITH
-    //beaconData.insert({key, tmp});
+void RuntimeManager::updateBeaconRecord(const std::string &key, simtime_t currentSimTime) {
+    if (vehicleBeaconData.find(key) == vehicleBeaconData.end()) {
+        // this is the first time for this key
+        RuntimeManager::BeaconData bData;
+        bData.previousBeaconArrivalTime = currentSimTime;  // this is for checking
+        //std::cout << "Previous beacon arrival time from  " << key<<" : " << bData.previousBeaconArrivalTime << std::endl;
+        vehicleBeaconData.insert({key, bData});
+    } else {
+        auto iter = vehicleBeaconData.find(key);
+        iter->second.timeIntervalBetweenBeacon = currentSimTime - iter->second.previousBeaconArrivalTime;
+        iter->second.previousBeaconArrivalTime = currentSimTime;
+
+#ifdef DEBUG_RUNTIMEMANAGER
+        std::cout << key << "\n" << "\tpreviousBeaconArrivalTime: " << iter->second.previousBeaconArrivalTime.dbl()
+                         << "\n\ttimeIntervalBetweenBeacon: "<< iter->second.timeIntervalBetweenBeacon.dbl()
+                         << std::endl;
+#endif
+
+    }
+
+#ifdef DEBUG_RUNTIMEMANAGER
+        std::cout << "Total No. of vehicle in recordData: " << vehicleBeaconData.size() << std::endl;
+#endif
+
 
 }
 
@@ -136,15 +159,23 @@ void RuntimeManager::StateManager::accStateManager() {
 }
 
 void RuntimeManager::StateManager::caccStateManager() {
-    // here the status/stability of the current controller will be analyzed,
-    // and transition will be proposed to TODO  StateController if required
+    // TODO  here the status/stability of the current controller will be analyzed,
+    // and transition will be proposed to StateController if required
+    // monitor the recorded data
+    auto iter = myManager->vehicleBeaconData.find("front");
+
+    // Checking
+    if(iter->second.timeIntervalBetweenBeacon > .09) {
+        myManager->switchController = RuntimeManager::SwitchController::CACC_TO_ACC;
+        myManager->stateController->caccStateController();
+    }
+
 
 }
 
 void RuntimeManager::StateManager::platoonStateManager() {
     // here the status/stability of the current controller will be analyzed,
     // and transition will be proposed to TODO StateController if required
-    std::cout << "platoonStateManager is called to monitor the state!!!" << std::endl;
 
 }
 
@@ -166,11 +197,21 @@ void RuntimeManager::StateController::accStateController() {
         myManager->traciVehicle->setActiveController(Plexe::CACC);
         //myManager->currentState = RuntimeManager::StateMachine::CACC_ACTIVATED;
 
+#ifdef DEBUG_RUNTIMEMANAGER
         std::cout << "RuntimeManager performed transition from ACC to CACC!!!" << std::endl;
+#endif
+
     }
 }
 
 void RuntimeManager::StateController::caccStateController() {
+    if(myManager->switchController == RuntimeManager::SwitchController::CACC_TO_ACC) {
+        // TODO :: First take appropriate action for stable transition. For example deceleration to increase time gap to the front vehicle
+        myManager->traciVehicle->setActiveController(Plexe::ACC);
+#ifdef DEBUG_RUNTIMEMANAGER
+        std::cout << "RuntimeManager performed transition from CACC to ACC!!!" << std::endl;
+#endif
+    }
 
 }
 

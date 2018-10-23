@@ -215,8 +215,8 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
 
 
         //================================ Ahad :: Start of Runtime Manager ============================//
-
-        runtimeManager->record(pb->getVehicleId());
+        simtime_t currentSimTime = simTime();
+        runtimeManager->record(pb->getVehicleId(), currentSimTime);
 
         //================================ Ahad :: End of Runtime Manager ==============================//
 

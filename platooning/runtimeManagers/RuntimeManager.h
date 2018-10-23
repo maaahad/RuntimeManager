@@ -16,6 +16,10 @@ class BaseApp;
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 
+// this is for debugging purpose
+#define DEBUG_RUNTIMEMANAGER
+
+
 class RuntimeManager {
 public:
     RuntimeManager(BaseApp* app);
@@ -28,7 +32,7 @@ public:
     virtual void monitor();
 
     // this method is called every time a beacon is received and used to update StateMachine and beaconRecordData
-    virtual void record(int vehicleId);
+    virtual void record(int vehicleId, simtime_t currentSimTime);
 
 protected:
 
@@ -42,12 +46,12 @@ protected:
     // this method update the state machine
     virtual void updateStateMachine();
     // this method update the beacon record
-    virtual void updateBeaconRecord(const std::string &key);
+    virtual void updateBeaconRecord(const std::string &key, simtime_t currentSimTime);
 
     struct BeaconData {
         int vehicleId;
-        SimTime previousBeaconArrivalTime;
-        SimTime timeIntervalBetweenBeacon;
+        simtime_t previousBeaconArrivalTime;
+        simtime_t timeIntervalBetweenBeacon;
         double packetLossRate;
     };
 
@@ -111,7 +115,7 @@ protected:
     StateController* stateController;
 
     // this struct variable store the information related to received beacon for all vehicles
-    std::multimap<std::string, BeaconData> beaconData;
+    std::map<std::string, BeaconData> vehicleBeaconData;
 
     // required module. for example: PositionHelper, TraCI interface etc
     BaseApp* app;
