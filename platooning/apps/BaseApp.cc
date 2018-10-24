@@ -49,6 +49,14 @@ void BaseApp::initialize(int stage)
         // vehicle acceleration
         accelerationOut.setName("acceleration");
         controllerAccelerationOut.setName("controllerAcceleration");
+
+        //================================ Ahad :: Start of Runtime Manager ============================//
+
+        // beaconing interval in seconds
+        expectedBeaconInterval = SimTime(par("expectedBeaconInterval").doubleValue());
+        runtimeManagerEnabled = par("runtimeManagerEnabled").boolValue();
+        //================================ Ahad :: End of Runtime Manager ==============================//
+
     }
 
     if (stage == 1) {
@@ -69,12 +77,12 @@ void BaseApp::initialize(int stage)
 
 
         //================================ Ahad :: Start of Runtime Manager ============================//
-        runtimeManager = new RuntimeManager(this);
-        callBackRuntimeManager = new cMessage("callBackRuntimeManager");
-        // runtime manager is called in every (rounded) .11 (.11 * 1000 = 110 ms)
-        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-        SimTime callBackTime = SimTime(floor(simTime().dbl() * 1000 + 110), SIMTIME_MS);
-        scheduleAt(callBackTime, callBackRuntimeManager);
+//        runtimeManager = new RuntimeManager(this);
+//        callBackRuntimeManager = new cMessage("callBackRuntimeManager");
+//        // runtime manager is called in every (rounded) .11 (.11 * 1000 = 110 ms)
+//        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
+//        SimTime callBackTime = SimTime(floor(simTime().dbl() * 1000 + 110), SIMTIME_MS);
+//        scheduleAt(callBackTime, callBackRuntimeManager);
         //================================ Ahad :: End of Runtime Manager ==============================//
     }
 }
@@ -87,10 +95,10 @@ BaseApp::~BaseApp()
     stopSimulation = nullptr;
 
     //================================ Ahad :: Start of Runtime Manager ============================//
-    cancelAndDelete(callBackRuntimeManager);
-    callBackRuntimeManager = nullptr;
-
-    delete runtimeManager;
+//    cancelAndDelete(callBackRuntimeManager);
+//    callBackRuntimeManager = nullptr;
+//
+//    delete runtimeManager;
     //================================ Ahad :: End of Runtime Manager ==============================//
 }
 
@@ -158,19 +166,19 @@ void BaseApp::handleSelfMsg(cMessage* msg)
 
     //================================ Ahad :: Start of Runtime Manager ============================//
 
-    if (msg == callBackRuntimeManager) {
-        // callback runtime manager
-        EV << "Waiting to call the Runtime Manager!!!" << std::endl;
-        // Runtime manager analyze safety requirements to decide whether the current state is stable or not
-        // And take appropriate measures
-
-        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-        runtimeManager->monitor();
-        // re-schedule the self message
-        // TODO :: Callback time should come from configuration file
-        scheduleAt(simTime() + SimTime(110, SIMTIME_MS), callBackRuntimeManager);
-
-    }
+//    if (msg == callBackRuntimeManager) {
+//        // callback runtime manager
+//        EV << "Waiting to call the Runtime Manager!!!" << std::endl;
+//        // Runtime manager analyze safety requirements to decide whether the current state is stable or not
+//        // And take appropriate measures
+//
+//        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
+//        runtimeManager->monitor();
+//        // re-schedule the self message
+//        // TODO :: Callback time should come from configuration file
+//        scheduleAt(simTime() + SimTime(110, SIMTIME_MS), callBackRuntimeManager);
+//
+//    }
 
     //================================ Ahad :: End of Runtime Manager ============================//
 
@@ -214,8 +222,8 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
 
 
         //================================ Ahad :: Start of Runtime Manager ============================//
-        simtime_t currentSimTime = simTime();
-        runtimeManager->record(pb->getVehicleId(), currentSimTime);
+//        simtime_t currentSimTime = simTime();
+//        runtimeManager->record(pb->getVehicleId(), currentSimTime);
 
         //================================ Ahad :: End of Runtime Manager ==============================//
 

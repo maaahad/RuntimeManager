@@ -23,6 +23,9 @@ simple SimplePlatooningApp like BaseApp
 {
     parameters:
         int headerLength @unit("bit") = default(0 bit);
+        volatile double expectedBeaconInterval @unit(seconds) = default(0.11s);
+        bool runtimeManagerEnabled = default(true);
+        
         @display("i=block/app2");
         @class(SimplePlatooningApp);
     gates:

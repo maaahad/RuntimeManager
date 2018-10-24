@@ -82,12 +82,14 @@ protected:
 
 
     //================================ Ahad :: Start of Runtime Manager ============================//
-
-    // self message to activate runtime manager.
-    // TODO : CALLBACK TIME SHOULD BE COME FROM CONFIGURATION FILE. BaseScenario.ned, BBaseScenario.ned and .ini
-    cMessage* callBackRuntimeManager;
-    // Runtime manager
-    RuntimeManager *runtimeManager;
+    SimTime expectedBeaconInterval;
+    bool runtimeManagerEnabled;
+//
+//    // self message to activate runtime manager.
+//    // TODO : CALLBACK TIME SHOULD BE COME FROM CONFIGURATION FILE. BaseScenario.ned, BBaseScenario.ned and .ini
+//    cMessage* callBackRuntimeManager;
+//    // Runtime manager
+//    RuntimeManager *runtimeManager;
     //================================ Ahad :: End of Runtime Manager ==============================//
 
 public:
@@ -101,22 +103,22 @@ public:
 
     //================================ Ahad :: Start of Runtime Manager ============================//
 
-    BasePositionHelper* getPositionHelper()
-    {
-        return positionHelper;
-    }
-    Veins::TraCIMobility* getMobility()
-    {
-        return mobility;
-    }
-    Veins::TraCICommandInterface* getTraci()
-    {
-        return traci;
-    }
-    Veins::TraCICommandInterface::Vehicle* getTraciVehicle()
-    {
-        return traciVehicle;
-    }
+//    BasePositionHelper* getPositionHelper()
+//    {
+//        return positionHelper;
+//    }
+//    Veins::TraCIMobility* getMobility()
+//    {
+//        return mobility;
+//    }
+//    Veins::TraCICommandInterface* getTraci()
+//    {
+//        return traci;
+//    }
+//    Veins::TraCICommandInterface::Vehicle* getTraciVehicle()
+//    {
+//        return traciVehicle;
+//    }
 
     //================================ Ahad :: End of Runtime Manager ==============================//
 

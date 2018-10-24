@@ -7,13 +7,13 @@
 
 #include <iostream>
 #include "veins/modules/application/platooning/runtimeManagers/RuntimeManager.h"
-#include "veins/modules/application/platooning/apps/BaseApp.h"
+#include "veins/modules/application/platooning/apps/SimplePlatooningApp.h"
 
 //======================================================================================================================//
 //                                           RuntimeManager's methods implementation
 //======================================================================================================================//
 
-RuntimeManager::RuntimeManager(BaseApp* app) : currentState(StateMachine::NOT_INITIALIZED) ,
+RuntimeManager::RuntimeManager(SimplePlatooningApp* app) : currentState(StateMachine::NOT_INITIALIZED) ,
 switchController(SwitchController::NOT_INITIALIZED) {
     //std::cout << "Runtime Manager has been created..." << std::endl;
 

@@ -28,6 +28,8 @@ parameters:
     string joinManeuver;
 
     int headerLength @unit("bit") = default(0 bit);
+    volatile double expectedBeaconInterval @unit(seconds) = default(0.11s);
+    bool runtimeManagerEnabled = default(false);
     @display("i=block/app2");
     @class(GeneralPlatooningApp);
 

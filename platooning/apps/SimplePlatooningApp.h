@@ -23,9 +23,50 @@
 class SimplePlatooningApp : public BaseApp {
 
 public:
-    SimplePlatooningApp()
+    SimplePlatooningApp() {}
+    virtual ~SimplePlatooningApp();
+
+//================================ Ahad :: Start of Runtime Manager ============================//
+
+    /** override from BaseApp */
+    virtual void initialize(int stage) override;
+
+    BasePositionHelper* getPositionHelper()
     {
+        return positionHelper;
     }
+    Veins::TraCIMobility* getMobility()
+    {
+        return mobility;
+    }
+    Veins::TraCICommandInterface* getTraci()
+    {
+        return traci;
+    }
+    Veins::TraCICommandInterface::Vehicle* getTraciVehicle()
+    {
+        return traciVehicle;
+    }
+
+protected:
+    virtual void handleSelfMsg(cMessage* msg) override;
+
+    /**
+     * Handles PlatoonBeacons
+     *
+     * @param PlatooningBeacon pb to handle
+     */
+    virtual void onPlatoonBeacon(const PlatooningBeacon* pb) override;
+
+private:
+    // self message to activate runtime manager.
+    // TODO : CALLBACK TIME SHOULD BE COME FROM CONFIGURATION FILE. BaseScenario.ned, BBaseScenario.ned and .ini
+    cMessage* callBackRuntimeManager;
+    // Runtime manager
+    RuntimeManager *runtimeManager;
+
+//================================ Ahad :: End of Runtime Manager ==============================//
+
 };
 
 #endif /* SIMPLEPLATOONINGAPP_H_ */

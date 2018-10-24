@@ -9,7 +9,7 @@
 #define RUNTIMEMANAGER_H_
 
 // The runtime manager requires to have a reference to the Application under observation
-class BaseApp;
+class SimplePlatooningApp;
 
 
 #include <string>
@@ -22,7 +22,7 @@ class BaseApp;
 
 class RuntimeManager {
 public:
-    RuntimeManager(BaseApp* app);
+    RuntimeManager(SimplePlatooningApp* app);
 
     // We want all derived classes to override the destructor
     virtual ~RuntimeManager();
@@ -120,7 +120,7 @@ protected:
     std::map<std::string, BeaconData> vehicleBeaconData;
 
     // required module. for example: PositionHelper, TraCI interface etc
-    BaseApp* app;
+    SimplePlatooningApp* app;
     BasePositionHelper* positionHelper;
     Veins::TraCIMobility* mobility;
     Veins::TraCICommandInterface* traci;
