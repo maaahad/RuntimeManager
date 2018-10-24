@@ -32,7 +32,7 @@ public:
     virtual void monitor();
 
     // this method is called every time a beacon is received and used to update StateMachine and beaconRecordData
-    virtual void record(int vehicleId, simtime_t currentSimTime);
+    virtual void record(const int sourceVehicleId, simtime_t currentSimTime);
 
 protected:
 
@@ -44,7 +44,7 @@ protected:
 
 
     // this method update the state machine
-    virtual void updateStateMachine();
+    virtual void updateStateMachine(const int sourceVehicleId);
     // this method update the beacon record
     virtual void updateBeaconRecord(const std::string &key, simtime_t currentSimTime);
 
@@ -59,10 +59,11 @@ protected:
         NOT_INITIALIZED,
         CAR2X_ENGAGED,
         CAR2X_DISENGAGED,
+        CAR2LEADER_ENGAGED,
+        CAR2LEADER_DISENGAGED,
+        CAR2X_AND_CAR2LEADER_ENGAGED,
         PLATOON_ESTABLISHED,
-        CAR2X_ENGAGED_AND_PLATOON_ESTABLISHED,
-        PLATOON_LEAVE,
-        LEADER_LOST,
+        PLATOON_ESTABLISHED_AND_CAR2X_ENGAGED,
         COMMUNICATION_FAILURE,
         LOCAL_CONTROL_FAILURE
     };
@@ -70,6 +71,7 @@ protected:
     enum class SwitchController {
         NOT_INITIALIZED,
         ACC_TO_CACC,
+        ACC_TO_PLATOON,
         CACC_TO_ACC,
         CACC_TO_PLATOON,
         PLATOON_TO_CACC,

@@ -71,10 +71,9 @@ void BaseApp::initialize(int stage)
         //================================ Ahad :: Start of Runtime Manager ============================//
         runtimeManager = new RuntimeManager(this);
         callBackRuntimeManager = new cMessage("callBackRuntimeManager");
-        // runtime manager is called in every (rounded) .05 (.05 * 1000 = 50 ms)
-        // TODO :: callback time can be define in BaseScenario.ned and set BBaseScenario.ned (default)
-        // can be set in .ini file as sell
-        SimTime callBackTime = SimTime(floor(simTime().dbl() * 1000 + 50), SIMTIME_MS);
+        // runtime manager is called in every (rounded) .11 (.11 * 1000 = 110 ms)
+        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
+        SimTime callBackTime = SimTime(floor(simTime().dbl() * 1000 + 110), SIMTIME_MS);
         scheduleAt(callBackTime, callBackRuntimeManager);
         //================================ Ahad :: End of Runtime Manager ==============================//
     }
@@ -165,11 +164,11 @@ void BaseApp::handleSelfMsg(cMessage* msg)
         // Runtime manager analyze safety requirements to decide whether the current state is stable or not
         // And take appropriate measures
 
-        //TODO :: call runtime manager periodically to monitor beaconRecordData for the current state
+        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
         runtimeManager->monitor();
         // re-schedule the self message
         // TODO :: Callback time should come from configuration file
-        scheduleAt(simTime() + SimTime(50, SIMTIME_MS), callBackRuntimeManager);
+        scheduleAt(simTime() + SimTime(110, SIMTIME_MS), callBackRuntimeManager);
 
     }
 

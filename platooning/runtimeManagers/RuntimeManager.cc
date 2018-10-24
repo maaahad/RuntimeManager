@@ -50,34 +50,72 @@ void RuntimeManager::monitor() {
     }
 }
 
-void RuntimeManager::record(int vehicleId, simtime_t currentSimTime) {
-    if (vehicleId == positionHelper->getLeaderId()) {
+void RuntimeManager::record(const int sourceVehicleId, simtime_t currentSimTime) {
+    if (sourceVehicleId == positionHelper->getLeaderId()) {
         // this is the leader
-
-    } else if (vehicleId == positionHelper->getFrontId()) {
+        updateStateMachine(sourceVehicleId);
+        // now keep record of the beacon in the beaconRecordData
+        updateBeaconRecord("leader", currentSimTime);
+    } else if (sourceVehicleId == positionHelper->getFrontId()) {
         // this is the front vehicle
-        if (currentState != StateMachine::CAR2X_ENGAGED || currentState != StateMachine::CAR2X_ENGAGED_AND_PLATOON_ESTABLISHED) {
-            // this is the first call to record for front vehicle :: We need to update the state machine
-            updateStateMachine();
-        }
+        updateStateMachine(sourceVehicleId);
         // now keep record of the beacon in the beaconRecordData
         updateBeaconRecord("front", currentSimTime);
     } else {
         // this is other vehicle
         // these records are used to determine whether a vehicle encounters a communication failure
-        std::string key = std::string("vehicle_") + std::to_string(vehicleId);
+        std::string key = std::string("vehicle_") + std::to_string(sourceVehicleId);
         updateBeaconRecord(key, currentSimTime);
     }
+
+    // after updating the StateMachine and the stored information, call the monitor() to monitor the state stability
+    monitor();
+
 }
 
-void RuntimeManager::updateStateMachine() {
+void RuntimeManager::updateStateMachine(const int sourceVehicleId) {
     switch(traciVehicle->getActiveController()) {
     case Plexe::ACC:
-        currentState = (currentState == StateMachine::NOT_INITIALIZED) ? StateMachine::CAR2X_ENGAGED :
-                StateMachine::CAR2X_ENGAGED_AND_PLATOON_ESTABLISHED;
+        if(sourceVehicleId == positionHelper->getLeaderId()) {
+            if(currentState == RuntimeManager::StateMachine::NOT_INITIALIZED || currentState == RuntimeManager::StateMachine::CAR2X_DISENGAGED
+                    || currentState == RuntimeManager::StateMachine::CAR2LEADER_DISENGAGED) {
+                currentState = RuntimeManager::StateMachine::CAR2LEADER_ENGAGED;
+            } else if (currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED) {
+                currentState = RuntimeManager::StateMachine::CAR2X_AND_CAR2LEADER_ENGAGED;
+            }
+        } else if (sourceVehicleId == positionHelper->getFrontId()) {
+            if (currentState == RuntimeManager::StateMachine::NOT_INITIALIZED  || currentState == RuntimeManager::StateMachine::CAR2X_DISENGAGED
+                    || currentState == RuntimeManager::StateMachine::CAR2LEADER_DISENGAGED) {
+                currentState = RuntimeManager::StateMachine::CAR2X_ENGAGED;
+            } else if (currentState == RuntimeManager::StateMachine::CAR2LEADER_ENGAGED) {
+                currentState = RuntimeManager::StateMachine::CAR2X_AND_CAR2LEADER_ENGAGED;
+
+            }
+        } else {
+            // TODO : use preprocessor variables related to file and function to guide the user where the error is
+            std::cerr << "updateStateMachine() is called with wring sourceVehicleId. This code block have a TODO option..." << std::endl;
+        }
+        // TODO :: Another possibility: PLATOON_ESTABLISHED => if the vehicle know that the vehicle in front is in platoon mode
+        // TODO :: LATER
         break;
     case Plexe::CACC:
         // If we are here, StateMachine::CAR2X_ENGAGED, is guaranteed, otherwise something is wrong (need double check)
+        if(sourceVehicleId == positionHelper->getLeaderId()) {
+            if(currentState == RuntimeManager::StateMachine::NOT_INITIALIZED) {
+                currentState = RuntimeManager::StateMachine::CAR2LEADER_ENGAGED;
+            } else if (currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED) {
+                currentState = RuntimeManager::StateMachine::CAR2X_AND_CAR2LEADER_ENGAGED;
+            }
+        } else if (sourceVehicleId == positionHelper->getFrontId()) {
+            if(currentState == RuntimeManager::StateMachine::NOT_INITIALIZED) {
+                currentState = RuntimeManager::StateMachine::CAR2X_ENGAGED;
+            }
+        } else {
+            // TODO : use preprocessor variables related to file and function to guide the user where the error is
+            std::cerr << "updateStateMachine() is called with wring sourceVehicleId. This code block have a TODO option..." << std::endl;
+        }
+        // TODO :: Another possibility: PLATOON_ESTABLISHED => if the vehicle know that the vehicle in front is in platoon mode
+        // TODO :: LATER
 
         break;
     default:
@@ -99,18 +137,17 @@ void RuntimeManager::updateBeaconRecord(const std::string &key, simtime_t curren
         auto iter = vehicleBeaconData.find(key);
         iter->second.timeIntervalBetweenBeacon = currentSimTime - iter->second.previousBeaconArrivalTime;
         iter->second.previousBeaconArrivalTime = currentSimTime;
-
-#ifdef DEBUG_RUNTIMEMANAGER
-        std::cout << key << "\n" << "\tpreviousBeaconArrivalTime: " << iter->second.previousBeaconArrivalTime.dbl()
-                         << "\n\ttimeIntervalBetweenBeacon: "<< iter->second.timeIntervalBetweenBeacon.dbl()
-                         << std::endl;
-#endif
+//#ifdef DEBUG_RUNTIMEMANAGER
+//        std::cout << key << "\n" << "\tpreviousBeaconArrivalTime: " << iter->second.previousBeaconArrivalTime.dbl()
+//                         << "\n\ttimeIntervalBetweenBeacon: "<< iter->second.timeIntervalBetweenBeacon.dbl()
+//                         << std::endl;
+//#endif
 
     }
 
-#ifdef DEBUG_RUNTIMEMANAGER
-        std::cout << "Total No. of vehicle in recordData: " << vehicleBeaconData.size() << std::endl;
-#endif
+//#ifdef DEBUG_RUNTIMEMANAGER
+//        std::cout << "Total No. of vehicle in recordData: " << vehicleBeaconData.size() << std::endl;
+//#endif
 
 
 }
@@ -127,34 +164,19 @@ RuntimeManager::StateManager::~StateManager(){
 }
 
 void RuntimeManager::StateManager::accStateManager() {
-    // here the status/stability of the current controller will be analyzed,
-    // and transition will be proposed to TODO StateController if required
-
-    //std::cout << "accStateManager is called to monitor the state. Changing state to CACC!!!" << std::endl;
-
-    // If the current active controller is ACC and this is the first beacon from the vehicle in front
-//    if(myManager->currentState == RuntimeManager::StateMachine::NOT_INITIALIZED) {
-//        // TODO :: NEED TO CHECK COMPROMISATION WITH THE FRONT VEHICLE ????
-//        // THIS IS ALREADY FROM THE FRONT VEHICLE => I AM THE FOLLOWER
-//        // RADIO CONNECTION ESTABLISHED, SO WE CAN SWITCH TO CACC
-//        // This means there is at least one beacon from the front vehicle
-//
-//        // TODO: recored the received time of the beacon from the front vehicle.
-//        // This will periodically be used by the upper controller
-//
-//        myManager->currentState = RuntimeManager::StateMachine::CONNECTED_TO_FRONT_VEHICLE;
-//        myManager->stateController->accStateController();
-//    }
-
-    // If currentState is, at least CAR2X_ENGAGED, we require to switch to CACC mode
-    if (myManager->currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED) {
+    if (myManager->currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED || myManager->currentState == RuntimeManager::StateMachine::CAR2X_AND_CAR2LEADER_ENGAGED) {
         // TODO need to check all safety requirements stored in beaconRecordData
 
         // Then store the possible controller to switch to for the state controller
         myManager->switchController = RuntimeManager::SwitchController::ACC_TO_CACC;
         myManager->stateController->accStateController();
-    }
+    } else if (myManager->currentState == RuntimeManager::StateMachine::PLATOON_ESTABLISHED_AND_CAR2X_ENGAGED ||
+            myManager->currentState == RuntimeManager::StateMachine::PLATOON_ESTABLISHED) {
+        // TODO need to check all the safe requirements
 
+        myManager->switchController == RuntimeManager::SwitchController::ACC_TO_PLATOON;
+        myManager->stateController->accStateController();
+    }
 
 }
 
@@ -162,15 +184,28 @@ void RuntimeManager::StateManager::caccStateManager() {
     // TODO  here the status/stability of the current controller will be analyzed,
     // and transition will be proposed to StateController if required
     // monitor the recorded data
-    auto iter = myManager->vehicleBeaconData.find("front");
+    if (myManager->currentState == RuntimeManager::StateMachine::PLATOON_ESTABLISHED_AND_CAR2X_ENGAGED) {
+        // upgrade to Platoon
+        std::cout << "caccStateManager() has not implemented the upgrade from CACC yet..." << std::endl;
 
-    // Checking
-    if(iter->second.timeIntervalBetweenBeacon > .09) {
-        myManager->switchController = RuntimeManager::SwitchController::CACC_TO_ACC;
-        myManager->stateController->caccStateController();
+    } else if (myManager->currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED || myManager->currentState == RuntimeManager::StateMachine::CAR2X_AND_CAR2LEADER_ENGAGED) {
+        // No upgrade , but check the stability of the current state
+        auto iter = myManager->vehicleBeaconData.find("front");
+
+        // second operand of operator || is used by considering that the monitor() is called from the handleSelfMessage() of app !!!
+        // TODO :: (NOT 100% CONVINCED :: NEED TO DOUBLE CHECK)
+        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
+        if(iter->second.timeIntervalBetweenBeacon > 0.11 || (simTime() - iter->second.previousBeaconArrivalTime) > 0.11) {
+            // update the state machine
+            myManager->currentState = (myManager->currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED) ?
+                    RuntimeManager::StateMachine::CAR2X_DISENGAGED :
+                    RuntimeManager::StateMachine::CAR2LEADER_ENGAGED;
+
+            // we assume the connection to front vehicles lost or not good enough for CACC. downgrade from CACC to ACC
+            myManager->switchController = RuntimeManager::SwitchController::CACC_TO_ACC;
+            myManager->stateController->caccStateController();
+        }
     }
-
-
 }
 
 void RuntimeManager::StateManager::platoonStateManager() {
@@ -198,19 +233,27 @@ void RuntimeManager::StateController::accStateController() {
         //myManager->currentState = RuntimeManager::StateMachine::CACC_ACTIVATED;
 
 #ifdef DEBUG_RUNTIMEMANAGER
-        std::cout << "RuntimeManager performed transition from ACC to CACC!!!" << std::endl;
+        std::cout << "VehicleId: " << myManager->positionHelper->getId() << "\n\tRuntimeManager performed transition from ACC to CACC!!!" << std::endl;
 #endif
 
+    } else if (myManager->switchController == RuntimeManager::SwitchController::ACC_TO_PLATOON) {
+        // TODO Implement the transition
+        std::cerr << "accStateController() has not implemented the ACC_PLATOON yet!!!" << std::endl;
     }
 }
 
 void RuntimeManager::StateController::caccStateController() {
     if(myManager->switchController == RuntimeManager::SwitchController::CACC_TO_ACC) {
         // TODO :: First take appropriate action for stable transition. For example deceleration to increase time gap to the front vehicle
+
         myManager->traciVehicle->setActiveController(Plexe::ACC);
+
 #ifdef DEBUG_RUNTIMEMANAGER
-        std::cout << "RuntimeManager performed transition from CACC to ACC!!!" << std::endl;
+        std::cout << "VehicleId: " << myManager->positionHelper->getId() << "\n\tRuntimeManager performed transition from CACC to ACC!!!" << std::endl;
 #endif
+    } else if (myManager->switchController == RuntimeManager::SwitchController::CACC_TO_PLATOON) {
+        // TODO :: First take appropriate action for stable transition. For example deceleration to increase time gap to the front vehicle
+        std::cout << "caccStateController() has not implemented the transition from CACC to Platoon yet..." << std::endl;
     }
 
 }
