@@ -17,6 +17,9 @@
 
 #include "veins/modules/application/platooning/apps/SimplePlatooningApp.h"
 
+#include "veins/modules/application/platooning/runtimeManagers/SimpleRuntimeManager.h"
+
+
 Define_Module(SimplePlatooningApp);
 
 //================================ Ahad :: Start of Runtime Manager ============================//
@@ -28,6 +31,10 @@ void SimplePlatooningApp::initialize(int stage)
     if (stage == 1) {
         if(runtimeManagerEnabled) {
             runtimeManager = new RuntimeManager(this);
+
+            //================= Adding new runtimeManager ==============//
+            rtManager = new SimpleRuntimeManager(this);
+
             callBackRuntimeManager = new cMessage("callBackRuntimeManager");
             // runtime manager is called in every (rounded) .11 (.11 * 1000 = 110 ms)
             // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
@@ -48,7 +55,8 @@ void SimplePlatooningApp::handleSelfMsg(cMessage* msg)
             // And take appropriate measures
 
             // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-            runtimeManager->monitor();
+            //runtimeManager->monitor();
+            //rtManager->monitor();
             // re-schedule the self message
             // TODO :: Callback time should come from configuration file
             scheduleAt(simTime() + expectedBeaconInterval, callBackRuntimeManager);
@@ -60,18 +68,19 @@ void SimplePlatooningApp::handleSelfMsg(cMessage* msg)
 
 void SimplePlatooningApp::onPlatoonBeacon(const PlatooningBeacon* pb)
 {
-    int sourceVehicleId = pb->getVehicleId();
-    // maintain platoon
-    BaseApp::onPlatoonBeacon(pb);
-
-    // TODO :: DO WE NEED TO SWAP IT WITH     BaseApp::onPlatoonBeacon(pb);
     //================================ Ahad :: Start of Runtime Manager ============================//
     if (runtimeManagerEnabled) {
         simtime_t currentSimTime = simTime();
-        runtimeManager->record(sourceVehicleId, currentSimTime);
+        //runtimeManager->record(sourceVehicleId, currentSimTime);
+        rtManager->record(pb->getVehicleId(), currentSimTime);
+//        if (positionHelper->getId() == 1 && pb->getVehicleId() == positionHelper->getFrontId()) {
+//            std::cout << "I am here !!!!!!!!!!!" << std::endl;
+//        }
     }
-
     //================================ Ahad :: End of Runtime Manager ==============================//
+
+    // maintain platoon
+    BaseApp::onPlatoonBeacon(pb);
 }
 
 SimplePlatooningApp::~SimplePlatooningApp() {

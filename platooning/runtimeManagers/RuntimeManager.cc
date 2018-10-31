@@ -77,18 +77,18 @@ void RuntimeManager::updateStateMachine(const int sourceVehicleId) {
     switch(traciVehicle->getActiveController()) {
     case Plexe::ACC:
         if(sourceVehicleId == positionHelper->getLeaderId()) {
-            if(currentState == RuntimeManager::StateMachine::NOT_INITIALIZED || currentState == RuntimeManager::StateMachine::CAR2X_DISENGAGED
+            if(currentState == RuntimeManager::StateMachine::NOT_INITIALIZED || currentState == RuntimeManager::StateMachine::CAR2FRONT_DISENGAGED
                     || currentState == RuntimeManager::StateMachine::CAR2LEADER_DISENGAGED) {
                 currentState = RuntimeManager::StateMachine::CAR2LEADER_ENGAGED;
-            } else if (currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED) {
-                currentState = RuntimeManager::StateMachine::CAR2X_AND_CAR2LEADER_ENGAGED;
+            } else if (currentState == RuntimeManager::StateMachine::CAR2FRONT_ENGAGED) {
+                currentState = RuntimeManager::StateMachine::CAR2FRONT_AND_CAR2LEADER_ENGAGED;
             }
         } else if (sourceVehicleId == positionHelper->getFrontId()) {
-            if (currentState == RuntimeManager::StateMachine::NOT_INITIALIZED  || currentState == RuntimeManager::StateMachine::CAR2X_DISENGAGED
+            if (currentState == RuntimeManager::StateMachine::NOT_INITIALIZED  || currentState == RuntimeManager::StateMachine::CAR2FRONT_DISENGAGED
                     || currentState == RuntimeManager::StateMachine::CAR2LEADER_DISENGAGED) {
-                currentState = RuntimeManager::StateMachine::CAR2X_ENGAGED;
+                currentState = RuntimeManager::StateMachine::CAR2FRONT_ENGAGED;
             } else if (currentState == RuntimeManager::StateMachine::CAR2LEADER_ENGAGED) {
-                currentState = RuntimeManager::StateMachine::CAR2X_AND_CAR2LEADER_ENGAGED;
+                currentState = RuntimeManager::StateMachine::CAR2FRONT_AND_CAR2LEADER_ENGAGED;
 
             }
         } else {
@@ -103,12 +103,12 @@ void RuntimeManager::updateStateMachine(const int sourceVehicleId) {
         if(sourceVehicleId == positionHelper->getLeaderId()) {
             if(currentState == RuntimeManager::StateMachine::NOT_INITIALIZED) {
                 currentState = RuntimeManager::StateMachine::CAR2LEADER_ENGAGED;
-            } else if (currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED) {
-                currentState = RuntimeManager::StateMachine::CAR2X_AND_CAR2LEADER_ENGAGED;
+            } else if (currentState == RuntimeManager::StateMachine::CAR2FRONT_ENGAGED) {
+                currentState = RuntimeManager::StateMachine::CAR2FRONT_AND_CAR2LEADER_ENGAGED;
             }
         } else if (sourceVehicleId == positionHelper->getFrontId()) {
             if(currentState == RuntimeManager::StateMachine::NOT_INITIALIZED) {
-                currentState = RuntimeManager::StateMachine::CAR2X_ENGAGED;
+                currentState = RuntimeManager::StateMachine::CAR2FRONT_ENGAGED;
             }
         } else {
             // TODO : use preprocessor variables related to file and function to guide the user where the error is
@@ -164,13 +164,13 @@ RuntimeManager::StateManager::~StateManager(){
 }
 
 void RuntimeManager::StateManager::accStateManager() {
-    if (myManager->currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED || myManager->currentState == RuntimeManager::StateMachine::CAR2X_AND_CAR2LEADER_ENGAGED) {
+    if (myManager->currentState == RuntimeManager::StateMachine::CAR2FRONT_ENGAGED || myManager->currentState == RuntimeManager::StateMachine::CAR2FRONT_AND_CAR2LEADER_ENGAGED) {
         // TODO need to check all safety requirements stored in beaconRecordData
 
         // Then store the possible controller to switch to for the state controller
         myManager->switchController = RuntimeManager::SwitchController::ACC_TO_CACC;
         myManager->stateController->accStateController();
-    } else if (myManager->currentState == RuntimeManager::StateMachine::PLATOON_ESTABLISHED_AND_CAR2X_ENGAGED ||
+    } else if (myManager->currentState == RuntimeManager::StateMachine::PLATOON_ESTABLISHED_AND_CAR2FRONT_ENGAGED ||
             myManager->currentState == RuntimeManager::StateMachine::PLATOON_ESTABLISHED) {
         // TODO need to check all the safe requirements
 
@@ -184,11 +184,11 @@ void RuntimeManager::StateManager::caccStateManager() {
     // TODO  here the status/stability of the current controller will be analyzed,
     // and transition will be proposed to StateController if required
     // monitor the recorded data
-    if (myManager->currentState == RuntimeManager::StateMachine::PLATOON_ESTABLISHED_AND_CAR2X_ENGAGED) {
+    if (myManager->currentState == RuntimeManager::StateMachine::PLATOON_ESTABLISHED_AND_CAR2FRONT_ENGAGED) {
         // upgrade to Platoon
         std::cout << "caccStateManager() has not implemented the upgrade from CACC yet..." << std::endl;
 
-    } else if (myManager->currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED || myManager->currentState == RuntimeManager::StateMachine::CAR2X_AND_CAR2LEADER_ENGAGED) {
+    } else if (myManager->currentState == RuntimeManager::StateMachine::CAR2FRONT_ENGAGED || myManager->currentState == RuntimeManager::StateMachine::CAR2FRONT_AND_CAR2LEADER_ENGAGED) {
         // No upgrade , but check the stability of the current state
         auto iter = myManager->vehicleBeaconData.find("front");
 
@@ -197,8 +197,8 @@ void RuntimeManager::StateManager::caccStateManager() {
         // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
         if(iter->second.timeIntervalBetweenBeacon > 0.11 || (simTime() - iter->second.previousBeaconArrivalTime) > 0.11) {
             // update the state machine
-            myManager->currentState = (myManager->currentState == RuntimeManager::StateMachine::CAR2X_ENGAGED) ?
-                    RuntimeManager::StateMachine::CAR2X_DISENGAGED :
+            myManager->currentState = (myManager->currentState == RuntimeManager::StateMachine::CAR2FRONT_ENGAGED) ?
+                    RuntimeManager::StateMachine::CAR2FRONT_DISENGAGED :
                     RuntimeManager::StateMachine::CAR2LEADER_ENGAGED;
 
             // we assume the connection to front vehicles lost or not good enough for CACC. downgrade from CACC to ACC

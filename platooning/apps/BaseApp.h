@@ -36,6 +36,8 @@
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 
 #include "veins/modules/application/platooning/runtimeManagers/RuntimeManager.h"
+#include "veins/modules/application/platooning/runtimeManagers/BaseRuntimeManager.h"
+
 
 
 
@@ -84,7 +86,10 @@ protected:
     //================================ Ahad :: Start of Runtime Manager ============================//
     SimTime expectedBeaconInterval;
     bool runtimeManagerEnabled;
-//
+
+    // TODO replace runtimeManager from the derived class
+    BaseRuntimeManager *rtManager;
+
 //    // self message to activate runtime manager.
 //    // TODO : CALLBACK TIME SHOULD BE COME FROM CONFIGURATION FILE. BaseScenario.ned, BBaseScenario.ned and .ini
 //    cMessage* callBackRuntimeManager;
@@ -103,22 +108,22 @@ public:
 
     //================================ Ahad :: Start of Runtime Manager ============================//
 
-//    BasePositionHelper* getPositionHelper()
-//    {
-//        return positionHelper;
-//    }
-//    Veins::TraCIMobility* getMobility()
-//    {
-//        return mobility;
-//    }
-//    Veins::TraCICommandInterface* getTraci()
-//    {
-//        return traci;
-//    }
-//    Veins::TraCICommandInterface::Vehicle* getTraciVehicle()
-//    {
-//        return traciVehicle;
-//    }
+    BasePositionHelper* getPositionHelper()
+    {
+        return positionHelper;
+    }
+    Veins::TraCIMobility* getMobility()
+    {
+        return mobility;
+    }
+    Veins::TraCICommandInterface* getTraci()
+    {
+        return traci;
+    }
+    Veins::TraCICommandInterface::Vehicle* getTraciVehicle()
+    {
+        return traciVehicle;
+    }
 
     //================================ Ahad :: End of Runtime Manager ==============================//
 

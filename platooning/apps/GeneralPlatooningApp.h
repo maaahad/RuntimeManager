@@ -119,27 +119,27 @@ public:
         inManeuver = b;
     }
 
-     // ==================================== Commented by Ahad (start) ===============================================//
-     // ======================================= Moved to BaseApp =====================================================//
+     // ==================================== override added by Ahad (start) ===============================================//
+     // =============================================== Moved to BaseApp ==================================================//
 
-    BasePositionHelper* getPositionHelper()
-    {
-        return positionHelper;
-    }
-    Veins::TraCIMobility* getMobility()
-    {
-        return mobility;
-    }
-    Veins::TraCICommandInterface* getTraci()
-    {
-        return traci;
-    }
-    Veins::TraCICommandInterface::Vehicle* getTraciVehicle()
-    {
-        return traciVehicle;
-    }
+//    BasePositionHelper* getPositionHelper() override
+//    {
+//        return positionHelper;
+//    }
+//    Veins::TraCIMobility* getMobility() override
+//    {
+//        return mobility;
+//    }
+//    Veins::TraCICommandInterface* getTraci() override
+//    {
+//        return traci;
+//    }
+//    Veins::TraCICommandInterface::Vehicle* getTraciVehicle() override
+//    {
+//        return traciVehicle;
+//    }
 
-    // ==================================== Commented by Ahad (end) ===============================================//
+    // ==================================== override added by Ahad (end) ===============================================//
 
     /**
      * Sends a unicast message

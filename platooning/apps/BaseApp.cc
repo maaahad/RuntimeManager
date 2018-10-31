@@ -15,6 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+
 #include "veins/modules/application/platooning/apps/BaseApp.h"
 
 #include "veins/modules/messages/WaveShortMessage_m.h"
@@ -95,6 +96,8 @@ BaseApp::~BaseApp()
     stopSimulation = nullptr;
 
     //================================ Ahad :: Start of Runtime Manager ============================//
+    // TODO Release memory : delete the runtime manager
+
 //    cancelAndDelete(callBackRuntimeManager);
 //    callBackRuntimeManager = nullptr;
 //
@@ -197,10 +200,13 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
         }
         // if the message comes from the vehicle in front
         if (pb->getVehicleId() == positionHelper->getFrontId()) {
-            EV << "I am vehicle in front!!!" << std::endl;
             traciVehicle->setFrontVehicleData(pb->getControllerAcceleration(), pb->getAcceleration(), pb->getSpeed(), pb->getPositionX(), pb->getPositionY(), pb->getTime());
 
             //================================ Ahad :: Start of Runtime Manager ============================//
+//           traciVehicle->setActiveController(Plexe::CACC);
+//           if (positionHelper->getId() == 8)
+//           std::cout << "VehicleId: " << positionHelper->getId() << "\n\tRuntimeManager performed transition from ACC to CACC!!!" << std::endl;
+
 
              // runtimeManager->monitor();
 
@@ -215,9 +221,9 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
         //================================================== Ahad:: Debug Start ==================================================//
         // TODO :: Need to keep record
         //std::cout << "Source Vehicle ID: " << pb->getVehicleId() << std::endl;
-        if (pb->getVehicleId() != positionHelper->getLeaderId() && pb->getVehicleId() != positionHelper->getFrontId()) {
-            //EV << "I am neither vehicle in front nor the leader!!!" << std::endl;
-        }
+//        if (pb->getVehicleId() != positionHelper->getLeaderId() && pb->getVehicleId() != positionHelper->getFrontId()) {
+//            //EV << "I am neither vehicle in front nor the leader!!!" << std::endl;
+//        }
         //=================================================== Ahad:: Debug Start =================================================//
 
 
@@ -245,3 +251,46 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
     }
     delete pb;
 }
+
+
+
+//================================ Ahad :: Start of Runtime Manager ============================//
+
+//BasePositionHelper* BaseApp::getPositionHelper() {
+//    std::cerr << "Error: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " must have to override by the derived class!!!"
+//              << std::endl;
+//}
+//Veins::TraCIMobility* BaseApp::getMobility() {
+//    std::cerr << "Error: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " must have to override by the derived class!!!"
+//              << std::endl;
+//}
+//Veins::TraCICommandInterface* BaseApp::getTraci() {
+//    std::cerr << "Error: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " must have to override by the derived class!!!"
+//              << std::endl;
+//}
+//Veins::TraCICommandInterface::Vehicle* BaseApp::getTraciVehicle() {
+//    std::cerr << "Error: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " must have to override by the derived class!!!"
+//              << std::endl;
+//}
+
+//================================ Ahad :: Start of Runtime Manager ============================//

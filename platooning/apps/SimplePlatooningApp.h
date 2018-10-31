@@ -30,23 +30,23 @@ public:
 
     /** override from BaseApp */
     virtual void initialize(int stage) override;
-
-    BasePositionHelper* getPositionHelper()
-    {
-        return positionHelper;
-    }
-    Veins::TraCIMobility* getMobility()
-    {
-        return mobility;
-    }
-    Veins::TraCICommandInterface* getTraci()
-    {
-        return traci;
-    }
-    Veins::TraCICommandInterface::Vehicle* getTraciVehicle()
-    {
-        return traciVehicle;
-    }
+    // ================================= Moved to BaseApp =====================================//
+//    BasePositionHelper* getPositionHelper() override
+//    {
+//        return positionHelper;
+//    }
+//    Veins::TraCIMobility* getMobility() override
+//    {
+//        return mobility;
+//    }
+//    Veins::TraCICommandInterface* getTraci() override
+//    {
+//        return traci;
+//    }
+//    Veins::TraCICommandInterface::Vehicle* getTraciVehicle() override
+//    {
+//        return traciVehicle;
+//    }
 
 protected:
     virtual void handleSelfMsg(cMessage* msg) override;
