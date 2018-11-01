@@ -30,7 +30,7 @@ void SimplePlatooningApp::initialize(int stage)
 
     if (stage == 1) {
         if(runtimeManagerEnabled) {
-            runtimeManager = new RuntimeManager(this);
+            // runtimeManager = new RuntimeManager(this);
 
             //================= Adding new runtimeManager ==============//
             rtManager = new SimpleRuntimeManager(this);

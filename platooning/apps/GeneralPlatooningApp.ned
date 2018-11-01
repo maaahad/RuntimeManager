@@ -30,6 +30,11 @@ parameters:
     int headerLength @unit("bit") = default(0 bit);
     volatile double expectedBeaconInterval @unit(seconds) = default(0.11s);
     bool runtimeManagerEnabled = default(false);
+    
+    
+	volatile double waitTimeToAcknoledgeConnectionEstd @unit(seconds) = deafult(0.25s);
+    int nBeaconToAcknoledgeConnectionEstd = default(2);
+    
     @display("i=block/app2");
     @class(GeneralPlatooningApp);
 

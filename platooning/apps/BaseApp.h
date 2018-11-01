@@ -87,6 +87,9 @@ protected:
     SimTime expectedBeaconInterval;
     bool runtimeManagerEnabled;
 
+    SimTime waitTimeToAcknoledgeConnectionEstd;
+    int nBeaconToAcknoledgeConnectionEstd;
+
     // TODO replace runtimeManager from the derived class
     BaseRuntimeManager *rtManager;
 
@@ -123,6 +126,14 @@ public:
     Veins::TraCICommandInterface::Vehicle* getTraciVehicle()
     {
         return traciVehicle;
+    }
+
+    SimTime getWaitTimeToAcknoledgeConnectionEstd() {
+        return waitTimeToAcknoledgeConnectionEstd;
+    }
+
+    int getNBeaconToAcknoledgeConnectionEstd() {
+        return nBeaconToAcknoledgeConnectionEstd;
     }
 
     //================================ Ahad :: End of Runtime Manager ==============================//

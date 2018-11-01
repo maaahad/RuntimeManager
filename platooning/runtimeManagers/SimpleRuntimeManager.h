@@ -17,8 +17,8 @@ public:
     void monitor() override;
     void record(const int sourceVehicleId, simtime_t currentSimTime) override;
 protected:
-    void updateStateMachine(const int sourceVehicleId) override;
-    void updateSafetyRecords(const std::string &key, simtime_t currentSimTime) override;
+    void updateStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) override;
+    void updateSafetyRecords(const int key, simtime_t currentSimTime) override;
 
 };
 

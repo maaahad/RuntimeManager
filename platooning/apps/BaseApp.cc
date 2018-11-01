@@ -55,7 +55,13 @@ void BaseApp::initialize(int stage)
 
         // beaconing interval in seconds
         expectedBeaconInterval = SimTime(par("expectedBeaconInterval").doubleValue());
-        runtimeManagerEnabled = par("runtimeManagerEnabled").boolValue();
+        runtimeManagerEnabled  = par("runtimeManagerEnabled").boolValue();
+
+        waitTimeToAcknoledgeConnectionEstd = SimTime(par("waitTimeToAcknoledgeConnectionEstd").doubleValue());
+        nBeaconToAcknoledgeConnectionEstd  = par("nBeaconToAcknoledgeConnectionEstd").intValue();
+
+//        std::cout << "expectedBeaconInterval: " << expectedBeaconInterval
+//                  << ", runtimeManagerEnabled: "<< runtimeManagerEnabled << std::endl;
         //================================ Ahad :: End of Runtime Manager ==============================//
 
     }

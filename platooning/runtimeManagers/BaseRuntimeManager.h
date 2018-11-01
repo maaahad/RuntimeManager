@@ -11,6 +11,8 @@
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 
+#define DEBUG_RUNTIMEMANAGER
+
 //=================================================================================================================================//
 // Forward declaration of Application
 //=================================================================================================================================//
@@ -41,12 +43,12 @@ protected:
      * This method is called by class method member record
      * to update the StateMachine
      */
-    virtual void updateStateMachine(const int sourceVehicleId) = 0;
+    virtual void updateStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) = 0;
     /**
      * This method is called by class method member record
      * to update the beacon record
      */
-    virtual void updateSafetyRecords(const std::string &key, simtime_t currentSimTime) = 0;
+    virtual void updateSafetyRecords(const int key, simtime_t currentSimTime) = 0;
 
     /**
      * This struct type use to record the safety related information on receiving beacon from another vehicles
@@ -55,6 +57,12 @@ protected:
         int vehicleId;
         simtime_t lastBeaconArrivalTime;
         simtime_t timeIntervalBetweenBeacon;
+
+        simtime_t firstBeaconArrivalTime;
+        int nbeaconReceived;        // WE CAN KEEP COUNTING AFTER CONNECTION TO USE THIS TO COMPUTE packetLossRate
+        //bool connectionEstablished; // WE DON'T NEED THIS RIGHT NOW
+
+        int nbeaconMissed;
         double packetLossRate;
     };
 
@@ -71,16 +79,6 @@ protected:
         ACC_CAR2FRONT_DISENGAGED,
         CACC_CAR2FRONT_ENGAGED,
         CACC_CAR2FRONT_CAR2LEADER_ENGAGED,
-//        NOT_INITIALIZED,
-//        CAR2FRONT_ENGAGED,
-//        CAR2FRONT_DISENGAGED,
-//        CAR2LEADER_ENGAGED,
-//        CAR2LEADER_DISENGAGED,
-//        CAR2FRONT_AND_CAR2LEADER_ENGAGED,
-//        PLATOON_ESTABLISHED,
-//        PLATOON_ESTABLISHED_AND_CAR2FRONT_ENGAGED,
-//        COMMUNICATION_FAILURE,
-//        LOCAL_CONTROL_FAILURE
     };
 
     /**
@@ -136,7 +134,8 @@ protected:
     StateManager *stateManager;
     StateController *stateController;
 
-    std::map<std::string, SafetyRecords> safetyRecords;
+    std::map<int, SafetyRecords> safetyRecords;
+
 
     BaseApp *app;
     Veins::TraCIMobility* mobility;

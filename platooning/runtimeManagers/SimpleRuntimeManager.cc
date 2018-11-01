@@ -5,6 +5,7 @@
  *      Author: ahad
  */
 
+#include "veins/modules/application/platooning/apps/BaseApp.h"
 #include "SimpleRuntimeManager.h"
 
 
@@ -22,26 +23,20 @@ SimpleRuntimeManager::SimpleRuntimeManager(BaseApp *app) : BaseRuntimeManager(ap
 //=================================================================================================================================//
 SimpleRuntimeManager::~SimpleRuntimeManager() {
     // TODO Auto-generated destructor stub
+    // Nothing to delete here. BaseRuntimeManager will delete the allocated memory
+    // As this derived class does not have any dynamically allocated memory
 }
 
 //=================================================================================================================================//
 // override virtual mehtods
 //=================================================================================================================================//
 void SimpleRuntimeManager::monitor() {
-//    std::cout << "Warning: " << __FILE__
-//              << "\n\tLine: " << __LINE__
-//              << "\n\tCompiled on: " << __DATE__
-//              << " at " << __TIME__
-//              << "\n\tfunction " << __func__
-//              << " : not been implemented yet!!!"
-//              << std::endl;
-
     switch(traciVehicle->getActiveController()) {
     case Plexe::ACC:
         stateManager->accStateManager();
         break;
     case Plexe::CACC:
-        stateManager->caccStateManager();
+        //stateManager->caccStateManager();
         break;
     default:
         std::cerr << "Error : Unrecognizable Active Controller +/ not considered yet in : "
@@ -57,103 +52,61 @@ void SimpleRuntimeManager::monitor() {
 }
 
 void SimpleRuntimeManager::record(const int sourceVehicleId, simtime_t currentSimTime){
-//    std::cout << "Warning: "
-//              << __FILE__
-//              << "\n\tLine: "
-//              << __LINE__
-//              << "\n\tCompiled on: "
-//              << __DATE__
-//              << " at "
-//              << __TIME__
-//              << "\n\tfunction "
-//              << __func__
-//              << " : not been implemented yet!!!"
-//              << std::endl;
 
+    updateSafetyRecords(sourceVehicleId, currentSimTime);
 
-    if (sourceVehicleId == positionHelper->getLeaderId()) {
-
-        // this is the leader
-        updateStateMachine(sourceVehicleId);
-        // now keep record of the beacon in the beaconRecordData
-        //updateSafetyRecords("leader", currentSimTime);
-    } else if (sourceVehicleId == positionHelper->getFrontId()) {
-        // this is the front vehicle
-        updateStateMachine(sourceVehicleId);
-        // now keep record of the beacon in the beaconRecordData
-        //updateSafetyRecords("front", currentSimTime);
-    } else {
-        // this is other vehicle
-        // these records are used to determine whether a vehicle encounters a communication failure
-        std::string key = std::string("vehicle_") + std::to_string(sourceVehicleId);
-        //updateSafetyRecords(key, currentSimTime);
+    if (sourceVehicleId == positionHelper->getLeaderId() || sourceVehicleId == positionHelper->getFrontId()) {
+        // this is the leader or the front vehicle
+        updateStateMachine(sourceVehicleId, currentSimTime);
     }
-
-    //===================================================== Test ======================================================//
-    // this is for testing purpose
-    if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
-            currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED) {
-        if(traciVehicle->getActiveController() != Plexe::CACC) {
-            traciVehicle->setActiveController(Plexe::CACC);
-//            if (positionHelper->getId() == 2)
-            std::cout << "VehicleId: " << positionHelper->getId() << "\n\tRuntimeManager performed transition from ACC to CACC!!!" << std::endl;
-        }
-
-    }
-    //===================================================== Test ======================================================//
-
-
-    // after updating the StateMachine and the stored information, call the monitor() to monitor the state stability
-    //monitor();
+    // after updating the StateMachine and the stored information, call the monitor() to monitor the check state stability
+    monitor();
 }
 
 
-void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId) {
-//    std::cout << "Warning: "
-//              << __FILE__
-//              << "\n\tLine: "
-//              << __LINE__
-//              << "\n\tCompiled on: "
-//              << __DATE__
-//              << " at "
-//              << __TIME__
-//              << "\n\tfunction "
-//              << __func__
-//              << " : under implementation!!"
-//              << std::endl;
-
+void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) {
     switch(traciVehicle->getActiveController()) {
     case Plexe::ACC:
         if(sourceVehicleId == positionHelper->getLeaderId()) {
-            if(currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_CAR2LEADER_DISENGAGED ||
-               currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED ||
-               currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED) {
+            auto safetyData = safetyRecords.find(sourceVehicleId);
+            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
+                    (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
 
-                if (positionHelper->getId() == 1) {
-                    currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
-                } else {
-                    currentState = BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_ENGAGED;
+                if(currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_CAR2LEADER_DISENGAGED ||
+                   currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED ||
+                   currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED) {
+
+                    if (sourceVehicleId == positionHelper->getFrontId()) {
+                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
+                    } else {
+                        currentState = BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_ENGAGED;
+                    }
                 }
             }
+
         } else if (sourceVehicleId == positionHelper->getFrontId()) {
-            if(currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_CAR2LEADER_DISENGAGED ||
-               currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED ||
-               currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED) {
+            auto safetyData = safetyRecords.find(sourceVehicleId);
+            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
+                                (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
+                if(currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_CAR2LEADER_DISENGAGED ||
+                   currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED ||
+                   currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED) {
 
 
-                if (positionHelper->getId() == 1) {
+                    if (sourceVehicleId == positionHelper->getLeaderId()) {
+                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
+                    } else {
+                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
+                    }
+
+                } else if (currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_ENGAGED) {
+                    // Sanity check
+                    assert(sourceVehicleId != positionHelper->getLeaderId());
+
                     currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
-                } else {
-                    currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
                 }
-
-            } else if (currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_ENGAGED) {
-
-//                if (positionHelper->getId() == 1 && sourceVehicleId == positionHelper->getFrontId()) {
-//                    std::cout << "I am here an I am confused here ...My front and leader is the same vehicle!!!!!!!!!!!" << std::endl;
-//                }
-                currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
             }
+
         } else {
             std::cerr << "Error : wrong Vehicle Id"
                       << "\n\tFile: "
@@ -180,17 +133,39 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId) {
 
     }
 }
-void SimpleRuntimeManager::updateSafetyRecords(const std::string &key, simtime_t currentSimTime) {
-    std::cout << "Warning: "
-              << __FILE__
-              << "\n\tLine: "
-              << __LINE__
-              << "\n\tCompiled on: "
-              << __DATE__
-              << " at " << __TIME__
-              << "\n\tfunction " << __func__
-              << " : not been implemented yet!!!"
-              << std::endl;
+void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentSimTime) {
+
+    // TODO IN CASE OF CONNECTION LOST WE CAN DISCARD THE RECORD TO RESTART THE NEW CONNECTION PROCEDURE
+    if(safetyRecords.find(key) == safetyRecords.end()) {
+        // This is the first time called of this method for this key
+        // create a new records for this key and insert it to the safetyRecords
+        // TODO ADD ADDITIONAL SAFETY DATA IF REQUIRED
+        BaseRuntimeManager::SafetyRecords safetyData;
+        safetyData.lastBeaconArrivalTime = currentSimTime;
+        safetyData.firstBeaconArrivalTime = currentSimTime;
+        safetyData.nbeaconReceived = 0;
+        safetyRecords.insert({key, safetyData});
+    } else {
+        // The record for the key is already exist
+        auto safetyData = safetyRecords.find(key);
+        safetyData->second.timeIntervalBetweenBeacon = currentSimTime - safetyData->second.lastBeaconArrivalTime;
+        safetyData->second.lastBeaconArrivalTime = currentSimTime;
+        safetyData->second.nbeaconReceived += 1;
+
+#ifdef DEBUG_RUNTIMEMANAGER
+        std::cout << "vehicle_" << positionHelper->getId() << " from vehicle_"
+                         << key << ":\n\tlastBeaconArrivalTime: " << safetyData->second.lastBeaconArrivalTime.dbl()
+                         << "\n\ttimeIntervalBetweenBeacon: "<< safetyData->second.timeIntervalBetweenBeacon.dbl()
+                         << "\n\tnbeaconReceived: " << safetyData->second.nbeaconReceived
+                         << std::endl;
+#endif
+
+    }
+
+#ifdef DEBUG_RUNTIMEMANAGER
+        std::cout << "Total No. of vehicle in recordData: " << safetyRecords.size() << std::endl;
+#endif
+
 }
 
 
