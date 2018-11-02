@@ -121,6 +121,13 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
     case Plexe::CACC:
         // in CACC mode, this is guaranteed that the connection to front is established
         // We don't have to think about update state machine while getting beacon from front vehicle
+        // In case the simulaiton start with CACC, there is a possibility that the current state will be ACC_CAR2FRONT_CAR2LEADER_DISENGAGED
+        // In this circumstance, we assume that the conection to front established as the simulation kernel already set active controller to CACC
+
+        if(currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_CAR2LEADER_DISENGAGED){
+            currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
+        }
+
         if(sourceVehicleId == positionHelper->getLeaderId()) {
 
             if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED) {
@@ -166,13 +173,13 @@ void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentS
         safetyData->second.lastBeaconArrivalTime = currentSimTime;
         safetyData->second.nbeaconReceived += 1;
 
-//#ifdef DEBUG_RUNTIMEMANAGER
+#ifdef DEBUG_RUNTIMEMANAGER
 //        std::cout << "vehicle_" << positionHelper->getId() << " from vehicle_"
 //                         << key << ":\n\tlastBeaconArrivalTime: " << safetyData->second.lastBeaconArrivalTime.dbl()
 //                         << "\n\ttimeIntervalBetweenBeacon: "<< safetyData->second.timeIntervalBetweenBeacon.dbl()
 //                         << "\n\tnbeaconReceived: " << safetyData->second.nbeaconReceived
 //                         << std::endl;
-//#endif
+#endif
 
     }
 

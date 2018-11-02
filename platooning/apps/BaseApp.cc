@@ -57,6 +57,8 @@ void BaseApp::initialize(int stage)
         expectedBeaconInterval = SimTime(par("expectedBeaconInterval").doubleValue());
         runtimeManagerEnabled  = par("runtimeManagerEnabled").boolValue();
 
+
+        avgExceptedBeaconInterval          = SimTime(par("avgExceptedBeaconInterval").doubleValue());
         waitTimeToAcknoledgeConnectionEstd = SimTime(par("waitTimeToAcknoledgeConnectionEstd").doubleValue());
         nBeaconToAcknoledgeConnectionEstd  = par("nBeaconToAcknoledgeConnectionEstd").intValue();
 

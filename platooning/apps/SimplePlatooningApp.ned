@@ -23,11 +23,12 @@ simple SimplePlatooningApp like BaseApp
 {
     parameters:
         int headerLength @unit("bit") = default(0 bit);
-        volatile double expectedBeaconInterval @unit(seconds) = default(0.11s);
+        volatile double expectedBeaconInterval @unit(seconds) = default(0.08s);
         bool runtimeManagerEnabled = default(true);
         
-    	volatile double waitTimeToAcknoledgeConnectionEstd @unit(seconds) = default(0.25s);
-    	int nBeaconToAcknoledgeConnectionEstd = default(2);
+        volatile double avgExceptedBeaconInterval @unit(seconds) = default(0.11s);			// = default(.11 seconds)
+    	volatile double waitTimeToAcknoledgeConnectionEstd @unit(seconds) = default(0.28s);
+    	int nBeaconToAcknoledgeConnectionEstd = default(3);
         
         @display("i=block/app2");
         @class(SimplePlatooningApp);

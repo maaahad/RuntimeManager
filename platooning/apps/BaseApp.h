@@ -87,6 +87,7 @@ protected:
     SimTime expectedBeaconInterval;
     bool runtimeManagerEnabled;
 
+    SimTime avgExceptedBeaconInterval;
     SimTime waitTimeToAcknoledgeConnectionEstd;
     int nBeaconToAcknoledgeConnectionEstd;
 
@@ -132,6 +133,10 @@ public:
             return expectedBeaconInterval;
     }
 
+
+    SimTime getAvgExceptedBeaconInterval() {
+        return avgExceptedBeaconInterval;
+    }
     SimTime getWaitTimeToAcknoledgeConnectionEstd() {
         return waitTimeToAcknoledgeConnectionEstd;
     }

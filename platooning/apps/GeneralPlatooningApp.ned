@@ -32,6 +32,7 @@ parameters:
     bool runtimeManagerEnabled = default(false);
     
     
+    volatile double avgExceptedBeaconInterval @unit(seconds) = default(0.11s);			// = default(.11 seconds)
 	volatile double waitTimeToAcknoledgeConnectionEstd @unit(seconds) = deafult(0.25s);
     int nBeaconToAcknoledgeConnectionEstd = default(2);
     
