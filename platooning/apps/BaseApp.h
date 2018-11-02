@@ -128,6 +128,10 @@ public:
         return traciVehicle;
     }
 
+    SimTime getExpectedBeaconInterval() {
+            return expectedBeaconInterval;
+    }
+
     SimTime getWaitTimeToAcknoledgeConnectionEstd() {
         return waitTimeToAcknoledgeConnectionEstd;
     }

@@ -36,7 +36,7 @@ void SimpleRuntimeManager::monitor() {
         stateManager->accStateManager();
         break;
     case Plexe::CACC:
-        //stateManager->caccStateManager();
+        stateManager->caccStateManager();
         break;
     default:
         std::cerr << "Error : Unrecognizable Active Controller +/ not considered yet in : "
@@ -119,6 +119,19 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
         }
         break;
     case Plexe::CACC:
+        // in CACC mode, this is guaranteed that the connection to front is established
+        // We don't have to think about update state machine while getting beacon from front vehicle
+        if(sourceVehicleId == positionHelper->getLeaderId()) {
+
+            if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED) {
+                auto safetyData = safetyRecords.find(sourceVehicleId);
+                if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
+                        (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
+                    currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
+                }
+            }
+
+        }
         break;
     default:
         std::cerr << "Error : Unrecognizable Active Controller +/ not considered yet in : "
@@ -137,7 +150,8 @@ void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentS
 
     // TODO IN CASE OF CONNECTION LOST WE CAN DISCARD THE RECORD TO RESTART THE NEW CONNECTION PROCEDURE
     if(safetyRecords.find(key) == safetyRecords.end()) {
-        // This is the first time called of this method for this key
+        // This is the first time called of this method for this key during the simulation
+        // or after connection to key is lost
         // create a new records for this key and insert it to the safetyRecords
         // TODO ADD ADDITIONAL SAFETY DATA IF REQUIRED
         BaseRuntimeManager::SafetyRecords safetyData;
@@ -152,19 +166,19 @@ void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentS
         safetyData->second.lastBeaconArrivalTime = currentSimTime;
         safetyData->second.nbeaconReceived += 1;
 
-#ifdef DEBUG_RUNTIMEMANAGER
-        std::cout << "vehicle_" << positionHelper->getId() << " from vehicle_"
-                         << key << ":\n\tlastBeaconArrivalTime: " << safetyData->second.lastBeaconArrivalTime.dbl()
-                         << "\n\ttimeIntervalBetweenBeacon: "<< safetyData->second.timeIntervalBetweenBeacon.dbl()
-                         << "\n\tnbeaconReceived: " << safetyData->second.nbeaconReceived
-                         << std::endl;
-#endif
+//#ifdef DEBUG_RUNTIMEMANAGER
+//        std::cout << "vehicle_" << positionHelper->getId() << " from vehicle_"
+//                         << key << ":\n\tlastBeaconArrivalTime: " << safetyData->second.lastBeaconArrivalTime.dbl()
+//                         << "\n\ttimeIntervalBetweenBeacon: "<< safetyData->second.timeIntervalBetweenBeacon.dbl()
+//                         << "\n\tnbeaconReceived: " << safetyData->second.nbeaconReceived
+//                         << std::endl;
+//#endif
 
     }
 
-#ifdef DEBUG_RUNTIMEMANAGER
-        std::cout << "Total No. of vehicle in recordData: " << safetyRecords.size() << std::endl;
-#endif
+//#ifdef DEBUG_RUNTIMEMANAGER
+//        std::cout << "Total No. of vehicle in recordData: " << safetyRecords.size() << std::endl;
+//#endif
 
 }
 

@@ -107,6 +107,7 @@ protected:
         void caccStateManager();
         void platoonStateManager();
     private:
+        bool safetyCheckingOK(int key);
         BaseRuntimeManager *myManager;
     };
 
