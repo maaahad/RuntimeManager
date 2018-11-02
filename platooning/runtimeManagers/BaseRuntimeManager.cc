@@ -124,7 +124,12 @@ void BaseRuntimeManager::StateManager::caccStateManager() {
             myManager->stateController->caccStateController();
         }
 
+    } else if (myManager->currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED) {
+        if (!safetyCheckingOK((myManager->positionHelper)->getLeaderId())) {
+            myManager->currentState = BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED;
+        }
     }
+
 }
 
 //=================================================================================================================================//
