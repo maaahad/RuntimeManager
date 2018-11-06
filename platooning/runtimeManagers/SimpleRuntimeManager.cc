@@ -72,7 +72,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
             if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
                     (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
 
-                if(currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_CAR2LEADER_DISENGAGED ||
+                if(currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
                    currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED ||
                    currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED) {
 
@@ -88,7 +88,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
             auto safetyData = safetyRecords.find(sourceVehicleId);
             if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
                                 (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
-                if(currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_CAR2LEADER_DISENGAGED ||
+                if(currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
                    currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED ||
                    currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED) {
 
@@ -119,42 +119,48 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
         }
         break;
     case Plexe::CACC:
-        // in CACC mode, this is guaranteed that the connection to front is established
-        // We don't have to think about update state machine while getting beacon from front vehicle
-        // In case the simulaiton start with CACC, there is a possibility that the current state will be ACC_CAR2FRONT_CAR2LEADER_DISENGAGED
-        // In this circumstance, we assume that the conection to front established as the simulation kernel already set active controller to CACC
-
         if(sourceVehicleId == positionHelper->getLeaderId()) {
+            auto safetyData = safetyRecords.find(sourceVehicleId);
+            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
+               (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
 
-            if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
-               currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_CAR2LEADER_DISENGAGED ||
-               currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED) {
+                if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
+                   currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
+                   currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED) {
 
-                auto safetyData = safetyRecords.find(sourceVehicleId);
-                if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-                   (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
-//                    currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
-                    currentState = (currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED) ?
-                            BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED :
-                            BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED;
-                }
+                    if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
+                       sourceVehicleId == positionHelper->getFrontId()) {
+
+                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
+                    } else {
+                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED;
+                    }
+
+                 }
             }
+
 
         } else if (sourceVehicleId == positionHelper->getFrontId()) {
-            if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED ||
-               currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_CAR2LEADER_DISENGAGED ||
-               currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED) {
+            auto safetyData = safetyRecords.find(sourceVehicleId);
+            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
+               (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
 
-                auto safetyData = safetyRecords.find(sourceVehicleId);
-                if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-                   (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
+                if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED ||
+                   currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
+                   currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED) {
 
-                    currentState = (currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED) ?
-                                                BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED :
-                                                BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
-                }
 
+                    if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED ||
+                       sourceVehicleId == positionHelper->getLeaderId()) {
+
+                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
+                    } else {
+                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
+                    }
+
+                 }
             }
+
         } else {
             std::cerr << "Error : wrong Vehicle Id"
                       << "\n\tFile: "

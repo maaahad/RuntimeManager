@@ -14,7 +14,7 @@
 //=================================================================================================================================//
 // Constructor
 //=================================================================================================================================//
-BaseRuntimeManager::BaseRuntimeManager(BaseApp *app) : currentState(BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_CAR2LEADER_DISENGAGED),
+BaseRuntimeManager::BaseRuntimeManager(BaseApp *app) : currentState(BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED),
     switchController(BaseRuntimeManager::SwitchController::NOT_INITIALIZED){
     // TODO Auto-generated constructor stub
     stateManager    = new StateManager(this);
@@ -46,7 +46,9 @@ BaseRuntimeManager::StateManager::StateManager(BaseRuntimeManager* myManager) : 
 bool BaseRuntimeManager::StateManager::safetyCheckingOK(int key) {
     auto it = myManager->safetyRecords.find(key);
     simtime_t currentTime = simTime();
-    int myId = myManager->positionHelper->getId();
+    int myId = myManager->positionHelper->getId();      // Debug
+
+    // Debug
     if(it->second.nbeaconReceived <= 0) {
         std::cerr << "Warning: \n\tVehicleId: " << myManager->positionHelper->getId()
                   << "\n\tit->second.nbeaconReceived: " << it->second.nbeaconReceived
