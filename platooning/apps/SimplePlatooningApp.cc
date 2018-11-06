@@ -55,7 +55,6 @@ void SimplePlatooningApp::handleSelfMsg(cMessage* msg)
             // And take appropriate measures
 
             // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-            //runtimeManager->monitor();
             rtManager->monitor();
             // re-schedule the self message
             // TODO :: Callback time should come from configuration file
@@ -71,11 +70,7 @@ void SimplePlatooningApp::onPlatoonBeacon(const PlatooningBeacon* pb)
     //================================ Ahad :: Start of Runtime Manager ============================//
     if (runtimeManagerEnabled) {
         simtime_t currentSimTime = simTime();
-        //runtimeManager->record(sourceVehicleId, currentSimTime);
         rtManager->record(pb->getVehicleId(), currentSimTime);
-//        if (positionHelper->getId() == 1 && pb->getVehicleId() == positionHelper->getFrontId()) {
-//            std::cout << "I am here !!!!!!!!!!!" << std::endl;
-//        }
     }
     //================================ Ahad :: End of Runtime Manager ==============================//
 

@@ -200,6 +200,7 @@ void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentS
         safetyData->second.nbeaconReceived += 1;
 
 #ifdef DEBUG_RUNTIMEMANAGER
+//        if(positionHelper->getId() == 1 && key == 0)
 //        std::cout << "vehicle_" << positionHelper->getId() << " from vehicle_"
 //                         << key << ":\n\tlastBeaconArrivalTime: " << safetyData->second.lastBeaconArrivalTime.dbl()
 //                         << "\n\ttimeIntervalBetweenBeacon: "<< safetyData->second.timeIntervalBetweenBeacon.dbl()

@@ -59,8 +59,8 @@ protected:
         simtime_t timeIntervalBetweenBeacon;
 
         simtime_t firstBeaconArrivalTime;
-        int nbeaconReceived;        // WE CAN KEEP COUNTING AFTER CONNECTION TO USE THIS TO COMPUTE packetLossRate
-        //bool connectionEstablished; // WE DON'T NEED THIS RIGHT NOW
+        int nbeaconReceived;                // WE CAN KEEP COUNTING AFTER CONNECTION TO USE THIS TO COMPUTE packetLossRate
+        //bool connectionEstablished;       // WE DON'T NEED THIS RIGHT NOW
 
         int nbeaconMissed;
         double packetLossRate;

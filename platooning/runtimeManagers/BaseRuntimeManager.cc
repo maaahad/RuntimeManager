@@ -46,15 +46,18 @@ BaseRuntimeManager::StateManager::StateManager(BaseRuntimeManager* myManager) : 
 bool BaseRuntimeManager::StateManager::safetyCheckingOK(int key) {
     auto it = myManager->safetyRecords.find(key);
     simtime_t currentTime = simTime();
+    int myId = myManager->positionHelper->getId();
     if(it->second.nbeaconReceived <= 0) {
-        std::cerr << "Warning: it->second.nbeaconReceived" << it->second.nbeaconReceived << std::endl;
+        std::cerr << "Warning: \n\tVehicleId: " << myManager->positionHelper->getId()
+                  << "\n\tit->second.nbeaconReceived: " << it->second.nbeaconReceived
+                  << std::endl;
     }
     double totalTime = (currentTime - it->second.firstBeaconArrivalTime).dbl();
     double nbeacon = static_cast<double>(it->second.nbeaconReceived);
-//    std::cout << "nbeacon" << (currentTime - it->second.firstBeaconArrivalTime).dbl() / nbeacon << std::endl;
+    std::cout << "AvgBeaconInterval: " << totalTime / nbeacon << std::endl;
 //    if((currentTime - it->second.lastBeaconArrivalTime).dbl() > (myManager->app)->getExpectedBeaconInterval().dbl()) {
-    if(it->second.timeIntervalBetweenBeacon.dbl() > (myManager->app)->getExpectedBeaconInterval().dbl()) {
-//    if((totalTime / nbeacon) > (myManager->app)->getAvgExceptedBeaconInterval().dbl()) {
+//    if(it->second.timeIntervalBetweenBeacon.dbl() > (myManager->app)->getExpectedBeaconInterval().dbl()) {
+    if((totalTime / nbeacon) > (myManager->app)->getAvgExceptedBeaconInterval().dbl()) {
 
         // Connection lost to the vehicle with id key
         // Discard the record
@@ -73,7 +76,7 @@ void BaseRuntimeManager::StateManager::accStateManager() {
         if(safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
             myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
             // call the StateController to perform the transition
-            myManager->stateController->accStateController();
+//            myManager->stateController->accStateController();
         } else {
             myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED;
         }
@@ -82,14 +85,21 @@ void BaseRuntimeManager::StateManager::accStateManager() {
         // TODO FIRST CHECK THE SAFETY CHECK
         if (!safetyCheckingOK((myManager->positionHelper)->getLeaderId())) {
             myManager->currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
+
+            if((myManager->positionHelper)->getLeaderId() == (myManager->positionHelper)->getFrontId()) {
+                // The vehicle's front and leader is the same vehicle
+                myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED;
+            }
         }
 
-        if(safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
-            myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
-            // call the StateController to perform the transition
-            myManager->stateController->accStateController();
-        } else {
-            myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED;
+        if((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId()) {
+            if(safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
+                myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
+                // call the StateController to perform the transition
+//                myManager->stateController->accStateController();
+            } else {
+                myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED;
+            }
         }
 
     } else if (myManager->currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_ENGAGED) {
@@ -97,6 +107,10 @@ void BaseRuntimeManager::StateManager::accStateManager() {
             myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED;
         }
     }
+
+    // Call the stateController
+    myManager->stateController->accStateController();
+
 }
 
 void BaseRuntimeManager::StateManager::caccStateManager() {
@@ -107,21 +121,30 @@ void BaseRuntimeManager::StateManager::caccStateManager() {
             myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
             myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED;
             // call the StateController to perform the transition
-            myManager->stateController->caccStateController();
+//            myManager->stateController->caccStateController();
         }
 
     } else if (myManager->currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED) {
         // TODO FIRST CHECK THE SAFETY CHECK
         if (!safetyCheckingOK((myManager->positionHelper)->getLeaderId())) {
             myManager->currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
+            if((myManager->positionHelper)->getLeaderId() == (myManager->positionHelper)->getFrontId()) {
+                // The vehicle's front and leader is the same vehicle
+                myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
+                myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED;
+//                myManager->stateController->caccStateController();
+
+            }
         }
 
-        if(!safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
-            myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
-            myManager->currentState = (myManager->currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED) ?
-                    BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED : BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_ENGAGED;
-            // call the StateController to perform the transition
-            myManager->stateController->caccStateController();
+        if((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId()) {
+            if(!safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
+                myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
+                myManager->currentState = (myManager->currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED) ?
+                        BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED : BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_ENGAGED;
+                // call the StateController to perform the transition
+//                myManager->stateController->caccStateController();
+            }
         }
 
     } else if (myManager->currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED) {
@@ -129,6 +152,9 @@ void BaseRuntimeManager::StateManager::caccStateManager() {
             myManager->currentState = BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED;
         }
     }
+
+    // Call the stateController
+    myManager->stateController->caccStateController();
 
 }
 
