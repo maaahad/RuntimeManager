@@ -35,7 +35,6 @@
 
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 
-#include "veins/modules/application/platooning/runtimeManagers/RuntimeManager.h"
 #include "veins/modules/application/platooning/runtimeManagers/BaseRuntimeManager.h"
 
 
@@ -84,12 +83,13 @@ protected:
 
 
     //================================ Ahad :: Start of Runtime Manager ============================//
-    SimTime expectedBeaconInterval;
+    SimTime runtimeManagerCallbackInterval;
     bool runtimeManagerEnabled;
 
-    SimTime avgExceptedBeaconInterval;
+    SimTime acceptedAvgBeaconInterval;
     SimTime waitTimeToAcknoledgeConnectionEstd;
     int nBeaconToAcknoledgeConnectionEstd;
+    int nAcceptedBeaconMiss;
 
     // TODO replace runtimeManager from the derived class
     BaseRuntimeManager *rtManager;
@@ -130,12 +130,12 @@ public:
     }
 
     SimTime getExpectedBeaconInterval() {
-            return expectedBeaconInterval;
+            return runtimeManagerCallbackInterval;
     }
 
 
-    SimTime getAvgExceptedBeaconInterval() {
-        return avgExceptedBeaconInterval;
+    double getAcceptedAvgBeaconInterval() {
+        return acceptedAvgBeaconInterval.dbl();
     }
     SimTime getWaitTimeToAcknoledgeConnectionEstd() {
         return waitTimeToAcknoledgeConnectionEstd;
@@ -145,6 +145,9 @@ public:
         return nBeaconToAcknoledgeConnectionEstd;
     }
 
+    int getNAcceptedBeaconMiss() {
+            return nAcceptedBeaconMiss;
+    }
     //================================ Ahad :: End of Runtime Manager ==============================//
 
     /**

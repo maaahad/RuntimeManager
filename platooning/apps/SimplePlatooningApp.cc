@@ -38,7 +38,7 @@ void SimplePlatooningApp::initialize(int stage)
             callBackRuntimeManager = new cMessage("callBackRuntimeManager");
             // runtime manager is called in every (rounded) .11 (.11 * 1000 = 110 ms)
             // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-            SimTime callBackTime = simTime() + expectedBeaconInterval;
+            SimTime callBackTime = simTime() + runtimeManagerCallbackInterval;
             scheduleAt(callBackTime, callBackRuntimeManager);
         }
     }
@@ -58,7 +58,7 @@ void SimplePlatooningApp::handleSelfMsg(cMessage* msg)
             rtManager->monitor();
             // re-schedule the self message
             // TODO :: Callback time should come from configuration file
-            scheduleAt(simTime() + expectedBeaconInterval, callBackRuntimeManager);
+            scheduleAt(simTime() + runtimeManagerCallbackInterval, callBackRuntimeManager);
 
         }
     }
@@ -81,8 +81,6 @@ void SimplePlatooningApp::onPlatoonBeacon(const PlatooningBeacon* pb)
 SimplePlatooningApp::~SimplePlatooningApp() {
     cancelAndDelete(callBackRuntimeManager);
     callBackRuntimeManager = nullptr;
-
-    delete runtimeManager;
 }
 
 //================================ Ahad :: End of Runtime Manager ==============================//

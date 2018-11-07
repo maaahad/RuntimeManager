@@ -70,7 +70,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
         if(sourceVehicleId == positionHelper->getLeaderId()) {
             auto safetyData = safetyRecords.find(sourceVehicleId);
             if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-                    (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
+               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
 
                 if(currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
                    currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED ||
@@ -87,7 +87,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
         } else if (sourceVehicleId == positionHelper->getFrontId()) {
             auto safetyData = safetyRecords.find(sourceVehicleId);
             if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-                                (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
+               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
                 if(currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
                    currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED ||
                    currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED) {
@@ -122,7 +122,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
         if(sourceVehicleId == positionHelper->getLeaderId()) {
             auto safetyData = safetyRecords.find(sourceVehicleId);
             if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-               (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
+               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
 
                 if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
                    currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
@@ -143,7 +143,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
         } else if (sourceVehicleId == positionHelper->getFrontId()) {
             auto safetyData = safetyRecords.find(sourceVehicleId);
             if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-               (currentSimTime - safetyData->second.firstBeaconArrivalTime.dbl()) <= app->getWaitTimeToAcknoledgeConnectionEstd()) {
+               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
 
                 if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED ||
                    currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
@@ -186,8 +186,6 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
     }
 }
 void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentSimTime) {
-
-    // TODO IN CASE OF CONNECTION LOST WE CAN DISCARD THE RECORD TO RESTART THE NEW CONNECTION PROCEDURE
     if(safetyRecords.find(key) == safetyRecords.end()) {
         // This is the first time called of this method for this key during the simulation
         // or after connection to key is lost
@@ -204,6 +202,8 @@ void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentS
         safetyData->second.timeIntervalBetweenBeacon = currentSimTime - safetyData->second.lastBeaconArrivalTime;
         safetyData->second.lastBeaconArrivalTime = currentSimTime;
         safetyData->second.nbeaconReceived += 1;
+        safetyData->second.avgBeaconInterval = (currentSimTime.dbl() - safetyData->second.firstBeaconArrivalTime.dbl()) / (double)safetyData->second.nbeaconReceived;
+
 
 #ifdef DEBUG_RUNTIMEMANAGER
 //        if(positionHelper->getId() == 1 && key == 0)
@@ -211,6 +211,7 @@ void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentS
 //                         << key << ":\n\tlastBeaconArrivalTime: " << safetyData->second.lastBeaconArrivalTime.dbl()
 //                         << "\n\ttimeIntervalBetweenBeacon: "<< safetyData->second.timeIntervalBetweenBeacon.dbl()
 //                         << "\n\tnbeaconReceived: " << safetyData->second.nbeaconReceived
+//                         << "\n\tavgBeaconInterval: " << safetyData->second.avgBeaconInterval
 //                         << std::endl;
 #endif
 

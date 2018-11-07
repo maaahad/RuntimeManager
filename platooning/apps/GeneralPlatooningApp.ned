@@ -28,13 +28,14 @@ parameters:
     string joinManeuver;
 
     int headerLength @unit("bit") = default(0 bit);
-    volatile double expectedBeaconInterval @unit(seconds) = default(0.11s);
+    volatile double runtimeManagerCallbackInterval @unit(seconds) = default(0.11s);
     bool runtimeManagerEnabled = default(false);
     
     
-    volatile double avgExceptedBeaconInterval @unit(seconds) = default(0.11s);			// = default(.11 seconds)
+    volatile double acceptedAvgBeaconInterval @unit(seconds) = default(0.11s);			// = default(.11 seconds)
 	volatile double waitTimeToAcknoledgeConnectionEstd @unit(seconds) = deafult(0.25s);
     int nBeaconToAcknoledgeConnectionEstd = default(2);
+    int nAcceptedBeaconMiss = default(3);											// =deault(3) 
     
     @display("i=block/app2");
     @class(GeneralPlatooningApp);

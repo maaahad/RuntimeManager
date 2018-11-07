@@ -54,13 +54,14 @@ void BaseApp::initialize(int stage)
         //================================ Ahad :: Start of Runtime Manager ============================//
 
         // beaconing interval in seconds
-        expectedBeaconInterval = SimTime(par("expectedBeaconInterval").doubleValue());
+        runtimeManagerCallbackInterval = SimTime(par("runtimeManagerCallbackInterval").doubleValue()); // TODO REMOVE THIS VARIABLE
         runtimeManagerEnabled  = par("runtimeManagerEnabled").boolValue();
 
 
-        avgExceptedBeaconInterval          = SimTime(par("avgExceptedBeaconInterval").doubleValue());
+        acceptedAvgBeaconInterval          = SimTime(par("acceptedAvgBeaconInterval").doubleValue());
         waitTimeToAcknoledgeConnectionEstd = SimTime(par("waitTimeToAcknoledgeConnectionEstd").doubleValue());
         nBeaconToAcknoledgeConnectionEstd  = par("nBeaconToAcknoledgeConnectionEstd").intValue();
+        nAcceptedBeaconMiss                = par("nAcceptedBeaconMiss").intValue();
 
 //        std::cout << "expectedBeaconInterval: " << expectedBeaconInterval
 //                  << ", runtimeManagerEnabled: "<< runtimeManagerEnabled << std::endl;

@@ -60,6 +60,7 @@ protected:
 
         simtime_t firstBeaconArrivalTime;
         int nbeaconReceived;                // WE CAN KEEP COUNTING AFTER CONNECTION TO USE THIS TO COMPUTE packetLossRate
+        double avgBeaconInterval;
         //bool connectionEstablished;       // WE DON'T NEED THIS RIGHT NOW
 
         int nbeaconMissed;

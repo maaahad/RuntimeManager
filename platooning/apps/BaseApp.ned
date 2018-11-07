@@ -22,12 +22,14 @@ import org.car2x.veins.base.modules.IBaseApplLayer;
 moduleinterface BaseApp extends IBaseApplLayer
 {
     parameters:
-        volatile double expectedBeaconInterval @unit(seconds);				// = default(0.11 seconds);
+        volatile double runtimeManagerCallbackInterval @unit(seconds);				// = default(0.11 seconds);
         bool runtimeManagerEnabled;											// = default(false)
         
-        volatile double avgExceptedBeaconInterval @unit(seconds);			// = default(.11 seconds)
+        volatile double acceptedAvgBeaconInterval @unit(seconds);			// = default(.11 seconds)
         volatile double waitTimeToAcknoledgeConnectionEstd @unit(seconds);	// = default(.25 seconds)
         int nBeaconToAcknoledgeConnectionEstd;								// =deault(2) after the first beacon
+        int nAcceptedBeaconMiss;											// =deault(3) 
+        
         
         @display("i=block/app2");
         @class(BaseApp);
