@@ -68,14 +68,18 @@ void SimplePlatooningApp::handleSelfMsg(cMessage* msg)
 void SimplePlatooningApp::onPlatoonBeacon(const PlatooningBeacon* pb)
 {
     //================================ Ahad :: Start of Runtime Manager ============================//
-    if (runtimeManagerEnabled) {
-        simtime_t currentSimTime = simTime();
-        rtManager->record(pb->getVehicleId(), currentSimTime);
-    }
+    int vehicleId = pb->getVehicleId();
+    simtime_t currentSimTime = simTime();
     //================================ Ahad :: End of Runtime Manager ==============================//
 
     // maintain platoon
     BaseApp::onPlatoonBeacon(pb);
+
+    //================================ Ahad :: Start of Runtime Manager ============================//
+    if (runtimeManagerEnabled) {
+        rtManager->record(vehicleId, currentSimTime);
+    }
+    //================================ Ahad :: End of Runtime Manager ==============================//
 }
 
 SimplePlatooningApp::~SimplePlatooningApp() {

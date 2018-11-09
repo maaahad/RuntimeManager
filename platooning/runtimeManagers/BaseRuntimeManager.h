@@ -54,16 +54,13 @@ protected:
      * This struct type use to record the safety related information on receiving beacon from another vehicles
      */
     struct SafetyRecords {
-        int vehicleId;
         simtime_t lastBeaconArrivalTime;
         simtime_t timeIntervalBetweenBeacon;
 
         simtime_t firstBeaconArrivalTime;
         int nbeaconReceived;                // WE CAN KEEP COUNTING AFTER CONNECTION TO USE THIS TO COMPUTE packetLossRate
         double avgBeaconInterval;
-        //bool connectionEstablished;       // WE DON'T NEED THIS RIGHT NOW
 
-        int nbeaconMissed;
         double packetLossRate;
     };
 
@@ -71,7 +68,6 @@ protected:
      * This is the state machine for the runtime manager
      * to store/identify the state of a vehicle requires
      * for checking active controller's stability
-     * TODO PLATOON ??
      */
     enum class StateMachine {
         CAR2FRONT_CAR2LEADER_DISENGAGED,

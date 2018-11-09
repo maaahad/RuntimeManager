@@ -59,7 +59,7 @@ void BaseApp::initialize(int stage)
 
 
         acceptedAvgBeaconInterval          = SimTime(par("acceptedAvgBeaconInterval").doubleValue());
-        waitTimeToAcknoledgeConnectionEstd = SimTime(par("waitTimeToAcknoledgeConnectionEstd").doubleValue());
+//        waitTimeToAcknoledgeConnectionEstd = SimTime(par("waitTimeToAcknoledgeConnectionEstd").doubleValue());
         nBeaconToAcknoledgeConnectionEstd  = par("nBeaconToAcknoledgeConnectionEstd").intValue();
         nAcceptedBeaconMiss                = par("nAcceptedBeaconMiss").intValue();
 
@@ -84,16 +84,6 @@ void BaseApp::initialize(int stage)
         // init statistics collection. round to 0.1 seconds
         SimTime rounded = SimTime(floor(simTime().dbl() * 1000 + 100), SIMTIME_MS);
         scheduleAt(rounded, recordData);
-
-
-        //================================ Ahad :: Start of Runtime Manager ============================//
-//        runtimeManager = new RuntimeManager(this);
-//        callBackRuntimeManager = new cMessage("callBackRuntimeManager");
-//        // runtime manager is called in every (rounded) .11 (.11 * 1000 = 110 ms)
-//        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-//        SimTime callBackTime = SimTime(floor(simTime().dbl() * 1000 + 110), SIMTIME_MS);
-//        scheduleAt(callBackTime, callBackRuntimeManager);
-        //================================ Ahad :: End of Runtime Manager ==============================//
     }
 }
 
@@ -103,15 +93,6 @@ BaseApp::~BaseApp()
     recordData = nullptr;
     cancelAndDelete(stopSimulation);
     stopSimulation = nullptr;
-
-    //================================ Ahad :: Start of Runtime Manager ============================//
-    // TODO Release memory : delete the runtime manager
-
-//    cancelAndDelete(callBackRuntimeManager);
-//    callBackRuntimeManager = nullptr;
-//
-//    delete runtimeManager;
-    //================================ Ahad :: End of Runtime Manager ==============================//
 }
 
 void BaseApp::handleLowerMsg(cMessage* msg)
@@ -176,25 +157,6 @@ void BaseApp::handleSelfMsg(cMessage* msg)
         scheduleAt(simTime() + SimTime(100, SIMTIME_MS), recordData);
     }
 
-    //================================ Ahad :: Start of Runtime Manager ============================//
-
-//    if (msg == callBackRuntimeManager) {
-//        // callback runtime manager
-//        EV << "Waiting to call the Runtime Manager!!!" << std::endl;
-//        // Runtime manager analyze safety requirements to decide whether the current state is stable or not
-//        // And take appropriate measures
-//
-//        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-//        runtimeManager->monitor();
-//        // re-schedule the self message
-//        // TODO :: Callback time should come from configuration file
-//        scheduleAt(simTime() + SimTime(110, SIMTIME_MS), callBackRuntimeManager);
-//
-//    }
-
-    //================================ Ahad :: End of Runtime Manager ============================//
-
-
     if (msg == stopSimulation) {
         endSimulation();
     }
@@ -210,37 +172,7 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
         // if the message comes from the vehicle in front
         if (pb->getVehicleId() == positionHelper->getFrontId()) {
             traciVehicle->setFrontVehicleData(pb->getControllerAcceleration(), pb->getAcceleration(), pb->getSpeed(), pb->getPositionX(), pb->getPositionY(), pb->getTime());
-
-            //================================ Ahad :: Start of Runtime Manager ============================//
-//           traciVehicle->setActiveController(Plexe::CACC);
-//           if (positionHelper->getId() == 8)
-//           std::cout << "VehicleId: " << positionHelper->getId() << "\n\tRuntimeManager performed transition from ACC to CACC!!!" << std::endl;
-
-
-             // runtimeManager->monitor();
-
-             // update state machine
-                //runtimeManager->updateStateMachine(pb->getVehicleId());
-             // update beaconRecordData
-
-            //================================ Ahad :: End of Runtime Manager ==============================//
-
         }
-
-        //================================================== Ahad:: Debug Start ==================================================//
-        // TODO :: Need to keep record
-        //std::cout << "Source Vehicle ID: " << pb->getVehicleId() << std::endl;
-//        if (pb->getVehicleId() != positionHelper->getLeaderId() && pb->getVehicleId() != positionHelper->getFrontId()) {
-//            //EV << "I am neither vehicle in front nor the leader!!!" << std::endl;
-//        }
-        //=================================================== Ahad:: Debug Start =================================================//
-
-
-        //================================ Ahad :: Start of Runtime Manager ============================//
-//        simtime_t currentSimTime = simTime();
-//        runtimeManager->record(pb->getVehicleId(), currentSimTime);
-
-        //================================ Ahad :: End of Runtime Manager ==============================//
 
         // send data about every vehicle to the CACC. this is needed by the consensus controller
         struct Plexe::VEHICLE_DATA vehicleData;
@@ -260,46 +192,3 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
     }
     delete pb;
 }
-
-
-
-//================================ Ahad :: Start of Runtime Manager ============================//
-
-//BasePositionHelper* BaseApp::getPositionHelper() {
-//    std::cerr << "Error: " << __FILE__
-//              << "\n\tLine: " << __LINE__
-//              << "\n\tCompiled on: " << __DATE__
-//              << " at " << __TIME__
-//              << "\n\tfunction " << __func__
-//              << " must have to override by the derived class!!!"
-//              << std::endl;
-//}
-//Veins::TraCIMobility* BaseApp::getMobility() {
-//    std::cerr << "Error: " << __FILE__
-//              << "\n\tLine: " << __LINE__
-//              << "\n\tCompiled on: " << __DATE__
-//              << " at " << __TIME__
-//              << "\n\tfunction " << __func__
-//              << " must have to override by the derived class!!!"
-//              << std::endl;
-//}
-//Veins::TraCICommandInterface* BaseApp::getTraci() {
-//    std::cerr << "Error: " << __FILE__
-//              << "\n\tLine: " << __LINE__
-//              << "\n\tCompiled on: " << __DATE__
-//              << " at " << __TIME__
-//              << "\n\tfunction " << __func__
-//              << " must have to override by the derived class!!!"
-//              << std::endl;
-//}
-//Veins::TraCICommandInterface::Vehicle* BaseApp::getTraciVehicle() {
-//    std::cerr << "Error: " << __FILE__
-//              << "\n\tLine: " << __LINE__
-//              << "\n\tCompiled on: " << __DATE__
-//              << " at " << __TIME__
-//              << "\n\tfunction " << __func__
-//              << " must have to override by the derived class!!!"
-//              << std::endl;
-//}
-
-//================================ Ahad :: Start of Runtime Manager ============================//

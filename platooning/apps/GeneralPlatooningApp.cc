@@ -40,15 +40,6 @@ void GeneralPlatooningApp::initialize(int stage)
             joinManeuver = new JoinAtBack(this);
         else
             throw new cRuntimeError("Invalid join maneuver implementation chosen");
-
-//        //================================ Ahad :: Start of Runtime Manager ============================//
-//        runtimeManager = new RuntimeManager(this);
-//        callBackRuntimeManager = new cMessage("callBackRuntimeManager");
-//        // runtime manager is called in every (rounded) .11 (.11 * 1000 = 110 ms)
-//        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-//        SimTime callBackTime = SimTime(floor(simTime().dbl() * 1000 + 110), SIMTIME_MS);
-//        scheduleAt(callBackTime, callBackRuntimeManager);
-//        //================================ Ahad :: End of Runtime Manager ==============================//
     }
 }
 
@@ -80,27 +71,6 @@ void GeneralPlatooningApp::sendUnicast(cPacket* msg, int destination)
     unicast->encapsulate(msg);
     sendDown(unicast);
 }
-
-//================================ Ahad :: Start of Runtime Manager ============================//
-
-//void GeneralPlatooningApp::handleSelfMsg(cMessage* msg)
-//{
-//    if (msg == callBackRuntimeManager) {
-//        // callback runtime manager
-//        EV << "Waiting to call the Runtime Manager!!!" << std::endl;
-//        // Runtime manager analyze safety requirements to decide whether the current state is stable or not
-//        // And take appropriate measures
-//
-//        // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-//        runtimeManager->monitor();
-//        // re-schedule the self message
-//        // TODO :: Callback time should come from configuration file
-//        scheduleAt(simTime() + SimTime(110, SIMTIME_MS), callBackRuntimeManager);
-//
-//    }
-//}
-
-//================================ Ahad :: End of Runtime Manager ==============================//
 
 
 void GeneralPlatooningApp::handleLowerMsg(cMessage* msg)
@@ -150,13 +120,6 @@ void GeneralPlatooningApp::onPlatoonBeacon(const PlatooningBeacon* pb)
     joinManeuver->onPlatoonBeacon(pb);
     // maintain platoon
     BaseApp::onPlatoonBeacon(pb);
-
-//    // TODO :: DO WE NEED TO SWAP IT WITH     BaseApp::onPlatoonBeacon(pb);
-//    //================================ Ahad :: Start of Runtime Manager ============================//
-//    simtime_t currentSimTime = simTime();
-//    runtimeManager->record(pb->getVehicleId(), currentSimTime);
-//
-//    //================================ Ahad :: End of Runtime Manager ==============================//
 }
 
 void GeneralPlatooningApp::onManeuverMessage(ManeuverMessage* mm)
@@ -190,13 +153,4 @@ UpdatePlatoonFormation* GeneralPlatooningApp::createUpdatePlatoonFormation(int v
 GeneralPlatooningApp::~GeneralPlatooningApp()
 {
     delete joinManeuver;
-
-//    //================================ Ahad :: Start of Runtime Manager ============================//
-//
-//    cancelAndDelete(callBackRuntimeManager);
-//    callBackRuntimeManager = nullptr;
-//
-//    delete runtimeManager;
-//    //================================= End :: Start of Runtime Manager ============================//
-
 }
