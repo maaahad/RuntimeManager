@@ -133,7 +133,9 @@ void BaseRuntimeManager::StateManager::accStateManager() {
 
         if((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId()) {
             if(!safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
-                myManager->rtState = BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED;
+                myManager->rtState = (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) ?
+                        BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED :
+                        BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED;
             }
         }
 
@@ -143,10 +145,70 @@ void BaseRuntimeManager::StateManager::accStateManager() {
         }else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_PLOEG;
         }
+    } else {
+        std::cerr << "Error : wrong rtState"
+                             << "\n\tFile: "
+                             << __FILE__
+                             << "\n\tFunction: "
+                             << __func__
+                             << "\n\tLine: "
+                             << __LINE__
+                             << std::endl;
     }
     // Call the stateController
     myManager->stateController->accStateController();
 
+}
+
+
+void BaseRuntimeManager::StateManager::ploegStateManager(){
+    if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
+
+        // Sanity check
+        ASSERT((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId());
+
+        if(!safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
+            myManager->rtState = BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED;
+            myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_ACC;
+        }
+
+    } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
+
+
+        if (!safetyCheckingOK((myManager->positionHelper)->getLeaderId())) {
+            myManager->rtState = (myManager->positionHelper)->getLeaderId() == (myManager->positionHelper)->getFrontId() ?
+                    BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED :
+                    BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED;
+        }
+
+        if((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId()) {
+            if(!safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
+                myManager->rtState = (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) ?
+                        BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED :
+                        BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED;
+            }
+        }
+
+        if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
+            myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_CACC;
+        }else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED ||
+                myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+            myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_ACC;
+        }
+
+    } else {
+        std::cerr << "Error : wrong rtState"
+                             << "\n\tFile: "
+                             << __FILE__
+                             << "\n\tFunction: "
+                             << __func__
+                             << "\n\tLine: "
+                             << __LINE__
+                             << std::endl;
+    }
+
+    // Call the stateController
+    myManager->stateController->ploegStateController();
 }
 
 void BaseRuntimeManager::StateManager::caccStateManager() {
@@ -272,6 +334,31 @@ void BaseRuntimeManager::StateController::accStateController() {
     // TODO ADD OTHER CONTROLLERS TRANSITION
 
 }
+
+
+void BaseRuntimeManager::StateController::ploegStateController(){
+    if(myManager->switchController == BaseRuntimeManager::SwitchController::PLOEG_TO_CACC) {
+        // TODO TAKE APPROPRIATE ACTION FOR STABLE TRANSITION. For example: providing deceleration
+
+
+        (myManager->traciVehicle)->setActiveController(Plexe::CACC);
+#ifdef DEBUG_RUNTIMEMANAGER
+        std::cout << "VehicleId: " << myManager->positionHelper->getId() << "\n\tRuntimeManager performed transition from PLOEG to CACC!!!" << std::endl;
+#endif
+
+    } else if(myManager->switchController == BaseRuntimeManager::SwitchController::PLOEG_TO_ACC) {
+
+        (myManager->traciVehicle)->setActiveController(Plexe::ACC);
+
+#ifdef DEBUG_RUNTIMEMANAGER
+        std::cout << "VehicleId: " << myManager->positionHelper->getId() << "\n\tRuntimeManager performed transition from PLOEG to ACC!!!" << std::endl;
+#endif
+    }
+
+    // reset the switchController
+    myManager->switchController = BaseRuntimeManager::SwitchController::NOT_INITIALIZED;
+}
+
 
 void BaseRuntimeManager::StateController::caccStateController() {
     if(myManager->switchController == BaseRuntimeManager::SwitchController::CACC_TO_ACC) {

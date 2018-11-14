@@ -116,7 +116,7 @@ protected:
         StateManager(BaseRuntimeManager*);
         void accStateManager();
         void caccStateManager();
-        void platoonStateManager();
+        void ploegStateManager();
     private:
         bool safetyCheckingOK(int key);
         BaseRuntimeManager *myManager;
@@ -131,7 +131,7 @@ protected:
         StateController (BaseRuntimeManager*);
         void accStateController();
         void caccStateController();
-        void platoonController();
+        void ploegStateController();
     private:
         BaseRuntimeManager *myManager;
     };

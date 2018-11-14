@@ -61,9 +61,10 @@ void SimpleRuntimeManager::record(const int sourceVehicleId, simtime_t currentSi
     if (sourceVehicleId == positionHelper->getLeaderId() || sourceVehicleId == positionHelper->getFrontId()) {
         // this is the leader or the front vehicle
         updateStateMachine(sourceVehicleId, currentSimTime);
+        // after updating the StateMachine and the stored information, call the monitor() to monitor the check state stability
+        monitor();
     }
-    // after updating the StateMachine and the stored information, call the monitor() to monitor the check state stability
-    monitor();
+
 }
 
 
@@ -227,6 +228,54 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
         }
         break;
     case Plexe::PLOEG:
+//        // Sanity Check
+//        ASSERT(rtState != RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED);
+//
+//        if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+//            if(positionHelper->getLeaderId() == positionHelper->getFrontId()) {
+//                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+//            } else {
+//                // Sanity check
+//                ASSERT(sourceVehicleId != positionHelper->getLeaderId());
+//
+//                rtState = RTStateMachine::CAR2FRONT_ENGAGED;
+//            }
+//
+//        } else if(rtState == RTStateMachine::CAR2FRONT_ENGAGED) {
+//            // Sanity check
+//            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+//            if (sourceVehicleId == positionHelper->getLeaderId()) {
+//                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+//            } else if(sourceVehicleId == positionHelper->getFrontId()) {
+//                // DO NOTHING
+//            } else {
+//                std::cerr << "Error : wrong Vehicle Id"
+//                          << "\n\tFile: "
+//                          << __FILE__
+//                          << "\n\tFunction: "
+//                          << __func__
+//                          << "\n\tLine: "
+//                          << __LINE__
+//                          << std::endl;
+//            }
+//
+//        } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
+//            // Sanity check
+//            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+//            ASSERT(sourceVehicleId != positionHelper->getLeaderId());
+//
+//            rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+//        } else {
+//            std::cerr << "Error : wrong rtState"
+//                                 << "\n\tFile: "
+//                                 << __FILE__
+//                                 << "\n\tFunction: "
+//                                 << __func__
+//                                 << "\n\tLine: "
+//                                 << __LINE__
+//                                 << std::endl;
+//        }
+
         break;
     default:
         std::cerr << "Error : Unrecognizable Active Controller +/ not considered yet in : "

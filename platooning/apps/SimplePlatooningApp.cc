@@ -55,7 +55,9 @@ void SimplePlatooningApp::handleSelfMsg(cMessage* msg)
             // And take appropriate measures
 
             // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-            rtManager->monitor();
+
+            //rtManager->monitor();
+
             // re-schedule the self message
             // TODO :: Callback time should come from configuration file
             scheduleAt(simTime() + runtimeManagerCallbackInterval, callBackRuntimeManager);
