@@ -81,6 +81,18 @@ protected:
     };
 
     /**
+     * This is the state machine for the runtime manager
+     * to store/identify the state of a vehicle requires
+     * for checking active controller's stability
+     */
+    enum class RTStateMachine {
+        CAR2FRONT_CAR2LEADER_DISENGAGED,
+        CAR2LEADER_ENGAGED,
+        CAR2FRONT_ENGAGED,
+        CAR2FRONT_CAR2LEADER_ENGAGED,
+    };
+
+    /**
      * This enum class is used by StateManager to propose controller transition
      * StateController use this information to perform actual controller transition
      * TODO PLATOON ??
@@ -88,11 +100,11 @@ protected:
     enum class SwitchController {
         NOT_INITIALIZED,
         ACC_TO_CACC,
-        ACC_TO_PLATOON,
+        ACC_TO_PLOEG,
         CACC_TO_ACC,
-        CACC_TO_PLATOON,
-        PLATOON_TO_CACC,
-        PLATOON_TO_ACC,
+        CACC_TO_PLOEG,
+        PLOEG_TO_CACC,
+        PLOEG_TO_ACC,
     };
 
     /**
@@ -128,6 +140,7 @@ protected:
     //===============================================================//
     // Protected Data
     //===============================================================//
+    RTStateMachine rtState;
     StateMachine currentState;
     SwitchController switchController;
 
