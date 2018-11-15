@@ -36,10 +36,10 @@ void SimpleRuntimeManager::monitor() {
         stateManager->accStateManager();
         break;
     case Plexe::CACC:
-        //stateManager->caccStateManager();
+        stateManager->caccStateManager();
         break;
     case Plexe::PLOEG:
-        //stateManager->ploegStateManager();
+        stateManager->ploegStateManager();
         break;
     default:
         std::cerr << "Error : Unrecognizable Active Controller +/ not considered yet in : "
@@ -78,10 +78,10 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
         // Update the RTStateMachine
         if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
             if (sourceVehicleId == positionHelper->getLeaderId()) {
-                rtState = (sourceVehicleId == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
                         RTStateMachine::CAR2LEADER_ENGAGED;
             } else if(sourceVehicleId == positionHelper->getFrontId()) {
-                rtState = (sourceVehicleId == positionHelper->getLeaderId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
                                         RTStateMachine::CAR2FRONT_ENGAGED;
             } else {
                 std::cerr << "Error : wrong Vehicle Id"
@@ -174,50 +174,25 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
 //        }
         break;
     case Plexe::CACC:
-        if(sourceVehicleId == positionHelper->getLeaderId()) {
-            auto safetyData = safetyRecords.find(sourceVehicleId);
-            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
+        // Sanity check
+        ASSERT(rtState != RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED);
 
-                if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
-                   currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
-                   currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED) {
+        if(rtState == RTStateMachine::CAR2FRONT_ENGAGED) {
+            // Sanity check
+            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+            ASSERT(sourceVehicleId != positionHelper->getFrontId());
 
-                    if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
-                       sourceVehicleId == positionHelper->getFrontId()) {
+            rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+        } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
+            // Sanity check
+            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+            ASSERT(sourceVehicleId != positionHelper->getLeaderId());
 
-                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
-                    } else {
-                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED;
-                    }
-
-                 }
-            }
-
-
-        } else if (sourceVehicleId == positionHelper->getFrontId()) {
-            auto safetyData = safetyRecords.find(sourceVehicleId);
-            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
-
-                if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED ||
-                   currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
-                   currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED) {
-
-
-                    if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED ||
-                       sourceVehicleId == positionHelper->getLeaderId()) {
-
-                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
-                    } else {
-                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
-                    }
-
-                 }
-            }
-
+            rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+        } else if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
+            // Nothing to do
         } else {
-            std::cerr << "Error : wrong Vehicle Id"
+            std::cerr << "Error : wrong rtState"
                       << "\n\tFile: "
                       << __FILE__
                       << "\n\tFunction: "
@@ -226,55 +201,107 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
                       << __LINE__
                       << std::endl;
         }
+//        if(sourceVehicleId == positionHelper->getLeaderId()) {
+//            auto safetyData = safetyRecords.find(sourceVehicleId);
+//            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
+//               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
+//
+//                if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
+//                   currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
+//                   currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED) {
+//
+//                    if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
+//                       sourceVehicleId == positionHelper->getFrontId()) {
+//
+//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
+//                    } else {
+//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED;
+//                    }
+//
+//                 }
+//            }
+//
+//
+//        } else if (sourceVehicleId == positionHelper->getFrontId()) {
+//            auto safetyData = safetyRecords.find(sourceVehicleId);
+//            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
+//               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
+//
+//                if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED ||
+//                   currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
+//                   currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED) {
+//
+//
+//                    if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED ||
+//                       sourceVehicleId == positionHelper->getLeaderId()) {
+//
+//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
+//                    } else {
+//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
+//                    }
+//
+//                 }
+//            }
+//
+//        } else {
+//            std::cerr << "Error : wrong Vehicle Id"
+//                      << "\n\tFile: "
+//                      << __FILE__
+//                      << "\n\tFunction: "
+//                      << __func__
+//                      << "\n\tLine: "
+//                      << __LINE__
+//                      << std::endl;
+//        }
         break;
     case Plexe::PLOEG:
-//        // Sanity Check
-//        ASSERT(rtState != RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED);
-//
-//        if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
-//            if(positionHelper->getLeaderId() == positionHelper->getFrontId()) {
-//                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
-//            } else {
-//                // Sanity check
-//                ASSERT(sourceVehicleId != positionHelper->getLeaderId());
-//
-//                rtState = RTStateMachine::CAR2FRONT_ENGAGED;
-//            }
-//
-//        } else if(rtState == RTStateMachine::CAR2FRONT_ENGAGED) {
-//            // Sanity check
-//            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
-//            if (sourceVehicleId == positionHelper->getLeaderId()) {
-//                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
-//            } else if(sourceVehicleId == positionHelper->getFrontId()) {
-//                // DO NOTHING
-//            } else {
-//                std::cerr << "Error : wrong Vehicle Id"
-//                          << "\n\tFile: "
-//                          << __FILE__
-//                          << "\n\tFunction: "
-//                          << __func__
-//                          << "\n\tLine: "
-//                          << __LINE__
-//                          << std::endl;
-//            }
-//
-//        } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
-//            // Sanity check
-//            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
-//            ASSERT(sourceVehicleId != positionHelper->getLeaderId());
-//
-//            rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
-//        } else {
-//            std::cerr << "Error : wrong rtState"
-//                                 << "\n\tFile: "
-//                                 << __FILE__
-//                                 << "\n\tFunction: "
-//                                 << __func__
-//                                 << "\n\tLine: "
-//                                 << __LINE__
-//                                 << std::endl;
-//        }
+        // Sanity Check
+        ASSERT(rtState != RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED);
+
+        if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+            if(positionHelper->getLeaderId() == positionHelper->getFrontId()) {
+                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+            } else {
+                // Sanity check
+                ASSERT(sourceVehicleId != positionHelper->getLeaderId());
+
+                rtState = RTStateMachine::CAR2FRONT_ENGAGED;
+            }
+
+        } else if(rtState == RTStateMachine::CAR2FRONT_ENGAGED) {
+            // Sanity check
+            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+            if (sourceVehicleId == positionHelper->getLeaderId()) {
+                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+            } else if(sourceVehicleId == positionHelper->getFrontId()) {
+                // DO NOTHING
+            } else {
+                std::cerr << "Error : wrong Vehicle Id"
+                          << "\n\tFile: "
+                          << __FILE__
+                          << "\n\tFunction: "
+                          << __func__
+                          << "\n\tLine: "
+                          << __LINE__
+                          << std::endl;
+            }
+
+        } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
+            // Sanity check
+            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+            ASSERT(sourceVehicleId != positionHelper->getLeaderId());
+
+            rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+        } else {
+            std::cerr << "Error : wrong rtState"
+                                 << "\n\tFile: "
+                                 << __FILE__
+                                 << "\n\tFunction: "
+                                 << __func__
+                                 << "\n\tLine: "
+                                 << __LINE__
+                                 << std::endl;
+        }
 
         break;
     default:
@@ -299,7 +326,7 @@ void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentS
         BaseRuntimeManager::SafetyRecords safetyData;
         safetyData.lastBeaconArrivalTime = currentSimTime;
         safetyData.firstBeaconArrivalTime = currentSimTime;
-        safetyData.nbeaconReceived = 0;
+        safetyData.nbeaconReceived = 1;
         safetyRecords.insert({key, safetyData});
     } else {
         // The record for the key is already exist
@@ -307,7 +334,7 @@ void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentS
         safetyData->second.timeIntervalBetweenBeacon = currentSimTime - safetyData->second.lastBeaconArrivalTime;
         safetyData->second.lastBeaconArrivalTime = currentSimTime;
         safetyData->second.nbeaconReceived += 1;
-        safetyData->second.avgBeaconInterval = (currentSimTime.dbl() - safetyData->second.firstBeaconArrivalTime.dbl()) / (double)safetyData->second.nbeaconReceived;
+        safetyData->second.avgBeaconInterval = (currentSimTime.dbl() - safetyData->second.firstBeaconArrivalTime.dbl()) / (double)(safetyData->second.nbeaconReceived - 1);
 
 
 #ifdef DEBUG_RUNTIMEMANAGER
