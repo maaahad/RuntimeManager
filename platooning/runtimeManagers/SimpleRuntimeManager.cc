@@ -31,6 +31,10 @@ SimpleRuntimeManager::~SimpleRuntimeManager() {
 // override virtual mehtods
 //=================================================================================================================================//
 void SimpleRuntimeManager::monitor() {
+    // If there is no connection neither to front or leader vehicle,
+    // there is no need to call StateManager to check for connection
+    if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) return;
+
     switch(traciVehicle->getActiveController()) {
     case Plexe::ACC:
         stateManager->accStateManager();
@@ -122,56 +126,6 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
                       << __LINE__
                       << std::endl;
         }
-//        if(sourceVehicleId == positionHelper->getLeaderId()) {
-//            auto safetyData = safetyRecords.find(sourceVehicleId);
-//            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-//               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
-//
-//                if(currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
-//                   currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED ||
-//                   currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED) {
-//
-//                    if (sourceVehicleId == positionHelper->getFrontId()) {
-//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
-//                    } else {
-//                        currentState = BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_ENGAGED;
-//                    }
-//                }
-//            }
-//
-//        } else if (sourceVehicleId == positionHelper->getFrontId()) {
-//            auto safetyData = safetyRecords.find(sourceVehicleId);
-//            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-//               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
-//                if(currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
-//                   currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED ||
-//                   currentState == BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED) {
-//
-//
-//                    if (sourceVehicleId == positionHelper->getLeaderId()) {
-//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
-//                    } else {
-//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
-//                    }
-//
-//                } else if (currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_ENGAGED) {
-//                    // Sanity check
-//                    assert(sourceVehicleId != positionHelper->getLeaderId());
-//
-//                    currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
-//                }
-//            }
-//
-//        } else {
-//            std::cerr << "Error : wrong Vehicle Id"
-//                      << "\n\tFile: "
-//                      << __FILE__
-//                      << "\n\tFunction: "
-//                      << __func__
-//                      << "\n\tLine: "
-//                      << __LINE__
-//                      << std::endl;
-//        }
         break;
     case Plexe::CACC:
         // Sanity check
@@ -201,58 +155,6 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
                       << __LINE__
                       << std::endl;
         }
-//        if(sourceVehicleId == positionHelper->getLeaderId()) {
-//            auto safetyData = safetyRecords.find(sourceVehicleId);
-//            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-//               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
-//
-//                if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
-//                   currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
-//                   currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED) {
-//
-//                    if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED ||
-//                       sourceVehicleId == positionHelper->getFrontId()) {
-//
-//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
-//                    } else {
-//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED;
-//                    }
-//
-//                 }
-//            }
-//
-//
-//        } else if (sourceVehicleId == positionHelper->getFrontId()) {
-//            auto safetyData = safetyRecords.find(sourceVehicleId);
-//            if(safetyData->second.nbeaconReceived >= app->getNBeaconToAcknoledgeConnectionEstd() &&
-//               safetyData->second.avgBeaconInterval <= app->getAcceptedAvgBeaconInterval()) {
-//
-//                if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED ||
-//                   currentState == BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
-//                   currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_DISENGAGED) {
-//
-//
-//                    if(currentState == BaseRuntimeManager::StateMachine::CACC_CAR2LEADER_ENGAGED ||
-//                       sourceVehicleId == positionHelper->getLeaderId()) {
-//
-//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED;
-//                    } else {
-//                        currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
-//                    }
-//
-//                 }
-//            }
-//
-//        } else {
-//            std::cerr << "Error : wrong Vehicle Id"
-//                      << "\n\tFile: "
-//                      << __FILE__
-//                      << "\n\tFunction: "
-//                      << __func__
-//                      << "\n\tLine: "
-//                      << __LINE__
-//                      << std::endl;
-//        }
         break;
     case Plexe::PLOEG:
         // Sanity Check

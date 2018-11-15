@@ -69,22 +69,6 @@ protected:
      * to store/identify the state of a vehicle requires
      * for checking active controller's stability
      */
-    enum class StateMachine {
-        CAR2FRONT_CAR2LEADER_DISENGAGED,
-        ACC_CAR2LEADER_ENGAGED,
-        ACC_CAR2LEADER_DISENGAGED,
-        ACC_CAR2FRONT_DISENGAGED,
-        CACC_CAR2FRONT_ENGAGED,
-        CACC_CAR2LEADER_ENGAGED,
-        CACC_CAR2LEADER_DISENGAGED,
-        CACC_CAR2FRONT_CAR2LEADER_ENGAGED,
-    };
-
-    /**
-     * This is the state machine for the runtime manager
-     * to store/identify the state of a vehicle requires
-     * for checking active controller's stability
-     */
     enum class RTStateMachine {
         CAR2FRONT_CAR2LEADER_DISENGAGED,
         CAR2LEADER_ENGAGED,
@@ -141,7 +125,6 @@ protected:
     // Protected Data
     //===============================================================//
     RTStateMachine rtState;
-    StateMachine currentState;
     SwitchController switchController;
 
     StateManager *stateManager;

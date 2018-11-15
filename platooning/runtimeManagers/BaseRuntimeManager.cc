@@ -14,8 +14,8 @@
 //=================================================================================================================================//
 // Constructor
 //=================================================================================================================================//
-BaseRuntimeManager::BaseRuntimeManager(BaseApp *app) : currentState(BaseRuntimeManager::StateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED),
-    rtState(BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED), switchController(BaseRuntimeManager::SwitchController::NOT_INITIALIZED){
+BaseRuntimeManager::BaseRuntimeManager(BaseApp *app) : rtState(BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED),
+switchController(BaseRuntimeManager::SwitchController::NOT_INITIALIZED){
     // TODO Auto-generated constructor stub
     stateManager    = new StateManager(this);
     stateController = new StateController(this);
@@ -49,7 +49,7 @@ bool BaseRuntimeManager::StateManager::safetyCheckingOK(int key) {
     int beaconMissed = (currentTime.dbl() - it->second.lastBeaconArrivalTime.dbl()) / (myManager->app)->getAcceptedAvgBeaconInterval();
 
 
-    int myId = myManager->positionHelper->getId();      // Debug
+//    int myId = myManager->positionHelper->getId();      // Debug
 
     // Debug
     //std::cout << "beaconMissed: "<< beaconMissed << ", it->second.avgBeaconInterval: " << it->second.avgBeaconInterval << std::endl;
@@ -71,43 +71,6 @@ bool BaseRuntimeManager::StateManager::safetyCheckingOK(int key) {
 }
 
 void BaseRuntimeManager::StateManager::accStateManager() {
-//    if(myManager->currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED) {
-//        if(safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
-//            myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
-//        } else {
-//            myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED;
-//        }
-//
-//    } else if (myManager->currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED) {
-//        if (!safetyCheckingOK((myManager->positionHelper)->getLeaderId())) {
-//            myManager->currentState = BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED;
-//
-//            if((myManager->positionHelper)->getLeaderId() == (myManager->positionHelper)->getFrontId()) {
-//                // The vehicle's front and leader is the same vehicle
-//                myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED;
-//            }
-//        }
-//
-//        if((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId()) {
-//            if(!safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
-//                myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2FRONT_DISENGAGED;
-//            }
-//        }
-//
-//        // TODO If both connection is OK, switch to Platoon mode
-//        if (myManager->currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_CAR2LEADER_ENGAGED) {
-//            // TODO Change the following to Platoon If both connection is OK, switch to Platoon mode
-//            myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
-//        }else if(myManager->currentState == BaseRuntimeManager::StateMachine::CACC_CAR2FRONT_ENGAGED) {
-//            myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
-//        }
-//
-//    } else if (myManager->currentState == BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_ENGAGED) {
-//        if (!safetyCheckingOK((myManager->positionHelper)->getLeaderId())) {
-//            myManager->currentState = BaseRuntimeManager::StateMachine::ACC_CAR2LEADER_DISENGAGED;
-//        }
-//    }
-
     if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
         // Sanity check
         ASSERT((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId());
@@ -281,55 +244,6 @@ void BaseRuntimeManager::StateController::accStateController() {
 
     // reset the switchController
     myManager->switchController = BaseRuntimeManager::SwitchController::NOT_INITIALIZED;
-
-
-//    if(myManager->switchController == BaseRuntimeManager::SwitchController::ACC_TO_CACC) {
-//        // TODO TAKE APPROPRIATE ACTION FOR STABLE TRANSITION. For example: providing deceleration
-//
-//        // [ debug ===============================================================
-//        double distance, relativeSpeed;
-//        (myManager->traciVehicle)->getRadarMeasurements(distance, relativeSpeed);
-//
-//        // Hardcoded: headway for vehicle .1s, default time is 50ms = .05s
-//        struct Plexe::VEHICLE_DATA vehicleData;
-//        (myManager->traciVehicle)->getVehicleData(&vehicleData);
-//
-//        double desiredSpeed = (distance - (vehicleData.speed - relativeSpeed) * .05) / (.10 + .05);
-//        (myManager->traciVehicle)->setCruiseControlDesiredSpeed(desiredSpeed);
-//
-////        if(vehicleData.speed * .1 > distance) {
-////           std::cout << "The vehicle is already close enough.." << std::endl;
-////        } else {
-////            std::cout << "The vehicle is NOT close enough.." << std::endl;
-////            // RESET THE DESIRED SPEED TO GET IT CLOSE TO THE FRONT VEHICLE
-////            double desiredSpeed = (distance - relativeSpeed + vehicleData.speed) / (1.0 + .1);
-////            (myManager->traciVehicle)->setCruiseControlDesiredSpeed(desiredSpeed);
-////        }
-//        // ================================================================ debug ]
-//
-//        (myManager->traciVehicle)->setActiveController(Plexe::CACC);
-//
-//        // reset the switchController
-//        myManager->switchController = BaseRuntimeManager::SwitchController::NOT_INITIALIZED;
-//#ifdef DEBUG_RUNTIMEMANAGER
-//        std::cout << "VehicleId: " << myManager->positionHelper->getId() << "\n\tRuntimeManager performed transition from ACC to CACC!!!" << std::endl;
-//#endif
-//
-//    } else {
-//        double distance, relativeSpeed;
-//        (myManager->traciVehicle)->getRadarMeasurements(distance, relativeSpeed);
-//
-//        // Hardcoded: headway for vehicle .1s, default time is 50ms = .05s
-//        struct Plexe::VEHICLE_DATA vehicleData;
-//        (myManager->traciVehicle)->getVehicleData(&vehicleData);
-//
-//        double desiredSpeed = (distance - (vehicleData.speed - relativeSpeed) * .05) / (.10 + .05);
-//        (myManager->traciVehicle)->setCruiseControlDesiredSpeed(desiredSpeed);
-//    }
-    // TODO Adjust the Desired speed. This will be called every time a beacon received or by callback from handleSelfMessage()??
-
-    // TODO ADD OTHER CONTROLLERS TRANSITION
-
 }
 
 
@@ -381,54 +295,6 @@ void BaseRuntimeManager::StateController::caccStateController() {
 
     // reset the switchController
     myManager->switchController = BaseRuntimeManager::SwitchController::NOT_INITIALIZED;
-
-//    if(myManager->switchController == BaseRuntimeManager::SwitchController::CACC_TO_ACC) {
-//        // TODO TAKE APPROPRIATE ACTION FOR STABLE TRANSITION. For example: providing deceleration
-//
-//        // [ debug ===============================================================
-//        double distance, relativeSpeed;
-//        (myManager->traciVehicle)->getRadarMeasurements(distance, relativeSpeed);
-//
-//
-//        // Hardcoded: headway for vehicle 1.2s, default time is 50ms = .05s
-//        struct Plexe::VEHICLE_DATA vehicleData;
-//        (myManager->traciVehicle)->getVehicleData(&vehicleData);
-//
-//        double desiredSpeed = (distance - (vehicleData.speed - relativeSpeed) * .05) / (1.2 + .05);
-//
-//        (myManager->traciVehicle)->setCruiseControlDesiredSpeed(desiredSpeed);
-//
-////        if(vehicleData.speed * .1 > distance) {
-////           std::cout << "The vehicle is already close enough.." << std::endl;
-////        } else {
-////            std::cout << "The vehicle is NOT close enough.." << std::endl;
-////            //  RESET THE DESIRED SPEED TO GET IT CLOSE TO THE FRONT VEHICLE
-////            double desiredSpeed = (distance - relativeSpeed + vehicleData.speed) / (1.0 + .1);
-////            (myManager->traciVehicle)->setCruiseControlDesiredSpeed(desiredSpeed);
-////        }
-//        // ================================================================ debug ]
-//
-//        (myManager->traciVehicle)->setActiveController(Plexe::ACC);
-//        // reset the switchController
-//        myManager->switchController = BaseRuntimeManager::SwitchController::NOT_INITIALIZED;
-//#ifdef DEBUG_RUNTIMEMANAGER
-//        std::cout << "VehicleId: " << myManager->positionHelper->getId() << "\n\tRuntimeManager performed transition from CACC to ACC!!!" << std::endl;
-//#endif
-//    } else {
-//        double distance, relativeSpeed;
-//        (myManager->traciVehicle)->getRadarMeasurements(distance, relativeSpeed);
-//
-//        // Hardcoded: headway for vehicle 1.2s, default time is 50ms = .05s
-//        struct Plexe::VEHICLE_DATA vehicleData;
-//        (myManager->traciVehicle)->getVehicleData(&vehicleData);
-//
-//        double desiredSpeed = (distance - (vehicleData.speed - relativeSpeed) * .05) / (1.2 + .05);
-//
-//        (myManager->traciVehicle)->setCruiseControlDesiredSpeed(desiredSpeed);
-//    }
-
-    // TODO Adjust the Desired speed. This will be called every time a beacon received or by callback from handleSelfMessage()??
-
 }
 
 //=================================================================================================================================//
