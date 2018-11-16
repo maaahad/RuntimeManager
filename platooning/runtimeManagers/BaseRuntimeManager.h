@@ -54,6 +54,8 @@ protected:
      * This struct type use to record the safety related information on receiving beacon from another vehicles
      */
     struct SafetyRecords {
+        int vId;        // This is for debugging purpose
+
         simtime_t lastBeaconArrivalTime;
         simtime_t timeIntervalBetweenBeacon;
 

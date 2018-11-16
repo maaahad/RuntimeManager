@@ -102,10 +102,9 @@ void BaseRuntimeManager::StateManager::accStateManager() {
             }
         }
 
-        // If both connection is OK, switch to CACC mode, If only connection to front ok, switch to PLOEG
         if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
-        }else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
+        } else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_PLOEG;
         }
     } else {
@@ -159,6 +158,17 @@ void BaseRuntimeManager::StateManager::ploegStateManager(){
             myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_ACC;
         }
 
+    } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED) {
+        // Sanity check
+        ASSERT((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId());
+
+        if (!safetyCheckingOK((myManager->positionHelper)->getLeaderId())) {
+            myManager->rtState = BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED;
+        }
+        // Does not matter whether connection is ok or not, a vehicle should use ACC if
+        // it is connected to the leader only. Better to use radar information rather than 0 acceleration
+        myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_ACC;
+
     } else {
         std::cerr << "Error : wrong rtState"
                              << "\n\tFile: "
@@ -196,6 +206,27 @@ void BaseRuntimeManager::StateManager::caccStateManager() {
                  myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
         }
+
+    } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
+        // Sanity check
+        ASSERT((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId());
+
+        if(safetyCheckingOK((myManager->positionHelper)->getFrontId())) {
+            myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_PLOEG;
+        } else {
+            myManager->rtState = BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED;
+            myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
+        }
+    } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED) {
+        // Sanity check
+        ASSERT((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId());
+
+        if (!safetyCheckingOK((myManager->positionHelper)->getLeaderId())) {
+            myManager->rtState = BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED;
+        }
+        // Does not matter whether connection is ok or not, a vehicle should use ACC if
+        // it is connected to the leader only. Better to use radar information rather than 0 acceleration
+        myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
 
     } else {
         std::cerr << "Error : wrong rtState"
