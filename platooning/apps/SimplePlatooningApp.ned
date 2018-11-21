@@ -28,9 +28,9 @@ simple SimplePlatooningApp like BaseApp
         bool runtimeManagerEnabled = default(true);
         
         volatile double acceptedAvgBeaconInterval @unit(seconds) = default(0.100s);			// = default(.11 seconds)
-    	volatile double waitTimeToAcknoledgeConnectionEstd @unit(seconds) = default(0.32s); // Not using 
-    	int nBeaconToAcknoledgeConnectionEstd = default(3);
-    	int nAcceptedBeaconMiss = default(3);											// =deault(3) 
+    	volatile double waitTimeToAcknoledgeConnectionEstd @unit(seconds) = default(0.32s); // Not used 
+    	int nBeaconToAcknoledgeConnectionEstd = default(3);									// Not used 
+    	int nAcceptedBeaconMiss = default(3);											    // =deault(3) 
         
         @display("i=block/app2");
         @class(SimplePlatooningApp);

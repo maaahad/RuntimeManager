@@ -54,7 +54,6 @@ protected:
      * This struct type use to record the safety related information on receiving beacon from another vehicles
      */
     struct SafetyRecords {
-        int vId;        // This is for debugging purpose
 
         simtime_t lastBeaconArrivalTime;
         simtime_t timeIntervalBetweenBeacon;
@@ -104,7 +103,9 @@ protected:
         void caccStateManager();
         void ploegStateManager();
     private:
-        bool safetyCheckingOK(int key);
+        // TODO a method for safeChecking
+        void transitionCheck();
+        bool connectionOK(int key);
         BaseRuntimeManager *myManager;
     };
 
@@ -119,6 +120,7 @@ protected:
         void caccStateController();
         void ploegStateController();
     private:
+        void adjust() const;
         BaseRuntimeManager *myManager;
     };
 

@@ -273,9 +273,6 @@ void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentS
         safetyData.lastBeaconArrivalTime = currentSimTime;
         safetyData.firstBeaconArrivalTime = currentSimTime;
         safetyData.nbeaconReceived = 1;
-
-        safetyData.vId = key;
-
         safetyRecords.insert({key, safetyData});
     } else {
         // The record for the key is already exist
