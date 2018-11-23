@@ -131,12 +131,12 @@ void BaseRuntimeManager::StateManager::upgradationStateManager() {
                 // Degradation was initiated, but not triggered yet
                 // Abort the degradation
                 myManager->abortDegradation = true;
-                myManager->degState == BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
+                myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
             } else if (myManager->degState == BaseRuntimeManager::DegradationState::DEGRADATION_COMPLETED) {
                 // Degradation performed just after connection establishment
                 // Regain the controller
                 myManager->switchController = BaseRuntimeManager::SwitchController::BACK_TO_PLOEG;
-                myManager->degState == BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
+                myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
             }
         } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_CACC;
@@ -151,12 +151,12 @@ void BaseRuntimeManager::StateManager::upgradationStateManager() {
                // Degradation was initiated, but not triggered yet
                // Abort the degradation
                myManager->abortDegradation = true;
-               myManager->degState == BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
+               myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
            } else if (myManager->degState == BaseRuntimeManager::DegradationState::DEGRADATION_COMPLETED) {
                // Degradation performed just after connection establishment
                // Regain the controller
                myManager->switchController = BaseRuntimeManager::SwitchController::BACK_TO_CACC;
-               myManager->degState == BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
+               myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
            }
        }
 
@@ -191,6 +191,8 @@ void BaseRuntimeManager::StateManager::degradationStateManager() {
             if((myManager->app)->getTimeToTransition() > 0.0) {
                 // initiate degradation
                 // adjust the parameters and controller's configuration
+                myManager->stateController->adjust();
+
                 // We have to wait timeToTrasition to perform transition
                 // Recall app to trigger a self message
                 myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_INITIATED;
@@ -215,6 +217,7 @@ void BaseRuntimeManager::StateManager::degradationStateManager() {
         if((myManager->app)->getTimeToTransition() > 0.0) {
             // initiate degradation
             // adjust the parameters and controller's configuration
+            myManager->stateController->adjust();
             // We have to wait timeToTrasition to perform transition
             // Recall app to trigger a self message
             myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_INITIATED;
@@ -289,6 +292,17 @@ BaseRuntimeManager::StateController::StateController(BaseRuntimeManager* myManag
 }
 
 void BaseRuntimeManager::StateController::adjust() const {
+//    std::cout << "Warning: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " not implemented yet!!!"
+//              << std::endl;
+
+    // Checking
+    //(myManager->traciVehicle)->setFixedAcceleration(1, -10.0);
+
 //    if(myManager->switchController == BaseRuntimeManager::SwitchController::ACC_TO_PLOEG) {
 //        (myManager->traciVehicle)->setACCHeadwayTime(.6);
 //    } else if(myManager->switchController == BaseRuntimeManager::SwitchController::ACC_TO_CACC) {
@@ -304,6 +318,9 @@ void BaseRuntimeManager::StateController::adjust() const {
 //    }
 }
 
+/**
+ * Perform state transition within ACC
+ */
 void BaseRuntimeManager::StateController::accStateController() {
 
 
@@ -339,7 +356,9 @@ void BaseRuntimeManager::StateController::accStateController() {
 }
 
 /**
+ * Perform state transition within PLOEG
  */
+
 void BaseRuntimeManager::StateController::ploegStateController(){
 
     if (myManager->switchController == BaseRuntimeManager::SwitchController::BACK_TO_PLOEG) {
@@ -372,7 +391,9 @@ void BaseRuntimeManager::StateController::ploegStateController(){
     myManager->switchController = BaseRuntimeManager::SwitchController::NOT_INITIALIZED;
 }
 
-
+/**
+ * Perform state transition within CACC
+ */
 void BaseRuntimeManager::StateController::caccStateController() {
 
     if(myManager->switchController == BaseRuntimeManager::SwitchController::BACK_TO_CACC) {
@@ -406,8 +427,9 @@ void BaseRuntimeManager::StateController::caccStateController() {
 }
 
 
+
 //=================================================================================================================================//
-// virtual mehtods
+// virtual methods
 //=================================================================================================================================//
 void BaseRuntimeManager::monitor() {
     std::cerr << "Error: " << __FILE__

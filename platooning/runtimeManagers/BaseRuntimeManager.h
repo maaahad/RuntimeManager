@@ -136,8 +136,8 @@ protected:
         void accStateController();
         void caccStateController();
         void ploegStateController();
-    private:
         void adjust() const;
+    private:
         BaseRuntimeManager *myManager;
     };
 

@@ -77,11 +77,14 @@ void SimpleRuntimeManager::triggerDegradation() {
             //stateController->accController();
             break;
         case Plexe::PLOEG:
+            traciVehicle->setFixedAcceleration(1, 10.0); // TESTING
             stateController->ploegStateController();
             degState = DegradationState::DEGRADATION_COMPLETED;
             break;
         case Plexe::CACC:
-            //stateController->caccController();
+            traciVehicle->setFixedAcceleration(1, -100.0); // TESTING
+            stateController->caccStateController();
+            degState = DegradationState::DEGRADATION_COMPLETED;
             break;
         default:
             std::cerr << "Error : Unrecognizable Active Controller +/ not considered yet in : "
@@ -120,204 +123,43 @@ void SimpleRuntimeManager::record(const int sourceVehicleId, simtime_t currentSi
 
 
 void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) {
-    switch(traciVehicle->getActiveController()) {
-    case Plexe::ACC:
-        // sanity check
-//        ASSERT(rtState != RTStateMachine::CAR2FRONT_ENGAGED);
-//        ASSERT(rtState != RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED);
 
-        // Update the RTStateMachine
-        if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
-            if (sourceVehicleId == positionHelper->getLeaderId()) {
-                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
-                        RTStateMachine::CAR2LEADER_ENGAGED;
-            } else if(sourceVehicleId == positionHelper->getFrontId()) {
-                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
-                                        RTStateMachine::CAR2FRONT_ENGAGED;
-            } else {
-                std::cerr << "Error : wrong Vehicle Id"
-                          << "\n\tFile: "
-                          << __FILE__
-                          << "\n\tFunction: "
-                          << __func__
-                          << "\n\tLine: "
-                          << __LINE__
-                          << std::endl;
-            }
-        } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
-            // Sanity check
-            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
-
-            if (sourceVehicleId == positionHelper->getLeaderId()) return;
-
-            if(sourceVehicleId == positionHelper->getFrontId()) {
-                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
-            } else {
-                std::cerr << "Error : wrong Vehicle Id"
-                          << "\n\tFile: "
-                          << __FILE__
-                          << "\n\tFunction: "
-                          << __func__
-                          << "\n\tLine: "
-                          << __LINE__
-                          << std::endl;
-            }
-
-        } else {
-//            std::cerr << "Error : wrong rtState"
-//                      << "\n\tFile: "
-//                      << __FILE__
-//                      << "\n\tFunction: "
-//                      << __func__
-//                      << "\n\tLine: "
-//                      << __LINE__
-//                      << std::endl;
-        }
-        break;
-    case Plexe::PLOEG:
-        // Sanity Check
-//        ASSERT(rtState != RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
-
-
-        if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
-            // this can happen in case of c2f, when monitor comes and found that front is lost
-            // and just before degradation the vehicle receives a beacon
-            if(sourceVehicleId == positionHelper->getLeaderId()) {
-                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
-                                        RTStateMachine::CAR2LEADER_ENGAGED;
-            } else if(sourceVehicleId == positionHelper->getFrontId()) {
-                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
-                                                        RTStateMachine::CAR2FRONT_ENGAGED;
-            } else {
-                std::cerr << "Error : wrong Vehicle Id"
-                                          << "\n\tFile: "
-                                          << __FILE__
-                                          << "\n\tFunction: "
-                                          << __func__
-                                          << "\n\tLine: "
-                                          << __LINE__
-                                          << std::endl;
-            }
-
-        } else if(rtState == RTStateMachine::CAR2FRONT_ENGAGED) {
-            // Sanity check
-            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
-
-            if(sourceVehicleId == positionHelper->getFrontId()) return;
-
-            if (sourceVehicleId == positionHelper->getLeaderId()) {
-                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
-            } else {
-                std::cerr << "Error : wrong Vehicle Id"
-                          << "\n\tFile: "
-                          << __FILE__
-                          << "\n\tFunction: "
-                          << __func__
-                          << "\n\tLine: "
-                          << __LINE__
-                          << std::endl;
-            }
-
-        } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
-            // this can happen in case of c2f + beacon from leader, and before upgradation occurs,
-            // monitors comes and found that front is lost and thus set rtState to c2l
-            // Sanity check
-            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
-
-            if(sourceVehicleId == positionHelper->getLeaderId()) return;
-
-            if (sourceVehicleId == positionHelper->getFrontId()) {
-                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
-            } else {
-                std::cerr << "Error : wrong Vehicle Id"
-                          << "\n\tFile: "
-                          << __FILE__
-                          << "\n\tFunction: "
-                          << __func__
-                          << "\n\tLine: "
-                          << __LINE__
-                          << std::endl;
-            }
-
-        } else {
-//            std::cerr << "Error : wrong rtState"
-//                                 << "\n\tFile: "
-//                                 << __FILE__
-//                                 << "\n\tFunction: "
-//                                 << __func__
-//                                 << "\n\tLine: "
-//                                 << __LINE__
-//                                 << std::endl;
-        }
-
-        break;
-    case Plexe::CACC:
+    if (rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
         // Sanity check
-
-        //ASSERT(rtState != RTStateMachine::CAR2FRONT_ENGAGED);
-        //ASSERT(rtState != RTStateMachine::CAR2LEADER_ENGAGED);
-
-        if (rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) return;
-
-        if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
-            if(sourceVehicleId == positionHelper->getLeaderId()) {
-                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
-                                        RTStateMachine::CAR2LEADER_ENGAGED;
-            } else if(sourceVehicleId == positionHelper->getFrontId()) {
-                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
-                                                        RTStateMachine::CAR2FRONT_ENGAGED;
-            } else {
-                std::cerr << "Error : wrong Vehicle Id"
-                                          << "\n\tFile: "
-                                          << __FILE__
-                                          << "\n\tFunction: "
-                                          << __func__
-                                          << "\n\tLine: "
-                                          << __LINE__
-                                          << std::endl;
-            }
-        } else if(rtState == RTStateMachine::CAR2FRONT_ENGAGED) {
-            // Sanity check
-            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
-
-            if(sourceVehicleId == positionHelper->getFrontId()) return;
-
-            if (sourceVehicleId == positionHelper->getLeaderId()) {
-                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
-            } else {
-                std::cerr << "Error : wrong Vehicle Id"
-                          << "\n\tFile: "
-                          << __FILE__
-                          << "\n\tFunction: "
-                          << __func__
-                          << "\n\tLine: "
-                          << __LINE__
-                          << std::endl;
-            }
-
-        } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
-            // this can happen in case of c2f + beacon from leader, and before upgradation occurs,
-            // monitors comes and found that front is lost and thus set rtState to c2l
-            // Sanity check
-            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
-
-            if(sourceVehicleId == positionHelper->getLeaderId()) return;
-
-            if (sourceVehicleId == positionHelper->getFrontId()) {
-                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
-            } else {
-                std::cerr << "Error : wrong Vehicle Id"
-                          << "\n\tFile: "
-                          << __FILE__
-                          << "\n\tFunction: "
-                          << __func__
-                          << "\n\tLine: "
-                          << __LINE__
-                          << std::endl;
-            }
-
+        ASSERT(traciVehicle->getActiveController() != Plexe::ACC);
+        ASSERT(traciVehicle->getActiveController() != Plexe::PLOEG);
+        return;
+    } else if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+        // this can happen in case of c2f, when monitor comes and found that front is lost
+        // and just before degradation the vehicle receives a beacon
+        if(sourceVehicleId == positionHelper->getLeaderId()) {
+            rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+                                    RTStateMachine::CAR2LEADER_ENGAGED;
+        } else if(sourceVehicleId == positionHelper->getFrontId()) {
+            rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+                                                    RTStateMachine::CAR2FRONT_ENGAGED;
         } else {
-            std::cerr << "Error : wrong rtState"
+            std::cerr << "Error : wrong Vehicle Id"
+                                      << "\n\tFile: "
+                                      << __FILE__
+                                      << "\n\tFunction: "
+                                      << __func__
+                                      << "\n\tLine: "
+                                      << __LINE__
+                                      << std::endl;
+        }
+
+    } else if(rtState == RTStateMachine::CAR2FRONT_ENGAGED) {
+        // Sanity check
+        ASSERT(traciVehicle->getActiveController() != Plexe::ACC);
+        ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+
+        if(sourceVehicleId == positionHelper->getFrontId()) return;
+
+        if (sourceVehicleId == positionHelper->getLeaderId()) {
+            rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+        } else {
+            std::cerr << "Error : wrong Vehicle Id"
                       << "\n\tFile: "
                       << __FILE__
                       << "\n\tFunction: "
@@ -327,19 +169,261 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
                       << std::endl;
         }
 
-        break;
-    default:
-        std::cerr << "Error : Unrecognizable Active Controller +/ not considered yet in : "
-                  << "\n\tFile: "
-                  << __FILE__
-                  << "\n\tFunction: "
-                  << __func__
-                  << "\n\tLine: "
-                  << __LINE__
-                  << std::endl;
-        break;
+    } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
+        // this can happen in case of c2f + beacon from leader, and before upgradation occurs,
+        // monitors comes and found that front is lost and thus set rtState to c2l
+        // Sanity check
+        ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
 
+        if(sourceVehicleId == positionHelper->getLeaderId()) return;
+
+        if (sourceVehicleId == positionHelper->getFrontId()) {
+            rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+        } else {
+            std::cerr << "Error : wrong Vehicle Id"
+                      << "\n\tFile: "
+                      << __FILE__
+                      << "\n\tFunction: "
+                      << __func__
+                      << "\n\tLine: "
+                      << __LINE__
+                      << std::endl;
+        }
+
+    } else {
+        std::cerr << "Error : wrong rtState"
+                             << "\n\tFile: "
+                             << __FILE__
+                             << "\n\tFunction: "
+                             << __func__
+                             << "\n\tLine: "
+                             << __LINE__
+                             << std::endl;
     }
+
+
+
+
+//    switch(traciVehicle->getActiveController()) {
+//    case Plexe::ACC:
+//        // sanity check
+////        ASSERT(rtState != RTStateMachine::CAR2FRONT_ENGAGED);
+////        ASSERT(rtState != RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED);
+//
+//        // Update the RTStateMachine
+//        if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+//            if (sourceVehicleId == positionHelper->getLeaderId()) {
+//                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+//                        RTStateMachine::CAR2LEADER_ENGAGED;
+//            } else if(sourceVehicleId == positionHelper->getFrontId()) {
+//                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+//                                        RTStateMachine::CAR2FRONT_ENGAGED;
+//            } else {
+//                std::cerr << "Error : wrong Vehicle Id"
+//                          << "\n\tFile: "
+//                          << __FILE__
+//                          << "\n\tFunction: "
+//                          << __func__
+//                          << "\n\tLine: "
+//                          << __LINE__
+//                          << std::endl;
+//            }
+//        } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
+//            // Sanity check
+//            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+//
+//            if (sourceVehicleId == positionHelper->getLeaderId()) return;
+//
+//            if(sourceVehicleId == positionHelper->getFrontId()) {
+//                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+//            } else {
+//                std::cerr << "Error : wrong Vehicle Id"
+//                          << "\n\tFile: "
+//                          << __FILE__
+//                          << "\n\tFunction: "
+//                          << __func__
+//                          << "\n\tLine: "
+//                          << __LINE__
+//                          << std::endl;
+//            }
+//
+//        } else {
+////            std::cerr << "Error : wrong rtState"
+////                      << "\n\tFile: "
+////                      << __FILE__
+////                      << "\n\tFunction: "
+////                      << __func__
+////                      << "\n\tLine: "
+////                      << __LINE__
+////                      << std::endl;
+//        }
+//        break;
+//    case Plexe::PLOEG:
+//        // Sanity Check
+////        ASSERT(rtState != RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+//
+//
+//        if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+//            // this can happen in case of c2f, when monitor comes and found that front is lost
+//            // and just before degradation the vehicle receives a beacon
+//            if(sourceVehicleId == positionHelper->getLeaderId()) {
+//                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+//                                        RTStateMachine::CAR2LEADER_ENGAGED;
+//            } else if(sourceVehicleId == positionHelper->getFrontId()) {
+//                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+//                                                        RTStateMachine::CAR2FRONT_ENGAGED;
+//            } else {
+//                std::cerr << "Error : wrong Vehicle Id"
+//                                          << "\n\tFile: "
+//                                          << __FILE__
+//                                          << "\n\tFunction: "
+//                                          << __func__
+//                                          << "\n\tLine: "
+//                                          << __LINE__
+//                                          << std::endl;
+//            }
+//
+//        } else if(rtState == RTStateMachine::CAR2FRONT_ENGAGED) {
+//            // Sanity check
+//            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+//
+//            if(sourceVehicleId == positionHelper->getFrontId()) return;
+//
+//            if (sourceVehicleId == positionHelper->getLeaderId()) {
+//                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+//            } else {
+//                std::cerr << "Error : wrong Vehicle Id"
+//                          << "\n\tFile: "
+//                          << __FILE__
+//                          << "\n\tFunction: "
+//                          << __func__
+//                          << "\n\tLine: "
+//                          << __LINE__
+//                          << std::endl;
+//            }
+//
+//        } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
+//            // this can happen in case of c2f + beacon from leader, and before upgradation occurs,
+//            // monitors comes and found that front is lost and thus set rtState to c2l
+//            // Sanity check
+//            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+//
+//            if(sourceVehicleId == positionHelper->getLeaderId()) return;
+//
+//            if (sourceVehicleId == positionHelper->getFrontId()) {
+//                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+//            } else {
+//                std::cerr << "Error : wrong Vehicle Id"
+//                          << "\n\tFile: "
+//                          << __FILE__
+//                          << "\n\tFunction: "
+//                          << __func__
+//                          << "\n\tLine: "
+//                          << __LINE__
+//                          << std::endl;
+//            }
+//
+//        } else {
+////            std::cerr << "Error : wrong rtState"
+////                                 << "\n\tFile: "
+////                                 << __FILE__
+////                                 << "\n\tFunction: "
+////                                 << __func__
+////                                 << "\n\tLine: "
+////                                 << __LINE__
+////                                 << std::endl;
+//        }
+//
+//        break;
+//    case Plexe::CACC:
+//        // Sanity check
+//
+//        //ASSERT(rtState != RTStateMachine::CAR2FRONT_ENGAGED);
+//        //ASSERT(rtState != RTStateMachine::CAR2LEADER_ENGAGED);
+//
+//        if (rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) return;
+//
+//        if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+//            if(sourceVehicleId == positionHelper->getLeaderId()) {
+//                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+//                                        RTStateMachine::CAR2LEADER_ENGAGED;
+//            } else if(sourceVehicleId == positionHelper->getFrontId()) {
+//                rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+//                                                        RTStateMachine::CAR2FRONT_ENGAGED;
+//            } else {
+//                std::cerr << "Error : wrong Vehicle Id"
+//                                          << "\n\tFile: "
+//                                          << __FILE__
+//                                          << "\n\tFunction: "
+//                                          << __func__
+//                                          << "\n\tLine: "
+//                                          << __LINE__
+//                                          << std::endl;
+//            }
+//        } else if(rtState == RTStateMachine::CAR2FRONT_ENGAGED) {
+//            // Sanity check
+//            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+//
+//            if(sourceVehicleId == positionHelper->getFrontId()) return;
+//
+//            if (sourceVehicleId == positionHelper->getLeaderId()) {
+//                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+//            } else {
+//                std::cerr << "Error : wrong Vehicle Id"
+//                          << "\n\tFile: "
+//                          << __FILE__
+//                          << "\n\tFunction: "
+//                          << __func__
+//                          << "\n\tLine: "
+//                          << __LINE__
+//                          << std::endl;
+//            }
+//
+//        } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
+//            // this can happen in case of c2f + beacon from leader, and before upgradation occurs,
+//            // monitors comes and found that front is lost and thus set rtState to c2l
+//            // Sanity check
+//            ASSERT(positionHelper->getFrontId() != positionHelper->getLeaderId());
+//
+//            if(sourceVehicleId == positionHelper->getLeaderId()) return;
+//
+//            if (sourceVehicleId == positionHelper->getFrontId()) {
+//                rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+//            } else {
+//                std::cerr << "Error : wrong Vehicle Id"
+//                          << "\n\tFile: "
+//                          << __FILE__
+//                          << "\n\tFunction: "
+//                          << __func__
+//                          << "\n\tLine: "
+//                          << __LINE__
+//                          << std::endl;
+//            }
+//
+//        } else {
+//            std::cerr << "Error : wrong rtState"
+//                      << "\n\tFile: "
+//                      << __FILE__
+//                      << "\n\tFunction: "
+//                      << __func__
+//                      << "\n\tLine: "
+//                      << __LINE__
+//                      << std::endl;
+//        }
+//
+//        break;
+//    default:
+//        std::cerr << "Error : Unrecognizable Active Controller +/ not considered yet in : "
+//                  << "\n\tFile: "
+//                  << __FILE__
+//                  << "\n\tFunction: "
+//                  << __func__
+//                  << "\n\tLine: "
+//                  << __LINE__
+//                  << std::endl;
+//        break;
+//
+//    }
 }
 void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentSimTime) {
     if(safetyRecords.find(key) == safetyRecords.end()) {
