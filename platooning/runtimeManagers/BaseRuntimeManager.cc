@@ -121,6 +121,7 @@ void BaseRuntimeManager::StateManager::upgradationStateManager() {
         }
 
         // call the accController for perform upgradation
+        std::cout << "UPGRADATION => ";
         (myManager->stateController)->accStateController();
         break;
     case Plexe::PLOEG:
@@ -141,6 +142,7 @@ void BaseRuntimeManager::StateManager::upgradationStateManager() {
         } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_CACC;
         }
+        std::cout << "UPGRADATION / RETAIN => ";
         (myManager->stateController)->ploegStateController();
         break;
     case Plexe::CACC:
@@ -160,6 +162,7 @@ void BaseRuntimeManager::StateManager::upgradationStateManager() {
            }
        }
 
+        std::cout << "UPGRADATION / RETAIN => ";
        (myManager->stateController)->caccStateController();
        break;
     default:
@@ -199,6 +202,7 @@ void BaseRuntimeManager::StateManager::degradationStateManager() {
                 (myManager->app)->triggerTimeToTransitionSelfMsg();
             } else {
                 // perform degradation straight away
+                std::cout << "DEGRADATION => ";
                 myManager->stateController->ploegStateController();
             }
         }
@@ -224,6 +228,7 @@ void BaseRuntimeManager::StateManager::degradationStateManager() {
             (myManager->app)->triggerTimeToTransitionSelfMsg();
         } else {
             // perform degradation straight away
+            std::cout << "DEGRADATION => ";
             myManager->stateController->caccStateController();
         }
 
