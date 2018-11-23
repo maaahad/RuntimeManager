@@ -25,6 +25,8 @@ moduleinterface BaseApp extends IBaseApplLayer
         volatile double runtimeManagerCallbackInterval @unit(seconds);				// = default(0.11 seconds);
         bool runtimeManagerEnabled;											// = default(false)
         
+        volatile double timeToTransition @unit(seconds);				    // default(.010 seconds)
+        
         volatile double acceptedAvgBeaconInterval @unit(seconds);			// = default(.11 seconds)
         volatile double waitTimeToAcknoledgeConnectionEstd @unit(seconds);	// = default(.25 seconds)
         int nBeaconToAcknoledgeConnectionEstd;								// =deault(2) after the first beacon

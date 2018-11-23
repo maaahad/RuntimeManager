@@ -57,14 +57,22 @@ void BaseApp::initialize(int stage)
         runtimeManagerCallbackInterval = SimTime(par("runtimeManagerCallbackInterval").doubleValue()); // TODO REMOVE THIS VARIABLE
         runtimeManagerEnabled  = par("runtimeManagerEnabled").boolValue();
 
+        timeToTransition = SimTime(par("timeToTransition").doubleValue());
 
         acceptedAvgBeaconInterval          = SimTime(par("acceptedAvgBeaconInterval").doubleValue());
 //        waitTimeToAcknoledgeConnectionEstd = SimTime(par("waitTimeToAcknoledgeConnectionEstd").doubleValue());
         nBeaconToAcknoledgeConnectionEstd  = par("nBeaconToAcknoledgeConnectionEstd").intValue();
         nAcceptedBeaconMiss                = par("nAcceptedBeaconMiss").intValue();
 
-//        std::cout << "expectedBeaconInterval: " << expectedBeaconInterval
-//                  << ", runtimeManagerEnabled: "<< runtimeManagerEnabled << std::endl;
+        if(runtimeManagerEnabled) {
+            callBackRuntimeManager = new cMessage("callBackRuntimeManager");
+            SimTime callBackTime = simTime() + runtimeManagerCallbackInterval;
+            scheduleAt(callBackTime, callBackRuntimeManager);
+            if(timeToTransition.dbl() > 0.0) {
+                msgToTransition = new cMessage("msgToTransition");
+            }
+        }
+
         //================================ Ahad :: End of Runtime Manager ==============================//
 
     }
@@ -93,6 +101,18 @@ BaseApp::~BaseApp()
     recordData = nullptr;
     cancelAndDelete(stopSimulation);
     stopSimulation = nullptr;
+
+    // Delete the msgToTransition only if it was created and runtimeManager was enabled
+
+    if(runtimeManagerEnabled) {
+        if(timeToTransition.dbl() > 0.0) {
+            cancelAndDelete(msgToTransition);
+            msgToTransition = nullptr;
+        }
+
+        cancelAndDelete(callBackRuntimeManager);
+        callBackRuntimeManager = nullptr;
+    }
 }
 
 void BaseApp::handleLowerMsg(cMessage* msg)
@@ -139,6 +159,11 @@ void BaseApp::handleLowerControl(cMessage* msg)
 {
     delete msg;
 }
+
+void BaseApp::triggerTimeToTransitionSelfMsg() {
+    scheduleAt(simTime() + timeToTransition, msgToTransition);
+}
+
 
 void BaseApp::sendUnicast(cPacket* msg, int destination)
 {

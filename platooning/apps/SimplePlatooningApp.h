@@ -59,9 +59,7 @@ protected:
     virtual void onPlatoonBeacon(const PlatooningBeacon* pb) override;
 
 private:
-    // self message to activate runtime manager.
-    // TODO : CALLBACK TIME SHOULD BE COME FROM CONFIGURATION FILE. BaseScenario.ned, BBaseScenario.ned and .ini
-    cMessage* callBackRuntimeManager;
+
 //================================ Ahad :: End of Runtime Manager ==============================//
 
 };

@@ -8,6 +8,8 @@
 #ifndef RUNTIMEMANAGERS_BASERUNTIMEMANAGER_H_
 #define RUNTIMEMANAGERS_BASERUNTIMEMANAGER_H_
 
+#include<atomic>
+
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 
@@ -37,6 +39,11 @@ public:
      * This method is called by the application during onPlatoonBeacon()
      */
     virtual void record(const int sourceVehicleId, simtime_t currentSimTime) = 0;
+
+    /**
+     * This method is called by the handleSefMsg to perform degradation
+     */
+    virtual void triggerDegradation() = 0;
 
 protected:
     /**
@@ -86,10 +93,18 @@ protected:
         NOT_INITIALIZED,
         ACC_TO_CACC,
         ACC_TO_PLOEG,
+        BACK_TO_PLOEG,
         CACC_TO_ACC,
         CACC_TO_PLOEG,
         PLOEG_TO_CACC,
         PLOEG_TO_ACC,
+        BACK_TO_CACC,
+    };
+
+    enum class DegradationState {
+        DEGRADATION_NOT_INITIATED,
+        DEGRADATION_INITIATED,
+        DEGRADATION_COMPLETED,
     };
 
     /**
@@ -99,6 +114,8 @@ protected:
     class StateManager {
     public:
         StateManager(BaseRuntimeManager*);
+        void upgradationStateManager();
+        void degradationStateManager();
         void accStateManager();
         void caccStateManager();
         void ploegStateManager();
@@ -128,8 +145,13 @@ protected:
     //===============================================================//
     // Protected Data
     //===============================================================//
-    RTStateMachine rtState;
-    SwitchController switchController;
+    std::atomic<RTStateMachine> rtState{RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED};
+    std::atomic<SwitchController> switchController{SwitchController::NOT_INITIALIZED};
+
+    // Degradation
+    std::atomic<DegradationState> degState{DegradationState::DEGRADATION_NOT_INITIATED};
+    std::atomic<bool> abortDegradation{false};
+
 
     StateManager *stateManager;
     StateController *stateController;

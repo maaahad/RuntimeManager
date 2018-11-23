@@ -16,6 +16,7 @@ public:
     virtual ~SimpleRuntimeManager();
     void monitor() override;
     void record(const int sourceVehicleId, simtime_t currentSimTime) override;
+    void triggerDegradation() override;
 protected:
     void updateStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) override;
     void updateSafetyRecords(const int key, simtime_t currentSimTime) override;

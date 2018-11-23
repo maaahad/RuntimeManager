@@ -31,6 +31,8 @@ parameters:
     volatile double runtimeManagerCallbackInterval @unit(seconds) = default(0.11s);
     bool runtimeManagerEnabled = default(false);
     
+    volatile double timeToTransition @unit(seconds) = default(.01s);				    // default(.010 seconds)
+    
     
     volatile double acceptedAvgBeaconInterval @unit(seconds) = default(0.11s);			// = default(.11 seconds)
 	volatile double waitTimeToAcknoledgeConnectionEstd @unit(seconds) = deafult(0.25s);

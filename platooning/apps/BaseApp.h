@@ -84,7 +84,11 @@ protected:
 
     //================================ Ahad :: Start of Runtime Manager ============================//
     SimTime runtimeManagerCallbackInterval;
+    cMessage* callBackRuntimeManager;
     bool runtimeManagerEnabled;
+
+    cMessage* msgToTransition;
+    SimTime timeToTransition;
 
     SimTime acceptedAvgBeaconInterval;
     SimTime waitTimeToAcknoledgeConnectionEstd;
@@ -133,6 +137,9 @@ public:
             return runtimeManagerCallbackInterval;
     }
 
+    double getTimeToTransition() {
+            return timeToTransition.dbl();
+    }
 
     double getAcceptedAvgBeaconInterval() {
         return acceptedAvgBeaconInterval.dbl();
@@ -148,6 +155,14 @@ public:
     int getNAcceptedBeaconMiss() {
             return nAcceptedBeaconMiss;
     }
+
+
+    /**
+     * This method schedule a self message to perform controller transition by handleSelfMsg
+     */
+    void triggerTimeToTransitionSelfMsg();
+
+
     //================================ Ahad :: End of Runtime Manager ==============================//
 
     /**

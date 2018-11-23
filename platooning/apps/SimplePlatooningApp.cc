@@ -30,16 +30,13 @@ void SimplePlatooningApp::initialize(int stage)
 
     if (stage == 1) {
         if(runtimeManagerEnabled) {
-            // runtimeManager = new RuntimeManager(this);
-
-            //================= Adding new runtimeManager ==============//
             rtManager = new SimpleRuntimeManager(this);
 
-            callBackRuntimeManager = new cMessage("callBackRuntimeManager");
-            // runtime manager is called in every (rounded) .11 (.11 * 1000 = 110 ms)
-            // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-            SimTime callBackTime = simTime() + runtimeManagerCallbackInterval;
-            scheduleAt(callBackTime, callBackRuntimeManager);
+//            callBackRuntimeManager = new cMessage("callBackRuntimeManager");  // TODO : Move this to the baseapp
+//            // runtime manager is called in every (rounded) .11 (.11 * 1000 = 110 ms)
+//            // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
+//            SimTime callBackTime = simTime() + runtimeManagerCallbackInterval;
+//            scheduleAt(callBackTime, callBackRuntimeManager);
         }
     }
 }
@@ -47,6 +44,7 @@ void SimplePlatooningApp::initialize(int stage)
 void SimplePlatooningApp::handleSelfMsg(cMessage* msg)
 {
     BaseApp::handleSelfMsg(msg);
+
     if (runtimeManagerEnabled) {
         if (msg == callBackRuntimeManager) {
             // callback runtime manager
@@ -54,14 +52,16 @@ void SimplePlatooningApp::handleSelfMsg(cMessage* msg)
             // Runtime manager analyze safety requirements to decide whether the current state is stable or not
             // And take appropriate measures
 
-            // TODO :: exceptedBeaconInterval is hard coded right now. Need to define in the configuration file .ned and .ini
-
             rtManager->monitor();
 
             // re-schedule the self message
-            // TODO :: Callback time should come from configuration file
             scheduleAt(simTime() + runtimeManagerCallbackInterval, callBackRuntimeManager);
 
+        }
+
+        if(msg == msgToTransition) {
+            // Call runtime manager to activate the transition
+            rtManager->triggerDegradation();
         }
     }
 }
@@ -85,8 +85,8 @@ void SimplePlatooningApp::onPlatoonBeacon(const PlatooningBeacon* pb)
 }
 
 SimplePlatooningApp::~SimplePlatooningApp() {
-    cancelAndDelete(callBackRuntimeManager);
-    callBackRuntimeManager = nullptr;
+//    cancelAndDelete(callBackRuntimeManager);
+//    callBackRuntimeManager = nullptr;
 }
 
 //================================ Ahad :: End of Runtime Manager ==============================//
