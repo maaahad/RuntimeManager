@@ -38,6 +38,10 @@ void SimpleRuntimeManager::monitor() {
     // Leader vehicle does not need to check the connection
     if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) return;
 
+    // Fix the condition 2 from accStateController()
+    // this is required if beacon not come from leader when in ploeg  before monitor is called
+    stateManager->upgradationStateManager();
+
     stateManager->degradationStateManager();
 }
 

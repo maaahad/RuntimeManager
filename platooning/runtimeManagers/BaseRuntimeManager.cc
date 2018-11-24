@@ -328,6 +328,22 @@ void BaseRuntimeManager::StateController::adjust() const {
  */
 void BaseRuntimeManager::StateController::accStateController() {
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // There is the possibility of the followings
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // 1.
+    //  front -->c2f ---------------------->to_ploeg----->transition_performed_to_ploeg--> reset switchController
+    //      leader-->c2f_c2l---------------------->to_cacc-----------------------------------> No transition ()
+
+    // 2.
+    // front-->c2f------------->(see the changes by the following beacon)--> to_cacc----->transition_performed--> reset switchController
+    //      leader--> c2f_c2l--> to_cacc--------------------------------------------------------------------------->no_transition (fix it in monitor())
+
+    // 3.
+    //  front -->c2f ---------------------->to_ploeg----->transition_performed_to_ploeg--> reset switchController
+    //      leader-->c2f_c2l---------------------->to_cacc-----------------------> performed transition ---< reset switchController (again)
+
 
     if(myManager->switchController == BaseRuntimeManager::SwitchController::ACC_TO_CACC) {
         // TODO TAKE APPROPRIATE ACTION FOR STABLE TRANSITION. For example: providing deceleration
@@ -336,6 +352,7 @@ void BaseRuntimeManager::StateController::accStateController() {
         //double ctd = (myManager->traciVehicle)->getCACCConstantSpacing();
         //std::cout << "CTD: " << ctd << std::endl;
 
+        if((myManager->traciVehicle)->getActiveController() == Plexe::CACC) return;
 
         (myManager->traciVehicle)->setActiveController(Plexe::CACC);
 
