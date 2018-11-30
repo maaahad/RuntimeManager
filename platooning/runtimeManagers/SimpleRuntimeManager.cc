@@ -30,19 +30,19 @@ SimpleRuntimeManager::~SimpleRuntimeManager() {
 //=================================================================================================================================//
 // override virtual mehtods
 //=================================================================================================================================//
-void SimpleRuntimeManager::monitor() {
+void SimpleRuntimeManager::observe() {
     // If there is no connection neither to front or leader vehicle,
     // there is no need to call StateManager to check for connection
     // Leader vehicle's rtState will always be CAR2FRONT_CAR2LEADER_DISENGAGED
     // and the controller will be ACC. Hence,
     // Leader vehicle does not need to check the connection
-    if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) return;
+    if(rmState == RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) return;
 
     // Fix the condition 2 from accStateController()
     // this is required if beacon not come from leader when in ploeg  before monitor is called
-    stateManager->upgradationStateManager();
+    monitor->upgrade();
 
-    stateManager->degradationStateManager();
+    monitor->degrade();
 }
 
 
@@ -50,18 +50,21 @@ void SimpleRuntimeManager::triggerDegradation() {
     if(!abortDegradation) {
         switch(traciVehicle->getActiveController()) {
         case Plexe::ACC:
+            // TODO Implement this in case of human driven car
             //stateController->accController();
             break;
         case Plexe::PLOEG:
-            //traciVehicle->setFixedAcceleration(1, 10.0); // TESTING
+//            traciVehicle->setFixedAcceleration(0, -10.0); // TESTING
+//            traciVehicle->useControllerAcceleration(true);
             std::cout << "DEGRADATION => ";
-            stateController->ploegStateController();
+            reactor->ploegStateController();
             degState = DegradationState::DEGRADATION_COMPLETED;
             break;
         case Plexe::CACC:
-            //traciVehicle->setFixedAcceleration(1, -100.0); // TESTING
+//            traciVehicle->setFixedAcceleration(0, -10.0); // TESTING
+//            traciVehicle->useControllerAcceleration(true);
             std::cout << "DEGRADATION => ";
-            stateController->caccStateController();
+            reactor->caccStateController();
             degState = DegradationState::DEGRADATION_COMPLETED;
             break;
         default:
@@ -84,14 +87,14 @@ void SimpleRuntimeManager::triggerDegradation() {
 
 void SimpleRuntimeManager::record(const int sourceVehicleId, simtime_t currentSimTime){
 
-    updateSafetyRecords(sourceVehicleId, currentSimTime);
+    logSafetyRecords(sourceVehicleId, currentSimTime);
 
     if (sourceVehicleId == positionHelper->getLeaderId() || sourceVehicleId == positionHelper->getFrontId()) {
         // this is the leader or the front vehicle
         updateStateMachine(sourceVehicleId, currentSimTime);
 
         // Call StateManager::upgradeManager
-        stateManager->upgradationStateManager();
+        monitor->upgrade();
 
 
         // after updating the StateMachine and the stored information, call the monitor() to monitor the check state stability
@@ -102,7 +105,7 @@ void SimpleRuntimeManager::record(const int sourceVehicleId, simtime_t currentSi
 
 void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) {
 
-    if (rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
+    if (rmState == RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
 //        // Sanity check
 //        ASSERT(traciVehicle->getActiveController() != Plexe::ACC);   // This can happen, before just upgradation another beacon may come from leader
 //        ASSERT(traciVehicle->getActiveController() != Plexe::PLOEG); // This can happen, before just upgradation another beacon may come from front
@@ -114,15 +117,15 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
 //        // debug ]
 
         return;
-    } else if(rtState == RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+    } else if(rmState == RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
         // this can happen in case of c2f, when monitor comes and found that front is lost
         // and just before degradation the vehicle receives a beacon
         if(sourceVehicleId == positionHelper->getLeaderId()) {
-            rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
-                                    RTStateMachine::CAR2LEADER_ENGAGED;
+            rmState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+                                    RMStateMachine::CAR2LEADER_ENGAGED;
         } else if(sourceVehicleId == positionHelper->getFrontId()) {
-            rtState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
-                                                    RTStateMachine::CAR2FRONT_ENGAGED;
+            rmState = (positionHelper->getLeaderId() == positionHelper->getFrontId()) ? RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED :
+                                                    RMStateMachine::CAR2FRONT_ENGAGED;
         } else {
             std::cerr << "Error : wrong Vehicle Id"
                                       << "\n\tFile: "
@@ -134,7 +137,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
                                       << std::endl;
         }
 
-    } else if(rtState == RTStateMachine::CAR2FRONT_ENGAGED) {
+    } else if(rmState == RMStateMachine::CAR2FRONT_ENGAGED) {
 //        // Sanity check
 //        ASSERT(traciVehicle->getActiveController() != Plexe::ACC); // This can happen, before just upgradation another beacon may come from leader
 //        // [ debug
@@ -148,7 +151,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
         if(sourceVehicleId == positionHelper->getFrontId()) return;
 
         if (sourceVehicleId == positionHelper->getLeaderId()) {
-            rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+            rmState = RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
         } else {
             std::cerr << "Error : wrong Vehicle Id"
                       << "\n\tFile: "
@@ -160,7 +163,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
                       << std::endl;
         }
 
-    } else if(rtState == RTStateMachine::CAR2LEADER_ENGAGED) {
+    } else if(rmState == RMStateMachine::CAR2LEADER_ENGAGED) {
         // this can happen in case of c2f + beacon from leader, and before upgradation occurs,
         // monitors comes and found that front is lost and thus set rtState to c2l
         // Sanity check
@@ -169,7 +172,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
         if(sourceVehicleId == positionHelper->getLeaderId()) return;
 
         if (sourceVehicleId == positionHelper->getFrontId()) {
-            rtState = RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
+            rmState = RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED;
         } else {
             std::cerr << "Error : wrong Vehicle Id"
                       << "\n\tFile: "
@@ -192,7 +195,7 @@ void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const s
                              << std::endl;
     }
 }
-void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentSimTime) {
+void SimpleRuntimeManager::logSafetyRecords(const int key, simtime_t currentSimTime) {
     if(safetyRecords.find(key) == safetyRecords.end()) {
         // This is the first time called of this method for this key during the simulation
         // or after connection to key is lost
@@ -201,7 +204,7 @@ void SimpleRuntimeManager::updateSafetyRecords(const int key, simtime_t currentS
         BaseRuntimeManager::SafetyRecords safetyData;
         safetyData.lastBeaconArrivalTime = currentSimTime;
         safetyData.firstBeaconArrivalTime = currentSimTime;
-        safetyData.avgBeaconInterval = app->getAcceptedAvgBeaconInterval();     // acceptedAvgBeaconInterval
+        safetyData.avgBeaconInterval = app->getAcceptedAvgBeaconInterval();     // acceptedAvgBeaconInterval, this is use for initialization
         safetyData.nbeaconReceived = 1;
         safetyRecords.insert({key, safetyData});
     } else {

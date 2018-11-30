@@ -52,7 +52,7 @@ void SimplePlatooningApp::handleSelfMsg(cMessage* msg)
             // Runtime manager analyze safety requirements to decide whether the current state is stable or not
             // And take appropriate measures
 
-            rtManager->monitor();
+            rtManager->observe();
 
             // re-schedule the self message
             scheduleAt(simTime() + runtimeManagerCallbackInterval, callBackRuntimeManager);

@@ -16,8 +16,8 @@
 //=================================================================================================================================//
 BaseRuntimeManager::BaseRuntimeManager(BaseApp *app) {
     // TODO Auto-generated constructor stub
-    stateManager    = new StateManager(this);
-    stateController = new StateController(this);
+    monitor    = new Monitor(this);
+    reactor = new Reactor(this);
 
     this->app      = app;
     mobility       = app->getMobility();
@@ -31,18 +31,18 @@ BaseRuntimeManager::BaseRuntimeManager(BaseApp *app) {
 //=================================================================================================================================//
 BaseRuntimeManager::~BaseRuntimeManager() {
     // TODO Auto-generated destructor stub
-    delete stateManager;
-    delete stateController;
+    delete monitor;
+    delete reactor;
 }
 
 //=================================================================================================================================//
 // StateManager's methods
 //=================================================================================================================================//
-BaseRuntimeManager::StateManager::StateManager(BaseRuntimeManager* myManager) : myManager(myManager) {
+BaseRuntimeManager::Monitor::Monitor(BaseRuntimeManager* myManager) : myManager(myManager) {
 
 }
 
-bool BaseRuntimeManager::StateManager::connectionOK(int key) {
+bool BaseRuntimeManager::Monitor::connected(int key) {
     auto it = myManager->safetyRecords.find(key);
     simtime_t currentTime = simTime();
     int beaconMissed = (currentTime.dbl() - it->second.lastBeaconArrivalTime.dbl()) / (myManager->app)->getAcceptedAvgBeaconInterval();
@@ -58,8 +58,9 @@ bool BaseRuntimeManager::StateManager::connectionOK(int key) {
 //                  << std::endl;
 //    }
 
-    if (beaconMissed > (myManager->app)->getNAcceptedBeaconMiss() ||
-            it->second.avgBeaconInterval > (myManager->app)->getAcceptedAvgBeaconInterval()) {
+//    if (beaconMissed > (myManager->app)->getNAcceptedBeaconMiss() ||
+//            it->second.avgBeaconInterval > (myManager->app)->getAcceptedAvgBeaconInterval()) {
+    if (beaconMissed > (myManager->app)->getNAcceptedBeaconMiss()) {
         // Assume Connection lost to the vehicle with id key
         // Discard the record
         EV << "Connection to vehicle_" << key << " is lost. Discarding the safety records." << std::endl;
@@ -69,33 +70,33 @@ bool BaseRuntimeManager::StateManager::connectionOK(int key) {
     return true;
 }
 
-void BaseRuntimeManager::StateManager::transitionCheck(){
-    if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
+void BaseRuntimeManager::Monitor::checkLog(){
+    if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_ENGAGED) {
         // Sanity check
         ASSERT((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId());
 
-        if(!connectionOK((myManager->positionHelper)->getFrontId())) {
-            myManager->rtState = BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED;
+        if(!connected((myManager->positionHelper)->getFrontId())) {
+            myManager->rmState = BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED;
         }
-    } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED) {
+    } else if (myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2LEADER_ENGAGED) {
         // Sanity check
         ASSERT((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId());
 
-        if (!connectionOK((myManager->positionHelper)->getLeaderId())) {
-            myManager->rtState = BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED;
+        if (!connected((myManager->positionHelper)->getLeaderId())) {
+            myManager->rmState = BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED;
         }
-    } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED){
-        if (!connectionOK((myManager->positionHelper)->getLeaderId())) {
-            myManager->rtState = ((myManager->positionHelper)->getLeaderId() == (myManager->positionHelper)->getFrontId()) ?
-                    BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED :
-                    BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED;
+    } else if (myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED){
+        if (!connected((myManager->positionHelper)->getLeaderId())) {
+            myManager->rmState = ((myManager->positionHelper)->getLeaderId() == (myManager->positionHelper)->getFrontId()) ?
+                    BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED :
+                    BaseRuntimeManager::RMStateMachine::CAR2FRONT_ENGAGED;
         }
 
         if((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId()) {
-            if(!connectionOK((myManager->positionHelper)->getFrontId())) {
-                myManager->rtState = (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) ?
-                        BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED :
-                        BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED;
+            if(!connected((myManager->positionHelper)->getFrontId())) {
+                myManager->rmState = (myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_ENGAGED) ?
+                        BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED :
+                        BaseRuntimeManager::RMStateMachine::CAR2LEADER_ENGAGED;
             }
         }
     } else {
@@ -111,21 +112,21 @@ void BaseRuntimeManager::StateManager::transitionCheck(){
 }
 
 
-void BaseRuntimeManager::StateManager::upgradationStateManager() {
+void BaseRuntimeManager::Monitor::upgrade() {
     switch((myManager->traciVehicle)->getActiveController()) {
     case Plexe::ACC:
-        if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
+        if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_PLOEG;
-        } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
+        } else if (myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
         }
 
         // call the accController for perform upgradation
         std::cout << "UPGRADATION => ";
-        (myManager->stateController)->accStateController();
+        (myManager->reactor)->accStateController();
         break;
     case Plexe::PLOEG:
-        if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
+        if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_ENGAGED) {
             // There is a possibility that during monitoring, front was assumed disconnected
             // That means reconnection has just happened
             if(myManager->degState == BaseRuntimeManager::DegradationState::DEGRADATION_INITIATED) {
@@ -139,14 +140,14 @@ void BaseRuntimeManager::StateManager::upgradationStateManager() {
                 myManager->switchController = BaseRuntimeManager::SwitchController::BACK_TO_PLOEG;
                 myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
             }
-        } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
+        } else if (myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_CACC;
         }
         std::cout << "UPGRADATION / RETAIN => ";
-        (myManager->stateController)->ploegStateController();
+        (myManager->reactor)->ploegStateController();
         break;
     case Plexe::CACC:
-        if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
+        if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
            // There is a possibility that during monitoring, front was assumed disconnected
            // That means reconnection has just happened
            if(myManager->degState == BaseRuntimeManager::DegradationState::DEGRADATION_INITIATED) {
@@ -163,7 +164,7 @@ void BaseRuntimeManager::StateManager::upgradationStateManager() {
        }
 
         std::cout << "UPGRADATION / RETAIN => ";
-       (myManager->stateController)->caccStateController();
+       (myManager->reactor)->caccStateController();
        break;
     default:
         std::cerr << "Error : Unrecognizable Active Controller +/ not considered yet in : "
@@ -178,42 +179,42 @@ void BaseRuntimeManager::StateManager::upgradationStateManager() {
     }
 }
 
-void BaseRuntimeManager::StateManager::degradationStateManager() {
+void BaseRuntimeManager::Monitor::degrade() {
     switch((myManager->traciVehicle)->getActiveController()) {
     case Plexe::ACC:
-        transitionCheck();
+        checkLog();
         //std::cout << "Right now there are no degradation from ACC mode !!!" << std::endl;
         break;
     case Plexe::PLOEG:
-        transitionCheck();
-        if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
-                myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED ) {
+        checkLog();
+        if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
+                myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2LEADER_ENGAGED ) {
 
             myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_ACC;
             // trigger self message or degrade straight away
             if((myManager->app)->getTimeToTransition() > 0.0) {
                 // initiate degradation
                 // adjust the parameters and controller's configuration
-                myManager->stateController->adjust();
+                myManager->reactor->adjust();
 
                 // We have to wait timeToTrasition to perform transition
                 // Recall app to trigger a self message
                 myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_INITIATED;
-                (myManager->app)->triggerTimeToTransitionSelfMsg();
+                (myManager->app)->triggerTransitionSelfMsg();
             } else {
                 // perform degradation straight away
                 std::cout << "DEGRADATION => ";
-                myManager->stateController->ploegStateController();
+                myManager->reactor->ploegStateController();
             }
         }
 
         break;
     case Plexe::CACC:
-        transitionCheck();
-        if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
+        checkLog();
+        if (myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_PLOEG;
-        }else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED ||
-                 myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+        }else if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2LEADER_ENGAGED ||
+                 myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
         }
 
@@ -221,15 +222,15 @@ void BaseRuntimeManager::StateManager::degradationStateManager() {
         if((myManager->app)->getTimeToTransition() > 0.0) {
             // initiate degradation
             // adjust the parameters and controller's configuration
-            myManager->stateController->adjust();
+            myManager->reactor->adjust();
             // We have to wait timeToTrasition to perform transition
             // Recall app to trigger a self message
             myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_INITIATED;
-            (myManager->app)->triggerTimeToTransitionSelfMsg();
+            (myManager->app)->triggerTransitionSelfMsg();
         } else {
             // perform degradation straight away
             std::cout << "DEGRADATION => ";
-            myManager->stateController->caccStateController();
+            myManager->reactor->caccStateController();
         }
 
         break;
@@ -247,64 +248,56 @@ void BaseRuntimeManager::StateManager::degradationStateManager() {
 }
 
 
-void BaseRuntimeManager::StateManager::accStateManager() {
-
-    transitionCheck();
-
-    if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
-        myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_PLOEG;
-    } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
-        myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
-    }
-    // Call the stateController
-    myManager->stateController->accStateController();
-
-}
-
-
-void BaseRuntimeManager::StateManager::ploegStateManager(){
-
-    transitionCheck();
-    if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
-        myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_CACC;
-    }else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED ||
-             myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
-        myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_ACC;
-    }
-    // Call the stateController
-    myManager->stateController->ploegStateController();
-}
-
-void BaseRuntimeManager::StateManager::caccStateManager() {
-
-    transitionCheck();
-    if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
-        myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_PLOEG;
-    }else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED ||
-             myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
-        myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
-    }
-    // Call the stateController
-    myManager->stateController->caccStateController();
-
-}
+//void BaseRuntimeManager::StateManager::accStateManager() {
+//
+//    checkLog();
+//
+//    if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
+//        myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_PLOEG;
+//    } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
+//        myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
+//    }
+//    // Call the stateController
+//    myManager->stateController->accStateController();
+//
+//}
+//
+//
+//void BaseRuntimeManager::StateManager::ploegStateManager(){
+//
+//    checkLog();
+//    if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
+//        myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_CACC;
+//    }else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED ||
+//             myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+//        myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_ACC;
+//    }
+//    // Call the stateController
+//    myManager->stateController->ploegStateController();
+//}
+//
+//void BaseRuntimeManager::StateManager::caccStateManager() {
+//
+//    checkLog();
+//    if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
+//        myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_PLOEG;
+//    }else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED ||
+//             myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
+//        myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
+//    }
+//    // Call the stateController
+//    myManager->stateController->caccStateController();
+//
+//}
 
 //=================================================================================================================================//
 // StateController's methods
 //=================================================================================================================================//
-BaseRuntimeManager::StateController::StateController(BaseRuntimeManager* myManager) : myManager(myManager) {
+BaseRuntimeManager::Reactor::Reactor(BaseRuntimeManager* myManager) : myManager(myManager) {
 
 }
 
-void BaseRuntimeManager::StateController::adjust() const {
-//    std::cout << "Warning: " << __FILE__
-//              << "\n\tLine: " << __LINE__
-//              << "\n\tCompiled on: " << __DATE__
-//              << " at " << __TIME__
-//              << "\n\tfunction " << __func__
-//              << " not implemented yet!!!"
-//              << std::endl;
-
+void BaseRuntimeManager::Reactor::adjust() const {
     // Checking
     //(myManager->traciVehicle)->setFixedAcceleration(1, -10.0);
 
@@ -326,7 +319,7 @@ void BaseRuntimeManager::StateController::adjust() const {
 /**
  * Perform state transition within ACC
  */
-void BaseRuntimeManager::StateController::accStateController() {
+void BaseRuntimeManager::Reactor::accStateController() {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // There is the possibility of the followings
@@ -381,7 +374,7 @@ void BaseRuntimeManager::StateController::accStateController() {
  * Perform state transition within PLOEG
  */
 
-void BaseRuntimeManager::StateController::ploegStateController(){
+void BaseRuntimeManager::Reactor::ploegStateController(){
 
     if (myManager->switchController == BaseRuntimeManager::SwitchController::BACK_TO_PLOEG) {
         (myManager->traciVehicle)->setActiveController(Plexe::PLOEG);
@@ -416,7 +409,7 @@ void BaseRuntimeManager::StateController::ploegStateController(){
 /**
  * Perform state transition within CACC
  */
-void BaseRuntimeManager::StateController::caccStateController() {
+void BaseRuntimeManager::Reactor::caccStateController() {
 
     if(myManager->switchController == BaseRuntimeManager::SwitchController::BACK_TO_CACC) {
             (myManager->traciVehicle)->setActiveController(Plexe::CACC);
@@ -453,7 +446,7 @@ void BaseRuntimeManager::StateController::caccStateController() {
 //=================================================================================================================================//
 // virtual methods
 //=================================================================================================================================//
-void BaseRuntimeManager::monitor() {
+void BaseRuntimeManager::observe() {
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
               << "\n\tCompiled on: " << __DATE__
@@ -494,7 +487,7 @@ void BaseRuntimeManager::updateStateMachine(const int sourceVehicleId, const sim
               << std::endl;
 }
 
-void BaseRuntimeManager::updateSafetyRecords(const int key, simtime_t currentSimTime){
+void BaseRuntimeManager::logSafetyRecords(const int key, simtime_t currentSimTime){
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
               << "\n\tCompiled on: " << __DATE__

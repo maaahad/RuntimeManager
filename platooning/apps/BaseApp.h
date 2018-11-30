@@ -160,7 +160,7 @@ public:
     /**
      * This method schedule a self message to perform controller transition by handleSelfMsg
      */
-    void triggerTimeToTransitionSelfMsg();
+    void triggerTransitionSelfMsg();
 
 
     //================================ Ahad :: End of Runtime Manager ==============================//

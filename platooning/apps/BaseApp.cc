@@ -160,7 +160,7 @@ void BaseApp::handleLowerControl(cMessage* msg)
     delete msg;
 }
 
-void BaseApp::triggerTimeToTransitionSelfMsg() {
+void BaseApp::triggerTransitionSelfMsg() {
     scheduleAt(simTime() + timeToTransition, msgToTransition);
 }
 

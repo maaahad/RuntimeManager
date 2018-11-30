@@ -33,7 +33,7 @@ public:
      * This method is called by the application during handleSelfMessage()
      * This method is also called within RuntimaManager from record()
      */
-    virtual void monitor() = 0;
+    virtual void observe() = 0;
     /**
      * This method store the beacon information such as, beacon received time, beacon delay to be used by StateManager
      * This method is called by the application during onPlatoonBeacon()
@@ -55,7 +55,7 @@ protected:
      * This method is called by class method member record
      * to update the beacon record
      */
-    virtual void updateSafetyRecords(const int key, simtime_t currentSimTime) = 0;
+    virtual void logSafetyRecords(const int key, simtime_t currentSimTime) = 0;
 
     /**
      * This struct type use to record the safety related information on receiving beacon from another vehicles
@@ -77,7 +77,7 @@ protected:
      * to store/identify the state of a vehicle requires
      * for checking active controller's stability
      */
-    enum class RTStateMachine {
+    enum class RMStateMachine {
         CAR2FRONT_CAR2LEADER_DISENGAGED,
         CAR2LEADER_ENGAGED,
         CAR2FRONT_ENGAGED,
@@ -111,18 +111,18 @@ protected:
      * The instance of class StateManager is responsible for analyzing the SafetyRecords
      * And propose the possible controller transition to the StateController
      */
-    class StateManager {
+    class Monitor {
     public:
-        StateManager(BaseRuntimeManager*);
-        void upgradationStateManager();
-        void degradationStateManager();
-        void accStateManager();
-        void caccStateManager();
-        void ploegStateManager();
+        Monitor(BaseRuntimeManager*);
+        void upgrade();
+        void degrade();
+//        void accStateManager();
+//        void caccStateManager();
+//        void ploegStateManager();
     private:
         // TODO a method for safeChecking
-        void transitionCheck();
-        bool connectionOK(int key);
+        void checkLog();
+        bool connected(int key);
         BaseRuntimeManager *myManager;
     };
 
@@ -130,9 +130,9 @@ protected:
      * The instance of StateController is to take appropriate action
      * for stable transition proposed by StateManager and impose transition
      */
-    class StateController {
+    class Reactor {
     public:
-        StateController (BaseRuntimeManager*);
+        Reactor (BaseRuntimeManager*);
         void accStateController();
         void caccStateController();
         void ploegStateController();
@@ -145,7 +145,7 @@ protected:
     //===============================================================//
     // Protected Data
     //===============================================================//
-    std::atomic<RTStateMachine> rtState{RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED};
+    std::atomic<RMStateMachine> rmState{RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED};
     std::atomic<SwitchController> switchController{SwitchController::NOT_INITIALIZED};
 
     // Degradation
@@ -153,8 +153,8 @@ protected:
     std::atomic<bool> abortDegradation{false};
 
 
-    StateManager *stateManager;
-    StateController *stateController;
+    Monitor *monitor;
+    Reactor *reactor;
 
     std::map<int, SafetyRecords> safetyRecords;
 
