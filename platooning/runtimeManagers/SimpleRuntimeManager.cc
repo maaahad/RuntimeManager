@@ -57,14 +57,14 @@ void SimpleRuntimeManager::triggerDegradation() {
 //            traciVehicle->setFixedAcceleration(0, -10.0); // TESTING
 //            traciVehicle->useControllerAcceleration(true);
             std::cout << "DEGRADATION => ";
-            reactor->ploegStateController();
+            reactor->ploegReactor();
             degState = DegradationState::DEGRADATION_COMPLETED;
             break;
         case Plexe::CACC:
 //            traciVehicle->setFixedAcceleration(0, -10.0); // TESTING
 //            traciVehicle->useControllerAcceleration(true);
             std::cout << "DEGRADATION => ";
-            reactor->caccStateController();
+            reactor->caccReactor();
             degState = DegradationState::DEGRADATION_COMPLETED;
             break;
         default:
@@ -91,19 +91,15 @@ void SimpleRuntimeManager::record(const int sourceVehicleId, simtime_t currentSi
 
     if (sourceVehicleId == positionHelper->getLeaderId() || sourceVehicleId == positionHelper->getFrontId()) {
         // this is the leader or the front vehicle
-        updateStateMachine(sourceVehicleId, currentSimTime);
+        updateRMStateMachine(sourceVehicleId, currentSimTime);
 
         // Call StateManager::upgradeManager
         monitor->upgrade();
-
-
-        // after updating the StateMachine and the stored information, call the monitor() to monitor the check state stability
-        //monitor();
     }
 }
 
 
-void SimpleRuntimeManager::updateStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) {
+void SimpleRuntimeManager::updateRMStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) {
 
     if (rmState == RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
 //        // Sanity check

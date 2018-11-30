@@ -50,7 +50,7 @@ protected:
      * This method is called by class method member record
      * to update the StateMachine
      */
-    virtual void updateStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) = 0;
+    virtual void updateRMStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) = 0;
     /**
      * This method is called by class method member record
      * to update the beacon record
@@ -121,7 +121,7 @@ protected:
 //        void ploegStateManager();
     private:
         // TODO a method for safeChecking
-        void checkLog();
+        void checkRMStateMachine();
         bool connected(int key);
         BaseRuntimeManager *myManager;
     };
@@ -133,9 +133,9 @@ protected:
     class Reactor {
     public:
         Reactor (BaseRuntimeManager*);
-        void accStateController();
-        void caccStateController();
-        void ploegStateController();
+        void accReactor();
+        void caccReactor();
+        void ploegReactor();
         void adjust() const;
     private:
         BaseRuntimeManager *myManager;

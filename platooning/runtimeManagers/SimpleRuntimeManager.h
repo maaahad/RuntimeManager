@@ -18,7 +18,7 @@ public:
     void record(const int sourceVehicleId, simtime_t currentSimTime) override;
     void triggerDegradation() override;
 protected:
-    void updateStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) override;
+    void updateRMStateMachine(const int sourceVehicleId, const simtime_t currentSimTime) override;
     void logSafetyRecords(const int key, simtime_t currentSimTime) override;
 
 };

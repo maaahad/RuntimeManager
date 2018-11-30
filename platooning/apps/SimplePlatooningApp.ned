@@ -25,7 +25,7 @@ simple SimplePlatooningApp like BaseApp
         int headerLength @unit("bit") = default(0 bit);
         
         volatile double runtimeManagerCallbackInterval @unit(seconds) = default(0.33s);
-        bool runtimeManagerEnabled = default(true);
+        bool runtimeManagerEnabled = default(false);
         
         volatile double timeToTransition @unit(seconds) = default(.01s);				    // default(.010 seconds), set value 0 to degrade straight away
         

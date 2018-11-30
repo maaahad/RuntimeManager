@@ -70,7 +70,7 @@ bool BaseRuntimeManager::Monitor::connected(int key) {
     return true;
 }
 
-void BaseRuntimeManager::Monitor::checkLog(){
+void BaseRuntimeManager::Monitor::checkRMStateMachine(){
     if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_ENGAGED) {
         // Sanity check
         ASSERT((myManager->positionHelper)->getLeaderId() != (myManager->positionHelper)->getFrontId());
@@ -123,7 +123,7 @@ void BaseRuntimeManager::Monitor::upgrade() {
 
         // call the accController for perform upgradation
         std::cout << "UPGRADATION => ";
-        (myManager->reactor)->accStateController();
+        (myManager->reactor)->accReactor();
         break;
     case Plexe::PLOEG:
         if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_ENGAGED) {
@@ -144,7 +144,7 @@ void BaseRuntimeManager::Monitor::upgrade() {
             myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_CACC;
         }
         std::cout << "UPGRADATION / RETAIN => ";
-        (myManager->reactor)->ploegStateController();
+        (myManager->reactor)->ploegReactor();
         break;
     case Plexe::CACC:
         if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
@@ -164,7 +164,7 @@ void BaseRuntimeManager::Monitor::upgrade() {
        }
 
         std::cout << "UPGRADATION / RETAIN => ";
-       (myManager->reactor)->caccStateController();
+       (myManager->reactor)->caccReactor();
        break;
     default:
         std::cerr << "Error : Unrecognizable Active Controller +/ not considered yet in : "
@@ -182,11 +182,11 @@ void BaseRuntimeManager::Monitor::upgrade() {
 void BaseRuntimeManager::Monitor::degrade() {
     switch((myManager->traciVehicle)->getActiveController()) {
     case Plexe::ACC:
-        checkLog();
+        checkRMStateMachine();
         //std::cout << "Right now there are no degradation from ACC mode !!!" << std::endl;
         break;
     case Plexe::PLOEG:
-        checkLog();
+        checkRMStateMachine();
         if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
                 myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2LEADER_ENGAGED ) {
 
@@ -204,16 +204,16 @@ void BaseRuntimeManager::Monitor::degrade() {
             } else {
                 // perform degradation straight away
                 std::cout << "DEGRADATION => ";
-                myManager->reactor->ploegStateController();
+                myManager->reactor->ploegReactor();
             }
         }
 
         break;
     case Plexe::CACC:
-        checkLog();
+        checkRMStateMachine();
         if (myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_PLOEG;
-        }else if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2LEADER_ENGAGED ||
+        } else if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2LEADER_ENGAGED ||
                  myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
         }
@@ -230,7 +230,7 @@ void BaseRuntimeManager::Monitor::degrade() {
         } else {
             // perform degradation straight away
             std::cout << "DEGRADATION => ";
-            myManager->reactor->caccStateController();
+            myManager->reactor->caccReactor();
         }
 
         break;
@@ -319,7 +319,7 @@ void BaseRuntimeManager::Reactor::adjust() const {
 /**
  * Perform state transition within ACC
  */
-void BaseRuntimeManager::Reactor::accStateController() {
+void BaseRuntimeManager::Reactor::accReactor() {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // There is the possibility of the followings
@@ -374,7 +374,7 @@ void BaseRuntimeManager::Reactor::accStateController() {
  * Perform state transition within PLOEG
  */
 
-void BaseRuntimeManager::Reactor::ploegStateController(){
+void BaseRuntimeManager::Reactor::ploegReactor(){
 
     if (myManager->switchController == BaseRuntimeManager::SwitchController::BACK_TO_PLOEG) {
         (myManager->traciVehicle)->setActiveController(Plexe::PLOEG);
@@ -409,7 +409,7 @@ void BaseRuntimeManager::Reactor::ploegStateController(){
 /**
  * Perform state transition within CACC
  */
-void BaseRuntimeManager::Reactor::caccStateController() {
+void BaseRuntimeManager::Reactor::caccReactor() {
 
     if(myManager->switchController == BaseRuntimeManager::SwitchController::BACK_TO_CACC) {
             (myManager->traciVehicle)->setActiveController(Plexe::CACC);
@@ -477,7 +477,7 @@ void BaseRuntimeManager::triggerDegradation() {
               << std::endl;
 }
 
-void BaseRuntimeManager::updateStateMachine(const int sourceVehicleId, const simtime_t currentSimTime){
+void BaseRuntimeManager::updateRMStateMachine(const int sourceVehicleId, const simtime_t currentSimTime){
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
               << "\n\tCompiled on: " << __DATE__
