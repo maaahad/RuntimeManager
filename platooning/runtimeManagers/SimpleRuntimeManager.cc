@@ -54,15 +54,13 @@ void SimpleRuntimeManager::triggerDegradation() {
             //stateController->accController();
             break;
         case Plexe::PLOEG:
-//            traciVehicle->setFixedAcceleration(0, -10.0); // TESTING
-//            traciVehicle->useControllerAcceleration(true);
+            reactor->abortAdjustment();
             std::cout << "DEGRADATION => ";
             reactor->ploegReactor();
             degState = DegradationState::DEGRADATION_COMPLETED;
             break;
         case Plexe::CACC:
-//            traciVehicle->setFixedAcceleration(0, -10.0); // TESTING
-//            traciVehicle->useControllerAcceleration(true);
+            reactor->abortAdjustment();
             std::cout << "DEGRADATION => ";
             reactor->caccReactor();
             degState = DegradationState::DEGRADATION_COMPLETED;

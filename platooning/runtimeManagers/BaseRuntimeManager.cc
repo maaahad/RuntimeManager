@@ -131,6 +131,10 @@ void BaseRuntimeManager::Monitor::upgrade() {
             // That means reconnection has just happened
             if(myManager->degState == BaseRuntimeManager::DegradationState::DEGRADATION_INITIATED) {
                 // Degradation was initiated, but not triggered yet
+
+                // stop the adjustment
+                myManager->reactor->abortAdjustment();
+
                 // Abort the degradation
                 myManager->abortDegradation = true;
                 myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
@@ -152,6 +156,10 @@ void BaseRuntimeManager::Monitor::upgrade() {
            // That means reconnection has just happened
            if(myManager->degState == BaseRuntimeManager::DegradationState::DEGRADATION_INITIATED) {
                // Degradation was initiated, but not triggered yet
+
+               // stop the adjustment
+               myManager->reactor->abortAdjustment();
+
                // Abort the degradation
                myManager->abortDegradation = true;
                myManager->degState = BaseRuntimeManager::DegradationState::DEGRADATION_NOT_INITIATED;
@@ -180,13 +188,14 @@ void BaseRuntimeManager::Monitor::upgrade() {
 }
 
 void BaseRuntimeManager::Monitor::degrade() {
+    // Checking the connection first
+    checkRMStateMachine();
+
     switch((myManager->traciVehicle)->getActiveController()) {
     case Plexe::ACC:
-        checkRMStateMachine();
         //std::cout << "Right now there are no degradation from ACC mode !!!" << std::endl;
         break;
     case Plexe::PLOEG:
-        checkRMStateMachine();
         if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED ||
                 myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2LEADER_ENGAGED ) {
 
@@ -210,7 +219,6 @@ void BaseRuntimeManager::Monitor::degrade() {
 
         break;
     case Plexe::CACC:
-        checkRMStateMachine();
         if (myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2FRONT_ENGAGED) {
             myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_PLOEG;
         } else if(myManager->rmState == BaseRuntimeManager::RMStateMachine::CAR2LEADER_ENGAGED ||
@@ -248,48 +256,6 @@ void BaseRuntimeManager::Monitor::degrade() {
 }
 
 
-//void BaseRuntimeManager::StateManager::accStateManager() {
-//
-//    checkLog();
-//
-//    if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
-//        myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_PLOEG;
-//    } else if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
-//        myManager->switchController = BaseRuntimeManager::SwitchController::ACC_TO_CACC;
-//    }
-//    // Call the stateController
-//    myManager->stateController->accStateController();
-//
-//}
-//
-//
-//void BaseRuntimeManager::StateManager::ploegStateManager(){
-//
-//    checkLog();
-//    if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_ENGAGED) {
-//        myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_CACC;
-//    }else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED ||
-//             myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
-//        myManager->switchController = BaseRuntimeManager::SwitchController::PLOEG_TO_ACC;
-//    }
-//    // Call the stateController
-//    myManager->stateController->ploegStateController();
-//}
-//
-//void BaseRuntimeManager::StateManager::caccStateManager() {
-//
-//    checkLog();
-//    if (myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_ENGAGED) {
-//        myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_PLOEG;
-//    }else if(myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2LEADER_ENGAGED ||
-//             myManager->rtState == BaseRuntimeManager::RTStateMachine::CAR2FRONT_CAR2LEADER_DISENGAGED) {
-//        myManager->switchController = BaseRuntimeManager::SwitchController::CACC_TO_ACC;
-//    }
-//    // Call the stateController
-//    myManager->stateController->caccStateController();
-//
-//}
-
 //=================================================================================================================================//
 // StateController's methods
 //=================================================================================================================================//
@@ -298,8 +264,33 @@ BaseRuntimeManager::Reactor::Reactor(BaseRuntimeManager* myManager) : myManager(
 }
 
 void BaseRuntimeManager::Reactor::adjust() const {
+    // [ debug
+    double distance, relativeSpeed;
+    myManager->traciVehicle->getRadarMeasurements(distance, relativeSpeed);
+    std::cout << "VehicleId: " << myManager->positionHelper->getId() << "Before Distance: " << distance << std::endl;
+    struct Plexe::VEHICLE_DATA data;
+    (myManager->traciVehicle)->getVehicleData(&data);
+
+    if(myManager->switchController == BaseRuntimeManager::SwitchController::PLOEG_TO_ACC) {
+        double newSpeed = (distance + (-relativeSpeed + data.speed) * (myManager->app)->getTimeToTransition()) / (2.0 + (myManager->app)->getTimeToTransition());
+        double acdc = newSpeed - data.speed;
+        std::cout << "acdc: " << acdc << std::endl;
+        (myManager->traciVehicle)->setFixedAcceleration(1, acdc);
+    } else if(myManager->switchController == BaseRuntimeManager::SwitchController::CACC_TO_ACC) {
+        double newSpeed = (distance + (-relativeSpeed + data.speed) * (myManager->app)->getTimeToTransition()) / (2.0 + (myManager->app)->getTimeToTransition());
+        double acdc = newSpeed - data.speed;
+        std::cout << "acdc: " << acdc << std::endl;
+        (myManager->traciVehicle)->setFixedAcceleration(1, acdc);
+    } else if(myManager->switchController == BaseRuntimeManager::SwitchController::CACC_TO_PLOEG) {
+        double newSpeed = (distance + (-relativeSpeed + data.speed) * (myManager->app)->getTimeToTransition()) / (0.6 + (myManager->app)->getTimeToTransition());
+        double acdc = newSpeed - data.speed;
+        std::cout << "acdc: " << acdc << std::endl;
+        (myManager->traciVehicle)->setFixedAcceleration(1, acdc);
+    }
+
+    // debug ]
     // Checking
-    //(myManager->traciVehicle)->setFixedAcceleration(1, -10.0);
+    //(myManager->traciVehicle)->setFixedAcceleration(1, -1.0);
 
 //    if(myManager->switchController == BaseRuntimeManager::SwitchController::ACC_TO_PLOEG) {
 //        (myManager->traciVehicle)->setACCHeadwayTime(.6);
@@ -314,6 +305,20 @@ void BaseRuntimeManager::Reactor::adjust() const {
 //    } else if(myManager->switchController == BaseRuntimeManager::SwitchController::CACC_TO_PLOEG) {
 //        (myManager->traciVehicle)->setACCHeadwayTime(.6);
 //    }
+}
+
+
+/**
+ * This method abort adjustment
+ */
+
+void BaseRuntimeManager::Reactor::abortAdjustment() const {
+    double distance, relativeSpeed;
+    myManager->traciVehicle->getRadarMeasurements(distance, relativeSpeed);
+    std::cout << "VehicleId: " << myManager->positionHelper->getId() << "After Distance: " << distance << std::endl;
+
+    myManager->traciVehicle->setFixedAcceleration(1, 0.0); // TESTING
+    myManager->traciVehicle->useControllerAcceleration(true);
 }
 
 /**

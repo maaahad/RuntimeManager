@@ -116,9 +116,6 @@ protected:
         Monitor(BaseRuntimeManager*);
         void upgrade();
         void degrade();
-//        void accStateManager();
-//        void caccStateManager();
-//        void ploegStateManager();
     private:
         // TODO a method for safeChecking
         void checkRMStateMachine();
@@ -137,6 +134,7 @@ protected:
         void caccReactor();
         void ploegReactor();
         void adjust() const;
+        void abortAdjustment() const;
     private:
         BaseRuntimeManager *myManager;
     };
