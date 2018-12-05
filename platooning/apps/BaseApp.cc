@@ -15,7 +15,6 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-
 #include "veins/modules/application/platooning/apps/BaseApp.h"
 
 #include "veins/modules/messages/WaveShortMessage_m.h"
@@ -23,7 +22,6 @@
 #include "veins/modules/mac/ieee80211p/Mac1609_4.h"
 
 #include "veins/modules/application/platooning/protocols/BaseProtocol.h"
-
 
 using namespace Veins;
 
@@ -50,31 +48,6 @@ void BaseApp::initialize(int stage)
         // vehicle acceleration
         accelerationOut.setName("acceleration");
         controllerAccelerationOut.setName("controllerAcceleration");
-
-        //================================ Ahad :: Start of Runtime Manager ============================//
-
-        // beaconing interval in seconds
-        runtimeManagerCallbackInterval = SimTime(par("runtimeManagerCallbackInterval").doubleValue()); // TODO REMOVE THIS VARIABLE
-        runtimeManagerEnabled  = par("runtimeManagerEnabled").boolValue();
-
-        timeToTransition = SimTime(par("timeToTransition").doubleValue());
-
-        acceptedAvgBeaconInterval          = SimTime(par("acceptedAvgBeaconInterval").doubleValue());
-//        waitTimeToAcknoledgeConnectionEstd = SimTime(par("waitTimeToAcknoledgeConnectionEstd").doubleValue());
-        nBeaconToAcknoledgeConnectionEstd  = par("nBeaconToAcknoledgeConnectionEstd").intValue();
-        nAcceptedBeaconMiss                = par("nAcceptedBeaconMiss").intValue();
-
-        if(runtimeManagerEnabled) {
-            callBackRuntimeManager = new cMessage("callBackRuntimeManager");
-            SimTime callBackTime = simTime() + runtimeManagerCallbackInterval;
-            scheduleAt(callBackTime, callBackRuntimeManager);
-            if(timeToTransition.dbl() > 0.0) {
-                msgToTransition = new cMessage("msgToTransition");
-            }
-        }
-
-        //================================ Ahad :: End of Runtime Manager ==============================//
-
     }
 
     if (stage == 1) {
@@ -92,6 +65,23 @@ void BaseApp::initialize(int stage)
         // init statistics collection. round to 0.1 seconds
         SimTime rounded = SimTime(floor(simTime().dbl() * 1000 + 100), SIMTIME_MS);
         scheduleAt(rounded, recordData);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Ahad Start
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        runtimeManager = FindModule<RuntimeManager*>::findSubModule(getParentModule());
+        ASSERT2(runtimeManager, "BaseApp failed to find the RuntimeManager!!!!");
+        // [ Debug
+
+        runtimeManager->checkingRM();
+
+        // Debug ]
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Ahad End
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 }
 
@@ -101,18 +91,6 @@ BaseApp::~BaseApp()
     recordData = nullptr;
     cancelAndDelete(stopSimulation);
     stopSimulation = nullptr;
-
-    // Delete the msgToTransition only if it was created and runtimeManager was enabled
-
-    if(runtimeManagerEnabled) {
-        if(timeToTransition.dbl() > 0.0) {
-            cancelAndDelete(msgToTransition);
-            msgToTransition = nullptr;
-        }
-
-        cancelAndDelete(callBackRuntimeManager);
-        callBackRuntimeManager = nullptr;
-    }
 }
 
 void BaseApp::handleLowerMsg(cMessage* msg)
@@ -160,11 +138,6 @@ void BaseApp::handleLowerControl(cMessage* msg)
     delete msg;
 }
 
-void BaseApp::triggerTransitionSelfMsg() {
-    scheduleAt(simTime() + timeToTransition, msgToTransition);
-}
-
-
 void BaseApp::sendUnicast(cPacket* msg, int destination)
 {
     UnicastMessage* unicast = new UnicastMessage();
@@ -181,7 +154,6 @@ void BaseApp::handleSelfMsg(cMessage* msg)
         // re-schedule next event
         scheduleAt(simTime() + SimTime(100, SIMTIME_MS), recordData);
     }
-
     if (msg == stopSimulation) {
         endSimulation();
     }
@@ -198,7 +170,6 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
         if (pb->getVehicleId() == positionHelper->getFrontId()) {
             traciVehicle->setFrontVehicleData(pb->getControllerAcceleration(), pb->getAcceleration(), pb->getSpeed(), pb->getPositionX(), pb->getPositionY(), pb->getTime());
         }
-
         // send data about every vehicle to the CACC. this is needed by the consensus controller
         struct Plexe::VEHICLE_DATA vehicleData;
         vehicleData.index = positionHelper->getMemberPosition(pb->getVehicleId());

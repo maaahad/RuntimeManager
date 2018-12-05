@@ -119,27 +119,22 @@ public:
         inManeuver = b;
     }
 
-     // ==================================== override added by Ahad (start) ===============================================//
-     // =============================================== Moved to BaseApp ==================================================//
-
-//    BasePositionHelper* getPositionHelper() override
-//    {
-//        return positionHelper;
-//    }
-//    Veins::TraCIMobility* getMobility() override
-//    {
-//        return mobility;
-//    }
-//    Veins::TraCICommandInterface* getTraci() override
-//    {
-//        return traci;
-//    }
-//    Veins::TraCICommandInterface::Vehicle* getTraciVehicle() override
-//    {
-//        return traciVehicle;
-//    }
-
-    // ==================================== override added by Ahad (end) ===============================================//
+    BasePositionHelper* getPositionHelper()
+    {
+        return positionHelper;
+    }
+    Veins::TraCIMobility* getMobility()
+    {
+        return mobility;
+    }
+    Veins::TraCICommandInterface* getTraci()
+    {
+        return traci;
+    }
+    Veins::TraCICommandInterface::Vehicle* getTraciVehicle()
+    {
+        return traciVehicle;
+    }
 
     /**
      * Sends a unicast message
@@ -183,12 +178,6 @@ public:
     bool isJoinAllowed() const;
 
 protected:
-//    //================================ Ahad :: Start of Runtime Manager ============================//
-//    virtual void handleSelfMsg(cMessage* msg) override;
-//    //================================ Ahad :: End of Runtime Manager ==============================//
-
-
-
     /** override this method of BaseApp. we want to handle it ourself */
     virtual void handleLowerMsg(cMessage* msg) override;
 
@@ -214,16 +203,6 @@ private:
     PlatoonRole role;
     /** join maneuver implementation */
     JoinManeuver* joinManeuver;
-
-//    //================================ Ahad :: Start of Runtime Manager ============================//
-//
-//    // self message to activate runtime manager.
-//    // TODO : CALLBACK TIME SHOULD BE COME FROM CONFIGURATION FILE. BaseScenario.ned, BBaseScenario.ned and .ini
-//    cMessage* callBackRuntimeManager;
-//    // Runtime manager
-//    RuntimeManager *runtimeManager;
-//    //================================ Ahad :: End of Runtime Manager ==============================//
-
 };
 
 #endif

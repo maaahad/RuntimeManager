@@ -23,45 +23,9 @@
 class SimplePlatooningApp : public BaseApp {
 
 public:
-    SimplePlatooningApp() {}
-    virtual ~SimplePlatooningApp();
-
-//================================ Ahad :: Start of Runtime Manager ============================//
-
-    /** override from BaseApp */
-    virtual void initialize(int stage) override;
-    // ================================= Moved to BaseApp =====================================//
-//    BasePositionHelper* getPositionHelper() override
-//    {
-//        return positionHelper;
-//    }
-//    Veins::TraCIMobility* getMobility() override
-//    {
-//        return mobility;
-//    }
-//    Veins::TraCICommandInterface* getTraci() override
-//    {
-//        return traci;
-//    }
-//    Veins::TraCICommandInterface::Vehicle* getTraciVehicle() override
-//    {
-//        return traciVehicle;
-//    }
-
-protected:
-    virtual void handleSelfMsg(cMessage* msg) override;
-
-    /**
-     * Handles PlatoonBeacons
-     *
-     * @param PlatooningBeacon pb to handle
-     */
-    virtual void onPlatoonBeacon(const PlatooningBeacon* pb) override;
-
-private:
-
-//================================ Ahad :: End of Runtime Manager ==============================//
-
+    SimplePlatooningApp()
+    {
+    }
 };
 
 #endif /* SIMPLEPLATOONINGAPP_H_ */

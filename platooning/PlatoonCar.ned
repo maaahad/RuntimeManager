@@ -30,9 +30,8 @@ import org.car2x.veins.modules.application.platooning.UnicastProtocol;
 import org.car2x.veins.modules.mobility.traci.TraCIMobility;
 import org.car2x.veins.modules.nic.Nic80211p;
 
-// < Ahad
-//import org.car2x.veins.modules.application.platooning.runtimeManagers.BaseRuntimeManager;
-//  Ahad >
+import org.car2x.veins.modules.application.platooning.runtimeManager.RuntimeManager;
+
 
 module PlatoonCar
 {
@@ -41,7 +40,6 @@ module PlatoonCar
         string helper_type;
         string appl_type;
         string protocol_type;
-        
 
     gates:
         input radioIn; // gate for sendDirect
@@ -51,7 +49,7 @@ module PlatoonCar
             parameters:
                 @display("p=90,100");
         }
-		
+
         scenario: <scenario_type> like BaseScenario {
             parameters:
                 @display("p=90,100");
@@ -62,6 +60,10 @@ module PlatoonCar
                 @display("p=60,100");
         }
         
+        runtimeManager: RuntimeManager {
+            parameters:
+                @display("p=200,100;i=block/cogwheel");
+        }
 
         prot: <protocol_type> like BaseProtocol {
             parameters:
@@ -82,6 +84,8 @@ module PlatoonCar
             parameters:
                 @display("p=130,172;i=block/cogwheel");
         }
+        
+                
     connections allowunconnected:
         unicast.upperControlIn <-- prot.lowerControlOut;
         unicast.upperControlOut --> prot.lowerControlIn;

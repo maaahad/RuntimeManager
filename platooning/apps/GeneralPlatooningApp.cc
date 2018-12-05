@@ -43,7 +43,6 @@ void GeneralPlatooningApp::initialize(int stage)
     }
 }
 
-
 bool GeneralPlatooningApp::isJoinAllowed() const
 {
     return ((role == PlatoonRole::LEADER || role == PlatoonRole::NONE) && !inManeuver);
@@ -71,7 +70,6 @@ void GeneralPlatooningApp::sendUnicast(cPacket* msg, int destination)
     unicast->encapsulate(msg);
     sendDown(unicast);
 }
-
 
 void GeneralPlatooningApp::handleLowerMsg(cMessage* msg)
 {

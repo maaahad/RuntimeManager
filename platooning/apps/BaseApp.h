@@ -18,12 +18,6 @@
 #ifndef BASEAPP_H_
 #define BASEAPP_H_
 
-
-//================================ Ahad :: Start of Runtime Manager ============================//
-#include <iostream>
-//================================ Ahad :: Start of Runtime Manager ============================//
-
-
 #include "veins/base/modules/BaseApplLayer.h"
 
 #include "veins/modules/application/platooning/UnicastProtocol.h"
@@ -35,8 +29,8 @@
 
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 
-#include "veins/modules/application/platooning/runtimeManagers/BaseRuntimeManager.h"
 
+#include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
 
 
 
@@ -81,29 +75,13 @@ protected:
     // message to stop the simulation in case of collision
     cMessage* stopSimulation;
 
-
-    //================================ Ahad :: Start of Runtime Manager ============================//
-    SimTime runtimeManagerCallbackInterval;
-    cMessage* callBackRuntimeManager;
-    bool runtimeManagerEnabled;
-
-    cMessage* msgToTransition;
-    SimTime timeToTransition;
-
-    SimTime acceptedAvgBeaconInterval;
-    SimTime waitTimeToAcknoledgeConnectionEstd;
-    int nBeaconToAcknoledgeConnectionEstd;
-    int nAcceptedBeaconMiss;
-
-    // TODO replace runtimeManager from the derived class
-    BaseRuntimeManager *rtManager;
-
-//    // self message to activate runtime manager.
-//    // TODO : CALLBACK TIME SHOULD BE COME FROM CONFIGURATION FILE. BaseScenario.ned, BBaseScenario.ned and .ini
-//    cMessage* callBackRuntimeManager;
-//    // Runtime manager
-//    RuntimeManager *runtimeManager;
-    //================================ Ahad :: End of Runtime Manager ==============================//
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Ahad Start
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    RuntimeManager *runtimeManager;
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Ahad End
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 public:
     BaseApp()
@@ -112,58 +90,6 @@ public:
         stopSimulation = nullptr;
     }
     virtual ~BaseApp();
-
-
-    //================================ Ahad :: Start of Runtime Manager ============================//
-
-    BasePositionHelper* getPositionHelper()
-    {
-        return positionHelper;
-    }
-    Veins::TraCIMobility* getMobility()
-    {
-        return mobility;
-    }
-    Veins::TraCICommandInterface* getTraci()
-    {
-        return traci;
-    }
-    Veins::TraCICommandInterface::Vehicle* getTraciVehicle()
-    {
-        return traciVehicle;
-    }
-
-    SimTime getExpectedBeaconInterval() {
-            return runtimeManagerCallbackInterval;
-    }
-
-    double getTimeToTransition() {
-            return timeToTransition.dbl();
-    }
-
-    double getAcceptedAvgBeaconInterval() {
-        return acceptedAvgBeaconInterval.dbl();
-    }
-    SimTime getWaitTimeToAcknoledgeConnectionEstd() {
-        return waitTimeToAcknoledgeConnectionEstd;
-    }
-
-    int getNBeaconToAcknoledgeConnectionEstd() {
-        return nBeaconToAcknoledgeConnectionEstd;
-    }
-
-    int getNAcceptedBeaconMiss() {
-            return nAcceptedBeaconMiss;
-    }
-
-
-    /**
-     * This method schedule a self message to perform controller transition by handleSelfMsg
-     */
-    void triggerTransitionSelfMsg();
-
-
-    //================================ Ahad :: End of Runtime Manager ==============================//
 
     /**
      * Sends a unicast message
