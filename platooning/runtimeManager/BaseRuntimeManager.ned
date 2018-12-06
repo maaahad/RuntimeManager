@@ -21,7 +21,14 @@ simple BaseRuntimeManager like IBaseApplLayer {
     parameters:
         int headerLength = default(88bit) @unit(bit); //header length of the application
         
-        int allowedNPacketLoss = default(3);
+        bool rmEnabled			 = default(true);
+        double rmMonitorInterval @unit("s") = default(.10s);
+                
+        int nPacketLossModerate  = default(1);
+        int nPacketLossPoor      = default(2);
+        int nPacketLossCritical  = default(3);
+        
+        double minSafetyDistance @unit("m")= default(2m);
     gates:
         input lowerLayerIn; // from mac layer
         output lowerLayerOut; // to mac layer

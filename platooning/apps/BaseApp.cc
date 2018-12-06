@@ -72,12 +72,6 @@ void BaseApp::initialize(int stage)
 
         runtimeManager = FindModule<RuntimeManager*>::findSubModule(getParentModule());
         ASSERT2(runtimeManager, "BaseApp failed to find the RuntimeManager!!!!");
-        // [ Debug
-
-        runtimeManager->checkingRM();
-
-        // Debug ]
-
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Ahad End
@@ -170,6 +164,18 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
         if (pb->getVehicleId() == positionHelper->getFrontId()) {
             traciVehicle->setFrontVehicleData(pb->getControllerAcceleration(), pb->getAcceleration(), pb->getSpeed(), pb->getPositionX(), pb->getPositionY(), pb->getTime());
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Ahad Start
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if(runtimeManager->isRMEnabled()) {
+            runtimeManager->onPlatoonBeacon(pb);
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Ahad End
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
         // send data about every vehicle to the CACC. this is needed by the consensus controller
         struct Plexe::VEHICLE_DATA vehicleData;
         vehicleData.index = positionHelper->getMemberPosition(pb->getVehicleId());
