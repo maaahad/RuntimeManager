@@ -14,7 +14,7 @@
 // 
 
 #include <iostream>
-#include "RuntimeManager.h"
+#include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
 
 using namespace Veins;
 Define_Module(RuntimeManager);
@@ -34,8 +34,13 @@ RuntimeManager::RuntimeManager() {
 RuntimeManager::~RuntimeManager() {
     // TODO REMOVE checkMsg
     if(rmParam.rmEnabled) {
-        cancelAndDelete(checkMsg);
-        checkMsg = nullptr;
+        cancelAndDelete(monitoringMsg);
+        monitoringMsg = nullptr;
+
+        // The followings should be erased in case we use smart_ptr
+        delete std::get<0>(rmLog).c2f;
+        delete std::get<0>(rmLog).c2l;
+
     }
 }
 
@@ -79,17 +84,27 @@ void RuntimeManager::initialize(int stage) {
         }
         // ***************************************************************************************************** Debug ]
 
-        checkMsg = new cMessage("checkMsg");
-        // init statistics collection. round to 0.1 seconds
-        SimTime rounded = SimTime(floor(simTime().dbl() * 1000 + 100), SIMTIME_MS);
-        scheduleAt(rounded, checkMsg);
+        // Initialize all contracts
+        // TODO The following two should be replaced by smart pointer
+        std::get<0>(rmLog).c2f = new C2X();
+        std::get<0>(rmLog).c2l = new C2X();
+
+        // Schedule the monitoring self message
+        monitoringMsg = new cMessage("monitoringMsg");
+        SimTime callBackTime = simTime() + rmParam.rmMonitorInterval;
+        scheduleAt(callBackTime, monitoringMsg);
     }
 }
 
 
 void RuntimeManager::handleSelfMsg(cMessage* msg) {
-    if(msg == checkMsg) {
-        std::cout << "Nice that I can handle self message!!!..." << std::endl;
+    if(msg == monitoringMsg) {
+        EV << "Monitoring message has been arrived. Evaluation started..." << std::endl;
+        evaluate();
+
+        // Reschedule the monitoring message
+        SimTime callBackTime = simTime() + rmParam.rmMonitorInterval;
+        scheduleAt(callBackTime, monitoringMsg);
     }
 }
 
@@ -131,3 +146,8 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb) {
 }
 
 
+
+void RuntimeManager::evaluate() {
+    (std::get<0>(rmLog).c2f)->evaluate();
+    (std::get<0>(rmLog).c2l)->evaluate();
+}

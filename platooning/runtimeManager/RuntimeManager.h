@@ -16,11 +16,12 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RUNTIMEMANAGER_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RUNTIMEMANAGER_H_
 
+
 #include "veins/base/modules/BaseApplLayer.h"
 #include "veins/modules/application/platooning/messages/PlatooningBeacon_m.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
-
+#include "veins/modules/application/platooning/runtimeManager/Contract.h"
 
 
 class RuntimeManager : public Veins::BaseApplLayer {
@@ -82,6 +83,11 @@ protected:
     struct RMLog_Own {
         Plexe::ACTIVE_CONTROLLER activeController;
         // TODO more parameters
+        Contract *c2f;
+        Contract *c2l;
+
+        // Replace the prevoius two by adding them to the following smart_ptr
+        //std::smart_ptr<std::vector<Contract *>> contracts;
     };
     /**
      * This is the log for the front vehicle
@@ -103,6 +109,11 @@ protected:
 
 
 private:
+    /**
+     * This method will start evaluating the logged info with the user provided parameters value
+     * Based on the evaluation it will update all contracts
+     */
+    void evaluate();
 
     RMParameters rmParam;
     std::tuple<RMLog_Own, RMLog_Front, RMLog_Leader> rmLog;
@@ -112,7 +123,8 @@ private:
     Veins::TraCICommandInterface::Vehicle *traciVehicle;
     BasePositionHelper* positionHelper;
 
-    cMessage *checkMsg;
+    // Self message to start monitoring
+    cMessage *monitoringMsg;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RUNTIMEMANAGER_H_ */
