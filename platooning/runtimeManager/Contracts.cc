@@ -21,13 +21,23 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Contracts::Contracts() : contractList(std::make_shared<std::multimap<Plexe::ACTIVE_CONTROLLER,std::vector<StateParameter*>>>()) ,
-data(std::make_shared<std::multimap<Plexe::ACTIVE_CONTROLLER, std::pair<std::vector<StateParameter *>, Guarantees>>>()){
+data(std::make_shared<Contract_Guarantee>()){
     // TODO Auto-generated constructor stub
     initContractList();
 }
 
 Contracts::~Contracts() {
     // TODO Auto-generated destructor stub
+}
+
+// This is for checking TODO will extend later
+void Contracts::evaluate() {
+    std::pair<Contract_Guarantee::iterator, Contract_Guarantee::iterator> it = data->equal_range(Plexe::ACTIVE_CONTROLLER::CACC);
+
+    // Looks like iterator is working
+    for( ; it.first != it.second; ++it.first) {
+
+    }
 }
 
 void Contracts::initContractList() {
@@ -38,20 +48,44 @@ void Contracts::initContractList() {
               << "\n\tfunction " << __func__
               << " Has not been implemented yet...!!!"
               << std::endl;
-    // c2f
-    std::vector<StateParameter *> c2f = {new C2X(Quality::CRITICAL, Role::FRONT)};
-    std::vector<StateParameter *> c2fc2l = {new C2X(Quality::CRITICAL, Role::FRONT), new C2X(Quality::CRITICAL, Role::FRONT)};
+    // Downgrade
+    std::vector<StateParameter *> c2f_down = {new C2X(Quality::CRITICAL, Role::FRONT)};
+    std::vector<StateParameter *> c2l_down = {new C2X(Quality::CRITICAL, Role::LEADER)};
+    std::vector<StateParameter *> c2fc2l_down = {new C2X(Quality::CRITICAL, Role::FRONT), new C2X(Quality::CRITICAL, Role::FRONT)};
+
+    // Upgrade
+    std::vector<StateParameter *> c2f_up = {new C2X(Quality::OK, Role::FRONT)};
+    std::vector<StateParameter *> c2l_up = {new C2X(Quality::OK, Role::LEADER)};
+    std::vector<StateParameter *> c2fc2l_up = {new C2X(Quality::OK, Role::FRONT), new C2X(Quality::OK, Role::FRONT)};
+
+//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2f_down));
+//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2fc2l_down));
+//
+//
+//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG,c2f_down));
+//
+//
+//
+//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::ACC, c2f_up));
+//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::ACC, c2fc2l_up));
+//
+//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG, c2l_up));
+
+    // Down grade
+    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2f_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
+    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2fc2l_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
+    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2l_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::PLOEG))));
 
 
-    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2f));
-    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2fc2l));
+    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG, std::make_pair(c2f_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
 
 
-    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG,c2f));
 
-    // Checking Replace the previous container by the following container
-    (*data).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG,std::make_pair(c2f, Guarantees())));
+//    (*data).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG,std::make_pair(c2f_down, Guarantees(true))));
 
 
+
+
+    // downgrade
 }
 

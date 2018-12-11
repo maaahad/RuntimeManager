@@ -24,6 +24,11 @@ Guarantees::Guarantees() : changeController(false), accelerate(false), decelerat
 
 }
 
+Guarantees::Guarantees(bool changeController, Plexe::ACTIVE_CONTROLLER to) : changeController(changeController), to(to),
+        accelerate(false), decelerate(false) {
+
+}
+
 Guarantees::~Guarantees() {
     // TODO Auto-generated destructor stub
 }

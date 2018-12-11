@@ -154,4 +154,9 @@ void RuntimeManager::evaluate() {
         (*it)->evaluate();
     }
 
+
+    // [debug
+    Contracts contracts;
+    contracts.evaluate();
+    // debug ]
 }

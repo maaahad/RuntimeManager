@@ -22,6 +22,7 @@
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
+#include "veins/modules/application/platooning/runtimeManager/Contracts.h"
 
 
 class RuntimeManager : public Veins::BaseApplLayer {

@@ -16,12 +16,17 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_H_
 
+#include "veins/modules/application/platooning/CC_Const.h"
+
+
 class Guarantees {
 public:
     Guarantees();
+    Guarantees(bool changeController, Plexe::ACTIVE_CONTROLLER to);
     virtual ~Guarantees();
     void provideGuarantee();
 
+    Plexe::ACTIVE_CONTROLLER to;
     bool changeController;
     bool accelerate;
     bool decelerate;
