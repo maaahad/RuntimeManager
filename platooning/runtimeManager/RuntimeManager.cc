@@ -28,7 +28,7 @@ Define_Module(RuntimeManager);
 
 RuntimeManager::RuntimeManager() {
     // TODO Auto-generated constructor stub
-    std::cout << "Runtime Manager is called ... " << std::endl;
+    std::cout << "Module :: RuntimeManager created." << std::endl;
 }
 
 RuntimeManager::~RuntimeManager() {
@@ -36,11 +36,6 @@ RuntimeManager::~RuntimeManager() {
     if(rmParam.rmEnabled) {
         cancelAndDelete(monitoringMsg);
         monitoringMsg = nullptr;
-
-        // The followings should be erased in case we use smart_ptr
-        delete std::get<0>(rmLog).c2f;
-        delete std::get<0>(rmLog).c2l;
-
     }
 }
 
@@ -84,10 +79,8 @@ void RuntimeManager::initialize(int stage) {
         }
         // ***************************************************************************************************** Debug ]
 
-        // Initialize all contracts
-        // TODO The following two should be replaced by smart pointer
-        std::get<0>(rmLog).c2f = new C2X();
-        std::get<0>(rmLog).c2l = new C2X();
+        // Initialize the StateParameters
+        initializeStateParameters();
 
         // Schedule the monitoring self message
         monitoringMsg = new cMessage("monitoringMsg");
@@ -146,8 +139,19 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb) {
 }
 
 
+void RuntimeManager::initializeStateParameters() {
+    (std::get<0>(rmLog)).stateParameters = std::make_shared<std::vector<StateParameter *>>();
+    // C2F
+    ((std::get<0>(rmLog)).stateParameters)->push_back(new C2X(Quality::NOT_INITIALIZED, Role::FRONT));
+    // C2L
+    ((std::get<0>(rmLog)).stateParameters)->push_back(new C2X(Quality::NOT_INITIALIZED, Role::LEADER));
+
+}
+
 
 void RuntimeManager::evaluate() {
-    (std::get<0>(rmLog).c2f)->evaluate();
-    (std::get<0>(rmLog).c2l)->evaluate();
+    for(auto it = ((std::get<0>(rmLog)).stateParameters)->begin(); it != ((std::get<0>(rmLog)).stateParameters)->end(); ++it) {
+        (*it)->evaluate();
+    }
+
 }

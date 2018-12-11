@@ -13,22 +13,40 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_H_
-#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_H_
+#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_STATEPARAMETER_H_
+#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_STATEPARAMETER_H_
 
-class Contract {
+enum class Quality {
+    NOT_INITIALIZED,
+    OK,
+    MODERATE,
+    POOR,
+    CRITICAL,
+};
+
+
+class StateParameter {
 public:
-    Contract();
-    virtual ~Contract();
+    StateParameter();
+    virtual ~StateParameter();
     virtual void evaluate() = 0;
 };
 
-
-class C2X : public Contract {
-public:
-    C2X();
-    ~C2X();
-   virtual void evaluate() override;
+enum class Role {
+    FRONT,
+    LEADER,
 };
 
-#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_H_ */
+class C2X : public StateParameter {
+public:
+    C2X(Role role);
+    C2X(Quality quality, Role role);
+    virtual void evaluate() override;
+
+    // TODO make these private and the user's class defined as friend
+    Quality quality;
+    Role role;
+
+};
+
+#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_STATEPARAMETER_H_ */

@@ -14,51 +14,44 @@
 // 
 
 #include <iostream>
-#include "Contract.h"
-
+#include "Guarantees.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Contract's Member function's implementation
+// Guarantees's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Contract::Contract() {
+Guarantees::Guarantees() : changeController(false), accelerate(false), decelerate(false){
     // TODO Auto-generated constructor stub
 
 }
 
-Contract::~Contract() {
+Guarantees::~Guarantees() {
     // TODO Auto-generated destructor stub
 }
 
-void Contract::evaluate() {
+void Guarantees::provideGuarantee() {
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
               << "\n\tCompiled on: " << __DATE__
               << " at " << __TIME__
               << "\n\tfunction " << __func__
-              << " must have to be overriden by the derived class!!!"
+              << " Has not been implemented yet...!!!"
               << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// C2X's Member function's implementation
+// Contracts's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-C2X::C2X() {
 
-}
-
-C2X::~C2X() {
-
-}
-
-void C2X::evaluate() {
-    std::cout << "Warning: " << __FILE__
-              << "\n\tLine: " << __LINE__
-              << "\n\tCompiled on: " << __DATE__
-              << " at " << __TIME__
-              << "\n\tfunction " << __func__
-              << " not implemented yet!!!"
-              << std::endl;
-}
-
-
-
+//ControllerTransition::ControllerTransition() {
+//
+//}
+//
+//void ControllerTransition::provideGuarantee() {
+//    std::cerr << "Error: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " Has not been implemented yet...!!!"
+//              << std::endl;
+//}

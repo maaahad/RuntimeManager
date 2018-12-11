@@ -21,7 +21,7 @@
 #include "veins/modules/application/platooning/messages/PlatooningBeacon_m.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
-#include "veins/modules/application/platooning/runtimeManager/Contract.h"
+#include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
 
 
 class RuntimeManager : public Veins::BaseApplLayer {
@@ -82,12 +82,9 @@ protected:
      */
     struct RMLog_Own {
         Plexe::ACTIVE_CONTROLLER activeController;
-        // TODO more parameters
-        Contract *c2f;
-        Contract *c2l;
+        // List of state parameters that the vehicle have to monitor during a state
+        std::shared_ptr<std::vector<StateParameter *>> stateParameters;
 
-        // Replace the prevoius two by adding them to the following smart_ptr
-        //std::smart_ptr<std::vector<Contract *>> contracts;
     };
     /**
      * This is the log for the front vehicle
@@ -103,7 +100,6 @@ protected:
      */
     struct RMLog_Leader {
       RMLog common;
-      double distance;
       // TODO more parameters
     };
 
@@ -115,8 +111,15 @@ private:
      */
     void evaluate();
 
+    /**
+     * This method initialize all vehicle related StateParameters
+     */
+    void initializeStateParameters();
+
     RMParameters rmParam;
     std::tuple<RMLog_Own, RMLog_Front, RMLog_Leader> rmLog;
+
+
 
     Veins::TraCIMobility *mobility;
     Veins::TraCICommandInterface *traci;
