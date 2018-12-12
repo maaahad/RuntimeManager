@@ -47,7 +47,8 @@ void RuntimeManager::initialize(int stage) {
         rmParam.rmEnabled               = par("rmEnabled").boolValue();
 
         if(rmParam.rmEnabled) {
-            rmParam.rmMonitorInterval   = par("rmMonitorInterval").doubleValue();
+            rmParam.rmMonitorInterval     = par("rmMonitorInterval").doubleValue();
+            rmParam.expectedBeconInterval = par("expectedBeconInterval").doubleValue();
 
             rmParam.nPacketLossModerate = par("nPacketLossModerate").intValue();
             rmParam.nPacketLossPoor     = par("nPacketLossPoor").intValue();
@@ -66,9 +67,10 @@ void RuntimeManager::initialize(int stage) {
         traciVehicle = mobility->getVehicleCommandInterface();
         positionHelper = FindModule<BasePositionHelper*>::findSubModule(getParentModule());
 
-        // Log own vehicle
+        // Log own vehicle active controller
 
         std::get<0>(rmLog).activeController = (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController();
+
 
         // [ Debug ***************************************************************************************************
         if(positionHelper->isLeader()) {
@@ -82,6 +84,8 @@ void RuntimeManager::initialize(int stage) {
         // Initialize the StateParameters
         initializeStateParameters();
 
+        // Initialize the Contracts + Suggestions
+
         // Schedule the monitoring self message
         monitoringMsg = new cMessage("monitoringMsg");
         SimTime callBackTime = simTime() + rmParam.rmMonitorInterval;
@@ -93,6 +97,7 @@ void RuntimeManager::initialize(int stage) {
 void RuntimeManager::handleSelfMsg(cMessage* msg) {
     if(msg == monitoringMsg) {
         EV << "Monitoring message has been arrived. Evaluation started..." << std::endl;
+        // TODO toggle comments for the following statement
         evaluate();
 
         // Reschedule the monitoring message
@@ -102,12 +107,15 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
 }
 
 
-void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb) {
+void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime currentTime) {
     // We are only interested in storing log for front and leader vehicle
     if(pb->getVehicleId() == positionHelper->getFrontId()) {
         RMLog_Front &frontLog = std::get<1>(rmLog);
         frontLog.common.acceleration = pb->getAcceleration();
         frontLog.common.controllerAcceleration = pb->getControllerAcceleration();
+
+        frontLog.common.lastBeaconArrivalTime = currentTime.dbl();
+        frontLog.common.nBeaconReceived++;
 
         // get front vehicle position
         Coord frontPosition(pb->getPositionX(), pb->getPositionY());
@@ -116,7 +124,9 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb) {
         Coord position(traciPosition.x, traciPosition.y);
         // compute distance
         double distance = position.distance(frontPosition) - pb->getLength();
+        frontLog.distance = distance; // Distance can be achieved during taking action
 
+        // [ debug
         double distanceR, relativeSpeed;
         traciVehicle->getRadarMeasurements(distanceR, relativeSpeed);
 
@@ -124,15 +134,26 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb) {
                   << "\n\tdistance: " <<  distance
                   << "\n\tdistanceR: " << distanceR
                   << std::endl;
-
-        frontLog.distance = distance; // Distance can be achieved during taking action
+        // debug ]
 
         // TODO log for end to end delay
+
+        // Evaluate StateParameters for possible upgrade
+        // Second argument is the index of front vehicle log in rmLog
+//        evaluate(true, 1);
+
     } else if(pb->getVehicleId() == positionHelper->getLeaderId()) {
         RMLog_Leader &leaderLog = std::get<2>(rmLog);
         leaderLog.common.acceleration = pb->getAcceleration();
         leaderLog.common.controllerAcceleration = pb->getControllerAcceleration();
+
+        leaderLog.common.lastBeaconArrivalTime = currentTime.dbl();
+        leaderLog.common.nBeaconReceived++;
         // TODO log for end to end delay
+
+        // Evaluate StateParameters for possible upgrade
+        // Second argument is the index of leader vehicle log in rmLog
+//        evaluate(true, 2);
     } else {
         return;
     }
@@ -140,23 +161,38 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb) {
 
 
 void RuntimeManager::initializeStateParameters() {
-    (std::get<0>(rmLog)).stateParameters = std::make_shared<std::vector<StateParameter *>>();
+    RMLog_Own &ego = std::get<0>(rmLog);
+    // Create a smart pointer points to an dynamically allocated empty vector whose elements are of type StateParameters *
+    ego.stateParameters = std::make_shared<std::vector<StateParameter *>>();
     // C2F
-    ((std::get<0>(rmLog)).stateParameters)->push_back(new C2X(Quality::NOT_INITIALIZED, Role::FRONT));
+    (ego.stateParameters)->push_back(new C2X(Role::FRONT));
     // C2L
-    ((std::get<0>(rmLog)).stateParameters)->push_back(new C2X(Quality::NOT_INITIALIZED, Role::LEADER));
+    (ego.stateParameters)->push_back(new C2X(Role::LEADER));
 
+    // TODO Add more state parameters if required
+//    std::vector<StateParameter *>::size_type size = (ego.stateParameters)->size();
+//    std::cout << "Size: " << size << std::endl;
 }
 
 
-void RuntimeManager::evaluate() {
+
+void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
+
+    // Sanity Check NEED TO FORMULATE PROPERLY
+    ASSERT2(onPlatoonBeacon ? index >= 0 : index < 0, "Problem with default argument in evaluate() methods in RuntimeManager");
+
+
     for(auto it = ((std::get<0>(rmLog)).stateParameters)->begin(); it != ((std::get<0>(rmLog)).stateParameters)->end(); ++it) {
-        (*it)->evaluate();
+        if(onPlatoonBeacon) {
+            (*it)->evaluate(rmParam, rmLog, onPlatoonBeacon, index);
+        } else {
+            (*it)->evaluate(rmParam, rmLog);
+        }
     }
 
 
     // [debug
-    Contracts contracts;
-    contracts.evaluate();
+//    Contracts contracts;
+//    contracts.evaluate();
     // debug ]
 }

@@ -23,6 +23,8 @@
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
 #include "veins/modules/application/platooning/runtimeManager/Contracts.h"
+#include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
+
 
 
 class RuntimeManager : public Veins::BaseApplLayer {
@@ -35,7 +37,7 @@ public:
      * This method is called by the application on receiving platooning beacon
      * RM log the required information in PlatooningBeacon pb
      */
-    void onPlatoonBeacon(const PlatooningBeacon *pb);
+    void onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime currentTime);
 
     /**
      * This method return true if RM is enabled
@@ -46,71 +48,12 @@ public:
 
 protected:
     virtual void handleSelfMsg(cMessage* msg) override;
-
-    /**
-     * This structure represents the RMLog, that is the information that RM
-     * stores onPlatoonBeacon from leader or front vehicle
-     */
-    struct RMParameters {
-        bool rmEnabled;
-        double rmMonitorInterval;
-
-        int nPacketLossModerate;
-        int nPacketLossPoor;
-        int nPacketLossCritical;
-
-        double minSafetyDistance;
-    };
-
-    /**
-     * These structures represents logs for different vehicles (own, front, leader)
-     *
-     *
-     */
-
-    /**
-     * This is common parameters of front and leader vehicle
-     */
-    struct RMLog {
-        double acceleration;
-        double controllerAcceleration;
-        double ede;     // end to end delay ,, don't know yet how to define and use this
-        // TODO more parameters
-    };
-
-    /**
-     * This is the log for the own vehicle
-     */
-    struct RMLog_Own {
-        Plexe::ACTIVE_CONTROLLER activeController;
-        // List of state parameters that the vehicle have to monitor during a state
-        std::shared_ptr<std::vector<StateParameter *>> stateParameters;
-
-    };
-    /**
-     * This is the log for the front vehicle
-     */
-    struct RMLog_Front {
-      RMLog common;
-      double distance;
-      // TODO more parameters
-    };
-
-    /**
-     * This is the log for the leader vehicle
-     */
-    struct RMLog_Leader {
-      RMLog common;
-      // TODO more parameters
-    };
-
-
 private:
     /**
      * This method will start evaluating the logged info with the user provided parameters value
      * Based on the evaluation it will update all contracts
      */
-    void evaluate();
+    void evaluate(bool onPlatoonBeacon = false, int index = -1);
 
     /**
      * This method initialize all vehicle related StateParameters
@@ -118,7 +61,7 @@ private:
     void initializeStateParameters();
 
     RMParameters rmParam;
-    std::tuple<RMLog_Own, RMLog_Front, RMLog_Leader> rmLog;
+    rm_log rmLog;
 
 
 

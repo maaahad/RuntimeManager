@@ -21,7 +21,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Contracts::Contracts() : contractList(std::make_shared<std::multimap<Plexe::ACTIVE_CONTROLLER,std::vector<StateParameter*>>>()) ,
-data(std::make_shared<Contract_Guarantee>()){
+data(std::make_shared<contract_guarantee>()){
     // TODO Auto-generated constructor stub
     initContractList();
 }
@@ -32,7 +32,7 @@ Contracts::~Contracts() {
 
 // This is for checking TODO will extend later
 void Contracts::evaluate() {
-    std::pair<Contract_Guarantee::iterator, Contract_Guarantee::iterator> it = data->equal_range(Plexe::ACTIVE_CONTROLLER::CACC);
+    std::pair<contract_guarantee::iterator, contract_guarantee::iterator> it = data->equal_range(Plexe::ACTIVE_CONTROLLER::CACC);
 
     // Looks like iterator is working
     for( ; it.first != it.second; ++it.first) {

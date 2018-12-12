@@ -169,7 +169,8 @@ void BaseApp::onPlatoonBeacon(const PlatooningBeacon* pb)
         // Ahad Start
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if(runtimeManager->isRMEnabled()) {
-            runtimeManager->onPlatoonBeacon(pb);
+            SimTime currentTime = simTime();
+            runtimeManager->onPlatoonBeacon(pb, currentTime);
         }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Ahad End

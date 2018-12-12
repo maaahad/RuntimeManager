@@ -21,8 +21,10 @@ simple BaseRuntimeManager like IBaseApplLayer {
     parameters:
         int headerLength = default(88bit) @unit(bit); //header length of the application
         
-        bool rmEnabled			 = default(true);
-        double rmMonitorInterval @unit("s") = default(.10s);
+        bool rmEnabled	 = default(true); 
+        
+        double rmMonitorInterval @unit("s") 	= default(.10s);  
+        double expectedBeconInterval @unit("s") = default(.05s);
                 
         int nPacketLossModerate  = default(1);
         int nPacketLossPoor      = default(2);

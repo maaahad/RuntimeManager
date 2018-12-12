@@ -16,12 +16,14 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_STATEPARAMETER_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_STATEPARAMETER_H_
 
-enum class Quality {
-    NOT_INITIALIZED,
-    OK,
-    MODERATE,
-    POOR,
+#include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
+
+
+enum class Quality : int {
     CRITICAL,
+    POOR,
+    MODERATE,
+    OK,
 };
 
 
@@ -29,9 +31,8 @@ class StateParameter {
 public:
     StateParameter();
     virtual ~StateParameter();
-    virtual void evaluate() = 0;
+    virtual void evaluate(const RMParameters &rmParam, rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
 };
-
 enum class Role {
     FRONT,
     LEADER,
@@ -41,7 +42,7 @@ class C2X : public StateParameter {
 public:
     C2X(Role role);
     C2X(Quality quality, Role role);
-    virtual void evaluate() override;
+    virtual void evaluate(const RMParameters &rmParam, rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
 
     // TODO make these private and the user's class defined as friend
     Quality quality;

@@ -33,10 +33,10 @@ public:
     void evaluate();
 private:
     // A companion type
-    using Contract_Guarantee = std::multimap<Plexe::ACTIVE_CONTROLLER, std::pair<std::vector<StateParameter*>, Guarantees>>;
+    using contract_guarantee = std::multimap<Plexe::ACTIVE_CONTROLLER, std::pair<std::vector<StateParameter*>, Guarantees>>;
     void initContractList();
     std::shared_ptr<std::multimap<Plexe::ACTIVE_CONTROLLER, std::vector<StateParameter*>>> contractList;
-    std::shared_ptr<Contract_Guarantee> data;
+    std::shared_ptr<contract_guarantee> data;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_H_ */
