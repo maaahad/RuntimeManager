@@ -53,6 +53,7 @@ public:
     QUALITY quality;
     ROLE role;
 
+    bool operator==(const C2X &rhs)const;
     friend std::ostream &operator<<(std::ostream &os, const C2X &c2x);
 };
 

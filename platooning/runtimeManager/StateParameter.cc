@@ -49,6 +49,7 @@ C2X::C2X(QUALITY quality, ROLE role) : quality(quality), role(role) {
 }
 
 template <typename T> void C2X::c2xQualityCheck(const RMParameters &rmParam, const T &other) {
+    // c2xInitiated ensures that we have logged the last received beacon
     if(other.common.c2xInitiated) {
         SimTime currentTime = simTime();
         int nBeaconMiss = (int)((currentTime.dbl() - other.common.lastBeaconArrivalTime) / rmParam.expectedBeconInterval);
@@ -78,11 +79,11 @@ void C2X::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool 
     } else {
         // This is called during monitoring from self message
         if(role == ROLE::FRONT) {
-//            auto &other = std::get<1>(rmLog);
+//            const auto &other = std::get<1>(rmLog);
             const RMLog_Front &other = std::get<1>(rmLog);
             c2xQualityCheck(rmParam, other);
         } else if (role == ROLE::LEADER) {
-//            auto &other = std::get<2>(rmLog);
+//            const auto &other = std::get<2>(rmLog);
             const RMLog_Leader &other = std::get<2>(rmLog);
             c2xQualityCheck(rmParam, other);
         } else {
@@ -94,14 +95,15 @@ void C2X::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool 
                       << " Wrong vehicle type!!!"
                       << std::endl;
         }
-
-//        // [ debug
-//        std::cout << *this << std::endl;
-//        // debug ]
-
     }
 }
 
+// Operator overloaded
+
+bool C2X::operator==(const C2X &rhs) const{
+    if(quality != rhs.quality) return false;
+    if(role != rhs.role) return false;
+}
 
 std::ostream &operator<<(std::ostream &os, const C2X &c2x){
     os << "C2X: \n\tQuality : " << (int)c2x.quality << "\n\trole: " << (int)c2x.role;
