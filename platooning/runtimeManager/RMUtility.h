@@ -45,6 +45,7 @@ class StateParameter;
         double controllerAcceleration;
         double ede;     // end to end delay ,, don't know yet how to define and use this
         // TODO more parameters
+        bool c2xInitiated = false;
         double lastBeaconArrivalTime;
         int nBeaconReceived = 0;
     };

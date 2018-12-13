@@ -27,7 +27,7 @@ StateParameter::~StateParameter() {
     // TODO Auto-generated destructor stub
 }
 
-void StateParameter::evaluate(const RMParameters &rmParam, rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+void StateParameter::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
               << "\n\tCompiled on: " << __DATE__
@@ -40,66 +40,70 @@ void StateParameter::evaluate(const RMParameters &rmParam, rm_log &rmLog, const 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // C2X's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-C2X::C2X(Role role) : quality(Quality::CRITICAL), role(role) {
+C2X::C2X(ROLE role) : quality(QUALITY::CRITICAL), role(role) {
 
 }
 
-C2X::C2X(Quality quality, Role role) : quality(quality), role(role) {
+C2X::C2X(QUALITY quality, ROLE role) : quality(quality), role(role) {
 
 }
 
-void C2X::evaluate(const RMParameters &rmParam, rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
-    std::cerr << "Error: " << __FILE__
-              << "\n\tLine: " << __LINE__
-              << "\n\tCompiled on: " << __DATE__
-              << " at " << __TIME__
-              << "\n\tfunction " << __func__
-              << " Implemenation started...!!!"
-              << std::endl;
+template <typename T> void C2X::c2xQualityCheck(const RMParameters &rmParam, const T &other) {
+    if(other.common.c2xInitiated) {
+        SimTime currentTime = simTime();
+        int nBeaconMiss = (int)((currentTime.dbl() - other.common.lastBeaconArrivalTime) / rmParam.expectedBeconInterval);
+
+        std::cout << "nBeaconMiss: " << nBeaconMiss << std::endl;
+
+        if(nBeaconMiss >= rmParam.nPacketLossCritical) {
+            quality = QUALITY::CRITICAL;
+        } else if (nBeaconMiss < rmParam.nPacketLossCritical && nBeaconMiss >= rmParam.nPacketLossPoor) {
+            quality = QUALITY::POOR;
+        } else if (nBeaconMiss < rmParam.nPacketLossPoor && nBeaconMiss >= rmParam.nPacketLossModerate) {
+            quality = QUALITY::MODERATE;
+        } else {
+            quality = QUALITY::OK;
+        }
+
+    } else {
+        // Sanity check
+        ASSERT(quality == QUALITY::CRITICAL);
+        return;
+    }
+}
+
+void C2X::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     if(onPlatoonBeacon) {
-        // This is related to upgrade the connection
-        // If connection is ok, nothing to do
-
-        // We need to set the quality to ok for degradaton to work
-
-        // [debug checking
-//        Quality check = (Quality)((int)Quality::CRITICAL + 1);
-//        int x = 0;
-        // debug ]
+        // Nothing doing here!!!
     } else {
         // This is called during monitoring from self message
-
-        auto &ego   = std::get<0>(rmLog);
-
-        // DON'T NEED THIS CASTING. AS C2X IS HERE !!!!!!!?????????????!!!!!!!!!!!!!
-        StateParameter *stateParameter = dynamic_cast<C2X *>((*ego.stateParameters)[index - 1]);
-
-
-        // We need dynamic cast as StateParameters can be of different type
-        if(C2X *c2x = dynamic_cast<C2X *>(stateParameter)) {
-            if(c2x->quality == Quality::CRITICAL) return;       // There is now way of degradation anymore
-
-            if (index == 1) {
-                auto &other = std::get<1>(rmLog);
-
-
-            } else if (index == 2) {
-                auto &other = std::get<2>(rmLog);
-
-            } else {
-                std::cerr << "Error: " << __FILE__
-                          << "\n\tLine: " << __LINE__
-                          << "\n\tCompiled on: " << __DATE__
-                          << " at " << __TIME__
-                          << "\n\tfunction " << __func__
-                          << " wrong vehicle index in rmLog"
-                          << std::endl;
-            }
+        if(role == ROLE::FRONT) {
+//            auto &other = std::get<1>(rmLog);
+            const RMLog_Front &other = std::get<1>(rmLog);
+            c2xQualityCheck(rmParam, other);
+        } else if (role == ROLE::LEADER) {
+//            auto &other = std::get<2>(rmLog);
+            const RMLog_Leader &other = std::get<2>(rmLog);
+            c2xQualityCheck(rmParam, other);
+        } else {
+            std::cerr << "Error: " << __FILE__
+                      << "\n\tLine: " << __LINE__
+                      << "\n\tCompiled on: " << __DATE__
+                      << " at " << __TIME__
+                      << "\n\tfunction " << __func__
+                      << " Wrong vehicle type!!!"
+                      << std::endl;
         }
-        // TODO Add code for other stateParameter
 
+//        // [ debug
+//        std::cout << *this << std::endl;
+//        // debug ]
 
-
-        // need to reset the received beacon to 0 once we are here from monitor/self-message
     }
+}
+
+
+std::ostream &operator<<(std::ostream &os, const C2X &c2x){
+    os << "C2X: \n\tQuality : " << (int)c2x.quality << "\n\trole: " << (int)c2x.role;
+    return os;
 }

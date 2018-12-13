@@ -16,10 +16,12 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_STATEPARAMETER_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_STATEPARAMETER_H_
 
+#include "veins/base/utils/MiXiMDefs.h"         // This is required for SimTime, ASSERT
+
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
 
 
-enum class Quality : int {
+enum class QUALITY {
     CRITICAL,
     POOR,
     MODERATE,
@@ -31,23 +33,28 @@ class StateParameter {
 public:
     StateParameter();
     virtual ~StateParameter();
-    virtual void evaluate(const RMParameters &rmParam, rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
+    virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
 };
-enum class Role {
+
+enum class ROLE {
     FRONT,
     LEADER,
 };
 
 class C2X : public StateParameter {
+private:
+    template <typename T> void c2xQualityCheck(const RMParameters &rmParam, const T &other);
 public:
-    C2X(Role role);
-    C2X(Quality quality, Role role);
-    virtual void evaluate(const RMParameters &rmParam, rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
+    C2X(ROLE role);
+    C2X(QUALITY quality, ROLE role);
+    virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
 
     // TODO make these private and the user's class defined as friend
-    Quality quality;
-    Role role;
+    QUALITY quality;
+    ROLE role;
 
+    friend std::ostream &operator<<(std::ostream &os, const C2X &c2x);
 };
+
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_STATEPARAMETER_H_ */

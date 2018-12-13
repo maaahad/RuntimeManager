@@ -49,14 +49,14 @@ void Contracts::initContractList() {
               << " Has not been implemented yet...!!!"
               << std::endl;
     // Downgrade
-    std::vector<StateParameter *> c2f_down = {new C2X(Quality::CRITICAL, Role::FRONT)};
-    std::vector<StateParameter *> c2l_down = {new C2X(Quality::CRITICAL, Role::LEADER)};
-    std::vector<StateParameter *> c2fc2l_down = {new C2X(Quality::CRITICAL, Role::FRONT), new C2X(Quality::CRITICAL, Role::FRONT)};
+    std::vector<StateParameter *> c2f_down = {new C2X(QUALITY::CRITICAL, ROLE::FRONT)};
+    std::vector<StateParameter *> c2l_down = {new C2X(QUALITY::CRITICAL, ROLE::LEADER)};
+    std::vector<StateParameter *> c2fc2l_down = {new C2X(QUALITY::CRITICAL, ROLE::FRONT), new C2X(QUALITY::CRITICAL, ROLE::FRONT)};
 
     // Upgrade
-    std::vector<StateParameter *> c2f_up = {new C2X(Quality::OK, Role::FRONT)};
-    std::vector<StateParameter *> c2l_up = {new C2X(Quality::OK, Role::LEADER)};
-    std::vector<StateParameter *> c2fc2l_up = {new C2X(Quality::OK, Role::FRONT), new C2X(Quality::OK, Role::FRONT)};
+    std::vector<StateParameter *> c2f_up = {new C2X(QUALITY::OK, ROLE::FRONT)};
+    std::vector<StateParameter *> c2l_up = {new C2X(QUALITY::OK, ROLE::LEADER)};
+    std::vector<StateParameter *> c2fc2l_up = {new C2X(QUALITY::OK, ROLE::FRONT), new C2X(QUALITY::OK, ROLE::FRONT)};
 
 //    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2f_down));
 //    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2fc2l_down));

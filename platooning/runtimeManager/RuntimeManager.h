@@ -50,6 +50,11 @@ protected:
     virtual void handleSelfMsg(cMessage* msg) override;
 private:
     /**
+     * This template function is used to perform log for both the front and the leader vehicle
+     */
+    template <typename T> void commonLog(const PlatooningBeacon *pb, T &loggedVehicle, const SimTime currentTime);
+
+    /**
      * This method will start evaluating the logged info with the user provided parameters value
      * Based on the evaluation it will update all contracts
      */

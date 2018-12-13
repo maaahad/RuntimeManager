@@ -73,12 +73,12 @@ void RuntimeManager::initialize(int stage) {
 
 
         // [ Debug ***************************************************************************************************
-        if(positionHelper->isLeader()) {
-            std::cout << "Leader: \n\tactiveController: " << std::get<0>(rmLog).activeController << std::endl;
-        } else {
-            std::cout << "VehicleId: " << positionHelper->getId() << "\n\tstd::get<0>(rmLog).activeController: " << std::get<0>(rmLog).activeController << std::endl;
-
-        }
+//        if(positionHelper->isLeader()) {
+//            std::cout << "Leader: \n\tactiveController: " << std::get<0>(rmLog).activeController << std::endl;
+//        } else {
+//            std::cout << "VehicleId: " << positionHelper->getId() << "\n\tstd::get<0>(rmLog).activeController: " << std::get<0>(rmLog).activeController << std::endl;
+//
+//        }
         // ***************************************************************************************************** Debug ]
 
         // Initialize the StateParameters
@@ -100,10 +100,24 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
         // TODO toggle comments for the following statement
         evaluate();
 
-        // Reschedule the monitoring message
+        // Reschedule the monitoring message. TODO make sure to reschedule the self message
+        // after the current evaluation and transition (if there is any)
         SimTime callBackTime = simTime() + rmParam.rmMonitorInterval;
         scheduleAt(callBackTime, monitoringMsg);
     }
+}
+
+
+template <typename T> void RuntimeManager::commonLog(const PlatooningBeacon *pb, T &loggedVehicle, const SimTime currentTime) {
+    loggedVehicle.common.c2xInitiated = true;
+    loggedVehicle.common.acceleration = pb->getAcceleration();
+    loggedVehicle.common.controllerAcceleration = pb->getControllerAcceleration();
+
+    loggedVehicle.common.lastBeaconArrivalTime = currentTime.dbl();
+    loggedVehicle.common.nBeaconReceived++;
+
+    // TODO log for end to end delay
+
 }
 
 
@@ -111,12 +125,9 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
     // We are only interested in storing log for front and leader vehicle
     if(pb->getVehicleId() == positionHelper->getFrontId()) {
         RMLog_Front &frontLog = std::get<1>(rmLog);
-        frontLog.common.acceleration = pb->getAcceleration();
-        frontLog.common.controllerAcceleration = pb->getControllerAcceleration();
+        commonLog(pb, frontLog, currentTime);
 
-        frontLog.common.lastBeaconArrivalTime = currentTime.dbl();
-        frontLog.common.nBeaconReceived++;
-
+        // TODO : log if there is any front specific log required
         // get front vehicle position
         Coord frontPosition(pb->getPositionX(), pb->getPositionY());
         // get my position
@@ -127,13 +138,13 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
         frontLog.distance = distance; // Distance can be achieved during taking action
 
         // [ debug
-        double distanceR, relativeSpeed;
-        traciVehicle->getRadarMeasurements(distanceR, relativeSpeed);
-
-        std::cout << "VehicleId : " << positionHelper->getId()
-                  << "\n\tdistance: " <<  distance
-                  << "\n\tdistanceR: " << distanceR
-                  << std::endl;
+//        double distanceR, relativeSpeed;
+//        traciVehicle->getRadarMeasurements(distanceR, relativeSpeed);
+//
+//        std::cout << "VehicleId : " << positionHelper->getId()
+//                  << "\n\tdistance: " <<  distance
+//                  << "\n\tdistanceR: " << distanceR
+//                  << std::endl;
         // debug ]
 
         // TODO log for end to end delay
@@ -144,13 +155,8 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
 
     } else if(pb->getVehicleId() == positionHelper->getLeaderId()) {
         RMLog_Leader &leaderLog = std::get<2>(rmLog);
-        leaderLog.common.acceleration = pb->getAcceleration();
-        leaderLog.common.controllerAcceleration = pb->getControllerAcceleration();
-
-        leaderLog.common.lastBeaconArrivalTime = currentTime.dbl();
-        leaderLog.common.nBeaconReceived++;
-        // TODO log for end to end delay
-
+        commonLog(pb, leaderLog, currentTime);
+        // TODO : log if there is any leader specific log required
         // Evaluate StateParameters for possible upgrade
         // Second argument is the index of leader vehicle log in rmLog
 //        evaluate(true, 2);
@@ -165,9 +171,9 @@ void RuntimeManager::initializeStateParameters() {
     // Create a smart pointer points to an dynamically allocated empty vector whose elements are of type StateParameters *
     ego.stateParameters = std::make_shared<std::vector<StateParameter *>>();
     // C2F
-    (ego.stateParameters)->push_back(new C2X(Role::FRONT));
+    (ego.stateParameters)->push_back(new C2X(ROLE::FRONT));
     // C2L
-    (ego.stateParameters)->push_back(new C2X(Role::LEADER));
+    (ego.stateParameters)->push_back(new C2X(ROLE::LEADER));
 
     // TODO Add more state parameters if required
 //    std::vector<StateParameter *>::size_type size = (ego.stateParameters)->size();
@@ -188,11 +194,21 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
         } else {
             (*it)->evaluate(rmParam, rmLog);
         }
+
+        // [ debug
+        if(C2X *c2x = dynamic_cast<C2X *>(*it)) {
+            std::cout << *c2x << std::endl;
+        }
+        // debug ]
     }
 
-
+    //
     // [debug
+
+
 //    Contracts contracts;
 //    contracts.evaluate();
     // debug ]
 }
+
+
