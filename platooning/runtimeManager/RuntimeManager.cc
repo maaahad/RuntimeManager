@@ -153,15 +153,18 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
         // Second argument is the index of front vehicle log in rmLog
 //        evaluate(true, 1);
 
-    } else if(pb->getVehicleId() == positionHelper->getLeaderId()) {
+    }
+
+    // We need to perform both for front and leader subsequently, as the vehicle with id 0, got the same vehicle as leader and front
+    // In that case we want to logged for both leader and the front vehicle
+    // In case of other vehicles onley one of the condition will be satisfied
+    if(pb->getVehicleId() == positionHelper->getLeaderId()) {
         RMLog_Leader &leaderLog = std::get<2>(rmLog);
         commonLog(pb, leaderLog, currentTime);
         // TODO : log if there is any leader specific log required
         // Evaluate StateParameters for possible upgrade
         // Second argument is the index of leader vehicle log in rmLog
 //        evaluate(true, 2);
-    } else {
-        return;
     }
 }
 
