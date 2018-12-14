@@ -109,7 +109,8 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
 
 
 template <typename T> void RuntimeManager::commonLog(const PlatooningBeacon *pb, T &loggedVehicle, const SimTime currentTime) {
-    loggedVehicle.common.c2xInitiated = true;
+    if(!loggedVehicle.common.c2xInitiated) loggedVehicle.common.c2xInitiated = true;
+
     loggedVehicle.common.acceleration = pb->getAcceleration();
     loggedVehicle.common.controllerAcceleration = pb->getControllerAcceleration();
 
@@ -117,7 +118,6 @@ template <typename T> void RuntimeManager::commonLog(const PlatooningBeacon *pb,
     loggedVehicle.common.nBeaconReceived++;
 
     // TODO log for end to end delay
-
 }
 
 
