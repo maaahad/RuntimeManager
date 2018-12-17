@@ -31,12 +31,14 @@ Contracts::~Contracts() {
 }
 
 // This is for checking TODO will extend later
-void Contracts::evaluate() {
-    std::pair<contract_guarantee::iterator, contract_guarantee::iterator> it = data->equal_range(Plexe::ACTIVE_CONTROLLER::CACC);
+void Contracts::evaluate(RMLog_Own &state) {
+    std::pair<contract_guarantee::iterator, contract_guarantee::iterator> it = data->equal_range(state.activeController);
 
     // Looks like iterator is working
     for( ; it.first != it.second; ++it.first) {
-
+//        for (auto itS = ((it.first)->second).first.begin(); itS != ((it.first)->second).first.end(); ++itS) {
+//
+//        }
     }
 }
 

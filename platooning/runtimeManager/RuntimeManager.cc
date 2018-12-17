@@ -69,7 +69,7 @@ void RuntimeManager::initialize(int stage) {
 
         // Log own vehicle active controller
 
-        std::get<0>(rmLog).activeController = (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController();
+//        std::get<0>(rmLog).activeController = (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController();
 
 
         // [ Debug ***************************************************************************************************
@@ -82,9 +82,13 @@ void RuntimeManager::initialize(int stage) {
         // ***************************************************************************************************** Debug ]
 
         // Initialize the StateParameters
-        initializeStateParameters();
+//        initializeStateParameters();
+
+        // initialize contract list
+        initializeContracts();
 
         // Initialize the Contracts + Suggestions
+        contracts = std::make_shared<Contracts>();
 
         // Schedule the monitoring self message
         monitoringMsg = new cMessage("monitoringMsg");
@@ -184,34 +188,47 @@ void RuntimeManager::initializeStateParameters() {
 }
 
 
+void RuntimeManager::initializeContracts() {
+    RMLog_Own &ego = std::get<0>(rmLog);
+    ego.contracts  = std::make_shared<std::vector<Contract *>>();
+
+    // WIFIContract
+    (ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::FRONT)));
+
+}
+
 
 void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
 
     // Sanity Check NEED TO FORMULATE PROPERLY
     ASSERT2(onPlatoonBeacon ? index >= 0 : index < 0, "Problem with default argument in evaluate() methods in RuntimeManager");
 
-
-    for(auto it = ((std::get<0>(rmLog)).stateParameters)->begin(); it != ((std::get<0>(rmLog)).stateParameters)->end(); ++it) {
+    for(auto it = ((std::get<0>(rmLog)).contracts)->begin(); it != ((std::get<0>(rmLog)).contracts)->end(); ++it) {
         if(onPlatoonBeacon) {
             (*it)->evaluate(rmParam, rmLog, onPlatoonBeacon, index);
         } else {
             (*it)->evaluate(rmParam, rmLog);
         }
-
-        // [ debug
-        if(C2X *c2x = dynamic_cast<C2X *>(*it)) {
-            std::cout << *c2x << std::endl;
-        }
-        // debug ]
     }
 
-    //
-    // [debug
+//    for(auto it = ((std::get<0>(rmLog)).stateParameters)->begin(); it != ((std::get<0>(rmLog)).stateParameters)->end(); ++it) {
+//        if(onPlatoonBeacon) {
+//            (*it)->evaluate(rmParam, rmLog, onPlatoonBeacon, index);
+//        } else {
+//            (*it)->evaluate(rmParam, rmLog);
+//        }
+//
+//        // [ debug
+//        if(C2X *c2x = dynamic_cast<C2X *>(*it)) {
+//            std::cout << *c2x << std::endl;
+//        }
+//        // debug ]
+//    }
+//    // After evaluating all StateParameters, we match the current state of the vehicle with the Contracts
+//    if(!onPlatoonBeacon) {
+//        contracts->evaluate(std::get<0>(rmLog));
+//    }
 
-
-//    Contracts contracts;
-//    contracts.evaluate();
-    // debug ]
 }
 
 

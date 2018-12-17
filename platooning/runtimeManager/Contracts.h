@@ -30,7 +30,7 @@ class Contracts {
 public:
     Contracts();
     virtual ~Contracts();
-    void evaluate();
+    void evaluate(RMLog_Own &state);
 private:
     // A companion type
     using contract_guarantee = std::multimap<Plexe::ACTIVE_CONTROLLER, std::pair<std::vector<StateParameter*>, Guarantees>>;

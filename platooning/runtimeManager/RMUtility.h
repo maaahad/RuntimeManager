@@ -13,7 +13,9 @@
 #include "veins/modules/application/platooning/CC_Const.h"
 
 
+// Forward decleration
 class StateParameter;
+class Contract;
 
 /**
      * This structure represents the RMLog, that is the information that RM
@@ -57,6 +59,9 @@ class StateParameter;
         Plexe::ACTIVE_CONTROLLER activeController;
         // List of state parameters that the vehicle have to monitor during a state
         std::shared_ptr<std::vector<StateParameter *>> stateParameters;
+
+        // new
+        std::shared_ptr<std::vector<Contract *>> contracts;
 
     };
     /**

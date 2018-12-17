@@ -75,7 +75,7 @@ template <typename T> void C2X::c2xQualityCheck(const RMParameters &rmParam, con
 
 void C2X::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     if(onPlatoonBeacon) {
-        // Nothing doing here!!!
+        // Right now there is nothing to do here!!!
     } else {
         // This is called during monitoring from self message
         if(role == ROLE::FRONT) {

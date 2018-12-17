@@ -23,6 +23,7 @@
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
 #include "veins/modules/application/platooning/runtimeManager/Contracts.h"
+#include "veins/modules/application/platooning/runtimeManager/contract/WIFIContract.h"
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
 
 
@@ -65,9 +66,16 @@ private:
      */
     void initializeStateParameters();
 
+    /**
+     * This method initialize all contracts for the vehicle
+     */
+    void initializeContracts();
+
+
     RMParameters rmParam;
     rm_log rmLog;
 
+    std::shared_ptr<Contracts> contracts;
 
 
     Veins::TraCIMobility *mobility;
