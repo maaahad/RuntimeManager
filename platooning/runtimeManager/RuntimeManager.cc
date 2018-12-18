@@ -88,7 +88,7 @@ void RuntimeManager::initialize(int stage) {
         initializeContracts();
 
         // Initialize the Contracts + Suggestions
-        contracts = std::make_shared<Contracts>();
+        contracts = std::make_shared<Contract_Guarantee>();
 
         // Schedule the monitoring self message
         monitoringMsg = new cMessage("monitoringMsg");

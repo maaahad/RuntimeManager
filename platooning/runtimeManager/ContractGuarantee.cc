@@ -12,26 +12,27 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
+#include "ContractGuarantee.h"
+
 #include <iostream>
-#include "Contracts.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Contracts's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Contracts::Contracts() : contractList(std::make_shared<std::multimap<Plexe::ACTIVE_CONTROLLER,std::vector<StateParameter*>>>()) ,
-data(std::make_shared<contract_guarantee>()){
+Contract_Guarantee::Contract_Guarantee() : contractList(std::make_shared<std::multimap<Plexe::ACTIVE_CONTROLLER,std::vector<StateParameter*>>>()) ,
+data(std::make_shared<contract_guarantee>()), cgList(std::make_shared<contract_guarantee_type>()){
     // TODO Auto-generated constructor stub
     initContractList();
 }
 
-Contracts::~Contracts() {
+Contract_Guarantee::~Contract_Guarantee() {
     // TODO Auto-generated destructor stub
 }
 
 // This is for checking TODO will extend later
-void Contracts::evaluate(RMLog_Own &state) {
+void Contract_Guarantee::evaluate(RMLog_Own &state) {
     std::pair<contract_guarantee::iterator, contract_guarantee::iterator> it = data->equal_range(state.activeController);
 
     // Looks like iterator is working
@@ -42,14 +43,7 @@ void Contracts::evaluate(RMLog_Own &state) {
     }
 }
 
-void Contracts::initContractList() {
-    std::cerr << "Error: " << __FILE__
-              << "\n\tLine: " << __LINE__
-              << "\n\tCompiled on: " << __DATE__
-              << " at " << __TIME__
-              << "\n\tfunction " << __func__
-              << " Has not been implemented yet...!!!"
-              << std::endl;
+void Contract_Guarantee::initContractList() {
     // Downgrade
     std::vector<StateParameter *> c2f_down = {new C2X(QUALITY::CRITICAL, ROLE::FRONT)};
     std::vector<StateParameter *> c2l_down = {new C2X(QUALITY::CRITICAL, ROLE::LEADER)};
@@ -85,8 +79,24 @@ void Contracts::initContractList() {
 
 //    (*data).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG,std::make_pair(c2f_down, Guarantees(true))));
 
+    // cgList
+//    Contract *cr1 = new WIFIContract(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, C2X(ROLE::FRONT), C2X(ROLE::LEADER));
+//    Contract *cr2 = new WIFIContract(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, C2X(ROLE::FRONT), C2X(ROLE::LEADER));
+//    cgList->insert(std::make_pair(cr1, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC)));
+//    cgList->insert(std::make_pair(cr2, Guarantees(true, Plexe::ACTIVE_CONTROLLER::CACC)));
+
+    WIFIContract cr1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, C2X(QUALITY::OK, ROLE::FRONT), C2X(ROLE::LEADER));
+    WIFIContract cr2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, C2X(QUALITY::OK, ROLE::FRONT), C2X(ROLE::LEADER));
+    WIFIContract cr3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, C2X(ROLE::FRONT), C2X(ROLE::LEADER));
+
+    cgList->insert(std::make_pair(cr1, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC)));
+    cgList->insert(std::make_pair(cr2, Guarantees(true, Plexe::ACTIVE_CONTROLLER::CACC)));
+    cgList->insert(std::make_pair(cr3, Guarantees(true, Plexe::ACTIVE_CONTROLLER::CACC)));
 
 
+    contract_guarantee_type ::size_type size = cgList->size();
+    int check = (cr1 == cr2);
+    std::cout << "  " <<std::endl;
 
     // downgrade
 }

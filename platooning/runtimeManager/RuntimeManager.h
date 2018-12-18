@@ -17,12 +17,12 @@
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RUNTIMEMANAGER_H_
 
 
+#include "ContractGuarantee.h"
 #include "veins/base/modules/BaseApplLayer.h"
 #include "veins/modules/application/platooning/messages/PlatooningBeacon_m.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
-#include "veins/modules/application/platooning/runtimeManager/Contracts.h"
 #include "veins/modules/application/platooning/runtimeManager/contract/WIFIContract.h"
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
 
@@ -75,7 +75,7 @@ private:
     RMParameters rmParam;
     rm_log rmLog;
 
-    std::shared_ptr<Contracts> contracts;
+    std::shared_ptr<Contract_Guarantee> contracts;
 
 
     Veins::TraCIMobility *mobility;

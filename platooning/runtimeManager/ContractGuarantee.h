@@ -13,23 +13,27 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_H_
-#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_H_
+#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_
+#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_
 
 #include<vector>
 #include<memory>
+#include <unordered_map>
 #include<map>
 
 #include "veins/modules/application/platooning/CC_Const.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
+#include "veins/modules/application/platooning/runtimeManager/contract/WIFIContract.h"
 
 
 
-class Contracts {
+
+
+class Contract_Guarantee {
 public:
-    Contracts();
-    virtual ~Contracts();
+    Contract_Guarantee();
+    virtual ~Contract_Guarantee();
     void evaluate(RMLog_Own &state);
 private:
     // A companion type
@@ -37,6 +41,9 @@ private:
     void initContractList();
     std::shared_ptr<std::multimap<Plexe::ACTIVE_CONTROLLER, std::vector<StateParameter*>>> contractList;
     std::shared_ptr<contract_guarantee> data;
+
+    using contract_guarantee_type = std::unordered_map<WIFIContract, Guarantees>;
+    std::shared_ptr<contract_guarantee_type> cgList;
 };
 
-#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_H_ */
+#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_ */
