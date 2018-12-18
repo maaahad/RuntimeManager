@@ -35,3 +35,8 @@ void WIFIContract::evaluate(const RMParameters &rmParam, const rm_log &rmLog, co
     // debug ]
 }
 
+bool WIFIContract::equal(const Contract &contract) const {
+    auto rhs = dynamic_cast<const WIFIContract &>(contract);
+    return (c2f == rhs.c2f) &&
+           (c2l == rhs.c2l);
+}

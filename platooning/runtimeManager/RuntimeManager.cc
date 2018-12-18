@@ -193,8 +193,26 @@ void RuntimeManager::initializeContracts() {
     ego.contracts  = std::make_shared<std::vector<Contract *>>();
 
     // WIFIContract
-    (ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::FRONT)));
+    (ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::LEADER)));
 
+    // [debug
+//    StateParameter *sp1 = new C2X(ROLE::LEADER);
+//    StateParameter *sp2 = new C2X(ROLE::LEADER);
+//
+//    if (*sp1 == *sp2) {
+//        std::cout << "Checking == Operator,,,Equal" << std::endl;
+//    } else {
+//        std::cout << "Checking == Operator,,,Not-Equal" << std::endl;
+//    }
+
+    Contract *cr1 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::FRONT));
+    Contract *cr2 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::LEADER), C2X(ROLE::LEADER));
+    if (*cr1 == *cr2) {
+        std::cout << "Checking == Operator,,,Equal" << std::endl;
+    } else {
+        std::cout << "Checking == Operator,,,Not-Equal" << std::endl;
+    }
+    // debug ]
 }
 
 

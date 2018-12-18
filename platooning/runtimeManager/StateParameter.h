@@ -21,7 +21,7 @@
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
 
 
-enum class QUALITY {
+enum QUALITY {
     CRITICAL,
     POOR,
     MODERATE,
@@ -30,13 +30,15 @@ enum class QUALITY {
 
 
 class StateParameter {
+    friend bool operator==(const StateParameter &sp1, const StateParameter &sp2);
 public:
     StateParameter();
     virtual ~StateParameter();
     virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
+    virtual bool equal(const StateParameter &stateParameter) const = 0;
 };
 
-enum class ROLE {
+enum ROLE {
     FRONT,
     LEADER,
 };
@@ -48,14 +50,25 @@ public:
     C2X(ROLE role);
     C2X(QUALITY quality, ROLE role);
     virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
-
+    virtual bool equal(const StateParameter &stateParameter) const override;
     // TODO make these private and the user's class defined as friend
     QUALITY quality;
     ROLE role;
 
-    bool operator==(const C2X &rhs)const;
     friend std::ostream &operator<<(std::ostream &os, const C2X &c2x);
 };
 
+// template specialization for hash<C2X>
+// TODO DONOT FORGET ABOOUT BASE CLASS
+namespace std {
+template <> struct hash<C2X> {
+  using result_type = size_t;
+  using argument_type = C2X;
+  result_type operator()(const argument_type &c2x) const {
+      return std::hash<std::underlying_type<QUALITY>::type>()(c2x.quality) ^
+             std::hash<std::underlying_type<ROLE>::type>()(c2x.role);
+  }
+};
+}
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_STATEPARAMETER_H_ */

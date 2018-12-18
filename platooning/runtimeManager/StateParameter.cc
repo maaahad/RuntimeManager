@@ -27,6 +27,19 @@ StateParameter::~StateParameter() {
     // TODO Auto-generated destructor stub
 }
 
+
+
+bool StateParameter::equal(const StateParameter &stateParameter) const {
+    std::cerr << "Error: " << __FILE__
+              << "\n\tLine: " << __LINE__
+              << "\n\tCompiled on: " << __DATE__
+              << " at " << __TIME__
+              << "\n\tfunction " << __func__
+              << " This method should never be called!!!"
+              << std::endl;
+    return false;
+}
+
 void StateParameter::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
@@ -35,6 +48,11 @@ void StateParameter::evaluate(const RMParameters &rmParam, const rm_log &rmLog, 
               << "\n\tfunction " << __func__
               << " must have to be overriden by the derived class!!!"
               << std::endl;
+}
+
+// Free == operator
+bool operator==(const StateParameter &sp1, const StateParameter &sp2) {
+    return (typeid(sp1) == typeid(sp2)) && sp1.equal(sp2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,10 +118,12 @@ void C2X::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool 
 
 // Operator overloaded
 
-bool C2X::operator==(const C2X &rhs) const{
-    if(quality != rhs.quality) return false;
-    if(role != rhs.role) return false;
+bool C2X::equal(const StateParameter &stateParameter) const {
+    auto rhs = dynamic_cast<const C2X &>(stateParameter);
+    return (quality == rhs.quality) &&
+           (role == rhs.role);
 }
+
 
 std::ostream &operator<<(std::ostream &os, const C2X &c2x){
     os << "C2X: \n\tQuality : " << (int)c2x.quality << "\n\trole: " << (int)c2x.role;

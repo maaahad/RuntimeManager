@@ -34,3 +34,13 @@ void Contract::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const 
               << std::endl;
 }
 
+
+bool Contract::equal(const Contract &contract) const {
+    return (type == contract.type) &&
+           (controller == contract.controller);
+}
+
+// Contract free == operator
+bool operator==(const Contract &cr1, const Contract &cr2 ) {
+    return (typeid(cr1) == typeid(cr2)) && cr1.equal(cr2);
+}

@@ -24,19 +24,22 @@
  */
 
 
-enum class CONTRACT_TYPE {
+enum CONTRACT_TYPE{
     WIFI,
     INTERNAL_ERROR,
 };
 
 class Contract {
+    friend bool operator==(const Contract &cr1, const Contract &cr2 );
 public:
     Contract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller);
     virtual ~Contract();
     virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
+    virtual bool equal(const Contract &contract) const;
 
     CONTRACT_TYPE type;
     Plexe::ACTIVE_CONTROLLER controller;
 };
+
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_H_ */
