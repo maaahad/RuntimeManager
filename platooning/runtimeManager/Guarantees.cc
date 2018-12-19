@@ -39,13 +39,22 @@ Guarantees::~Guarantees() {
 
 void Guarantees::provideGuarantee(Contract *contract) const{
     if(changeController) {
+        // [ debug
+        if(to > traciVehicle->getActiveController()) {
+            std::cout << "Vehicle " << positionHelper->getId()
+                      << "\n\t Upgrade!!!" << std::endl;
+        } else {
+            std::cout << "Vehicle " << positionHelper->getId()
+                      << "\n\t Degrade!!!" << std::endl;
+        }
+        // debug ]
+
         // update the vehicle's current contract status for the Active controller
         // As the consecutive Guarantee requires the current active controller (included in the key_type of the Contract-Guarantee unordered_map )
         contract->updateOnTransition(to);
         // Perform the transition
         traciVehicle->setActiveController(to);
-        std::cout << "Vehicle " << positionHelper->getId()
-                  << "\n\t Controller changed!!!" << std::endl;
+
 //        EV << "Vehicle " << positionHelper->getId()
 //             << "\n\t Controller changed!!!" << std::endl;
     }
