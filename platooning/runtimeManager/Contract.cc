@@ -40,6 +40,20 @@ bool Contract::equal(const Contract &contract) const {
            (controller == contract.controller);
 }
 
+void Contract::updateOnTransition(Plexe::ACTIVE_CONTROLLER to) {
+    std::cerr << "Error: " << __FILE__
+              << "\n\tLine: " << __LINE__
+              << "\n\tCompiled on: " << __DATE__
+              << " at " << __TIME__
+              << "\n\tfunction " << __func__
+              << " must have to be overriden by the derived class!!!"
+              << std::endl;
+}
+
+Plexe::ACTIVE_CONTROLLER Contract::getController() const {
+    return controller;
+}
+
 // Contract free == operator
 bool operator==(const Contract &cr1, const Contract &cr2 ) {
     return (typeid(cr1) == typeid(cr2)) && cr1.equal(cr2);

@@ -21,12 +21,13 @@
 
 
 class WIFIContract : public Contract {
-    friend class std::hash<WIFIContract>;
+    friend class std::hash<const WIFIContract>;
 public:
     WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2X c2f, C2X c2l);
     virtual ~WIFIContract();
     virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
     virtual bool equal(const Contract &contract) const override;
+    virtual void updateOnTransition(Plexe::ACTIVE_CONTROLLER to) override;
 private:
     C2X c2f;
     C2X c2l;
@@ -37,7 +38,7 @@ private:
 // TODO DONOT FORGET ABOOUT BASE CLASS
 
 namespace std{
-template <> struct hash<WIFIContract> {
+template <> struct hash<const WIFIContract> {
    typedef size_t result_type;
    typedef WIFIContract argument_type;
    result_type operator()(const argument_type &wifi_contract) const {

@@ -21,8 +21,7 @@
 // Contracts's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : contractList(std::make_shared<std::multimap<Plexe::ACTIVE_CONTROLLER,std::vector<StateParameter*>>>()) ,
-data(std::make_shared<contract_guarantee>()), wifiCG(std::make_shared<contract_guarantee_type>()){
+Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : wifiCG(std::make_shared<contract_guarantee_type>()){
     // TODO Auto-generated constructor stub
     initContractList(rm);
 }
@@ -33,66 +32,27 @@ Contract_Guarantee::~Contract_Guarantee() {
 
 // This is for checking TODO will extend later
 void Contract_Guarantee::evaluate(RMLog_Own &state) {
-//    std::pair<contract_guarantee::iterator, contract_guarantee::iterator> it = data->equal_range(state.activeController);
-//
-//    // Looks like iterator is working
-//    for( ; it.first != it.second; ++it.first) {
-////        for (auto itS = ((it.first)->second).first.begin(); itS != ((it.first)->second).first.end(); ++itS) {
-////
-////        }
-//    }
-
-    // Using the unordered_map
     // Iterate through every single contract of the state and perform the associate guarantees
     for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
         if(auto contract = dynamic_cast<WIFIContract *>(*start)) {
+            // match should be unique
             auto match = wifiCG->find(*contract);
             if(match != wifiCG->end()) {
                 // Match found and call the provideGuarantee method of the found Guarantee
                 Guarantees guarantee = match->second;
-                guarantee.provideGuarantee();
+                guarantee.provideGuarantee(*start);
             } else {
-                std::cout << "Not match contract found. No action needs to be taken" << std::endl;
+                std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
             }
+            // each contract of a vehicle should be exclusive to only one particular Contract_Guarantee list
+            continue;
         }
+
+        // TODO check in other Contract_Gurantee list
     }
-
-
 }
 
 void Contract_Guarantee::initContractList(RuntimeManager *rm) {
-//    // Downgrade
-//    std::vector<StateParameter *> c2f_down = {new C2X(QUALITY::CRITICAL, ROLE::FRONT)};
-//    std::vector<StateParameter *> c2l_down = {new C2X(QUALITY::CRITICAL, ROLE::LEADER)};
-//    std::vector<StateParameter *> c2fc2l_down = {new C2X(QUALITY::CRITICAL, ROLE::FRONT), new C2X(QUALITY::CRITICAL, ROLE::LEADER)};
-//
-//    // Upgrade
-//    std::vector<StateParameter *> c2f_up = {new C2X(QUALITY::OK, ROLE::FRONT)};
-//    std::vector<StateParameter *> c2l_up = {new C2X(QUALITY::OK, ROLE::LEADER)};
-//    std::vector<StateParameter *> c2fc2l_up = {new C2X(QUALITY::OK, ROLE::FRONT), new C2X(QUALITY::OK, ROLE::LEADER)};
-//
-////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2f_down));
-////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2fc2l_down));
-////
-////
-////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG,c2f_down));
-////
-////
-////
-////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::ACC, c2f_up));
-////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::ACC, c2fc2l_up));
-////
-////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG, c2l_up));
-//
-//    // Down grade
-//    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2f_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
-//    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2fc2l_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
-//    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2l_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::PLOEG))));
-//
-//
-//    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG, std::make_pair(c2f_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
-
-
     // Creating the WIFIContract-Guarantee list
 
     // StateParameters
@@ -138,10 +98,9 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     wifiCG->insert(std::make_pair(cacc2acc1, g2acc));
     wifiCG->insert(std::make_pair(cacc2acc2, g2acc));
 
-    contract_guarantee_type ::size_type size = wifiCG->size();
+//    contract_guarantee_type ::size_type size = wifiCG->size();
+//
+//    std::cout << "  " <<std::endl;
 
-    std::cout << "  " <<std::endl;
-
-    // downgrade
 }
 

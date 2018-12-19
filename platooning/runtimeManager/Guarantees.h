@@ -19,6 +19,7 @@
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/application/platooning/CC_Const.h"
+#include "veins/modules/application/platooning/runtimeManager/Contract.h"
 
 class RuntimeManager;
 
@@ -27,7 +28,7 @@ public:
     Guarantees(RuntimeManager *rm);
     Guarantees(RuntimeManager *rm, bool changeController, Plexe::ACTIVE_CONTROLLER to);
     virtual ~Guarantees();
-    void provideGuarantee();
+    void provideGuarantee(Contract *contract) const;
 
     Plexe::ACTIVE_CONTROLLER to;
     bool changeController;

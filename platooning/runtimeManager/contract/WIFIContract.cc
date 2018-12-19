@@ -42,3 +42,8 @@ bool WIFIContract::equal(const Contract &contract) const {
     return (c2f == rhs.c2f) &&
            (c2l == rhs.c2l);
 }
+
+
+void WIFIContract::updateOnTransition(Plexe::ACTIVE_CONTROLLER to) {
+    controller = to;
+}

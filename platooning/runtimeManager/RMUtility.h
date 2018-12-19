@@ -13,7 +13,7 @@
 #include "veins/modules/application/platooning/CC_Const.h"
 
 
-// Forward decleration
+// Forward declaration
 class StateParameter;
 class Contract;
 
@@ -46,6 +46,7 @@ class Contract;
         double acceleration;
         double controllerAcceleration;
         double ede;     // end to end delay ,, don't know yet how to define and use this
+
         // TODO more parameters
         bool c2xInitiated = false;
         double lastBeaconArrivalTime;
@@ -56,13 +57,7 @@ class Contract;
      * This is the log for the own vehicle
      */
     struct RMLog_Own {
-        Plexe::ACTIVE_CONTROLLER activeController;
-        // List of state parameters that the vehicle have to monitor during a state
-        std::shared_ptr<std::vector<StateParameter *>> stateParameters;
-
-        // new
         std::shared_ptr<std::vector<Contract *>> contracts;
-
     };
     /**
      * This is the log for the front vehicle

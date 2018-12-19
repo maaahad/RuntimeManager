@@ -67,11 +67,6 @@ void RuntimeManager::initialize(int stage) {
         traciVehicle = mobility->getVehicleCommandInterface();
         positionHelper = FindModule<BasePositionHelper*>::findSubModule(getParentModule());
 
-        // Log own vehicle active controller
-
-//        std::get<0>(rmLog).activeController = (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController();
-
-
         // [ Debug ***************************************************************************************************
 //        if(positionHelper->isLeader()) {
 //            std::cout << "Leader: \n\tactiveController: " << std::get<0>(rmLog).activeController << std::endl;
@@ -80,9 +75,6 @@ void RuntimeManager::initialize(int stage) {
 //
 //        }
         // ***************************************************************************************************** Debug ]
-
-        // Initialize the StateParameters
-//        initializeStateParameters();
 
         // initialize contract list
         initializeContracts();
@@ -103,6 +95,9 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
         EV << "Monitoring message has been arrived. Evaluation started..." << std::endl;
         // TODO toggle comments for the following statement
         evaluate();
+
+        // Sanity Check for now (WIFIContract only) TODO: need to generalize this
+        ASSERT(traciVehicle->getActiveController() == (std::get<0>(rmLog).contracts)->front()->getController());
 
         // Reschedule the monitoring message. TODO make sure to reschedule the self message
         // after the current evaluation and transition (if there is any)
@@ -173,20 +168,6 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
 }
 
 
-void RuntimeManager::initializeStateParameters() {
-    RMLog_Own &ego = std::get<0>(rmLog);
-    // Create a smart pointer points to an dynamically allocated empty vector whose elements are of type StateParameters *
-    ego.stateParameters = std::make_shared<std::vector<StateParameter *>>();
-    // C2F
-    (ego.stateParameters)->push_back(new C2X(ROLE::FRONT));
-    // C2L
-    (ego.stateParameters)->push_back(new C2X(ROLE::LEADER));
-
-    // TODO Add more state parameters if required
-//    std::vector<StateParameter *>::size_type size = (ego.stateParameters)->size();
-//    std::cout << "Size: " << size << std::endl;
-}
-
 
 void RuntimeManager::initializeContracts() {
     RMLog_Own &ego = std::get<0>(rmLog);
@@ -195,6 +176,7 @@ void RuntimeManager::initializeContracts() {
     // WIFIContract
     (ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::LEADER)));
 
+    // TODO other Contracts, if there is any
     // [debug
 
 //    Contract *cr1 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::FRONT));
@@ -211,10 +193,11 @@ void RuntimeManager::initializeContracts() {
 
 void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
 
-    // Sanity Check NEED TO FORMULATE PROPERLY
+    // Sanity Check
     ASSERT2(onPlatoonBeacon ? index >= 0 : index < 0, "Problem with default argument in evaluate() methods in RuntimeManager");
 
-    for(auto it = ((std::get<0>(rmLog)).contracts)->begin(); it != ((std::get<0>(rmLog)).contracts)->end(); ++it) {
+    RMLog_Own &ego = std::get<0>(rmLog);
+    for(auto it = (ego.contracts)->begin(); it != (ego.contracts)->end(); ++it) {
         if(onPlatoonBeacon) {
             (*it)->evaluate(rmParam, rmLog, onPlatoonBeacon, index);
         } else {
@@ -222,21 +205,9 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
         }
     }
 
-//    for(auto it = ((std::get<0>(rmLog)).stateParameters)->begin(); it != ((std::get<0>(rmLog)).stateParameters)->end(); ++it) {
-//        if(onPlatoonBeacon) {
-//            (*it)->evaluate(rmParam, rmLog, onPlatoonBeacon, index);
-//        } else {
-//            (*it)->evaluate(rmParam, rmLog);
-//        }
-//
-//        // [ debug
-//        if(C2X *c2x = dynamic_cast<C2X *>(*it)) {
-//            std::cout << *c2x << std::endl;
-//        }
-//        // debug ]
-//    }
-
-    // After evaluating all StateParameters, we match the current state of the vehicle with the Contracts-Guarantee
+    // Vehicles StateParameters related to the provided contract has been evaluated,
+    // Now, we need to match the current state of the vehicle's contract with the Contracts-Guarantee
+    // to ensure the appropriate Guarantee
     if(!onPlatoonBeacon) {
         contractGuarantees->evaluate(std::get<0>(rmLog));
     }

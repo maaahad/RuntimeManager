@@ -71,22 +71,23 @@ private:
      */
     void initializeContracts();
 
-
+    // RuntimeManager's parameter
     RMParameters rmParam;
+    // Log to be done by RuntimeManager
     rm_log rmLog;
-
+    // Reference to the full list of Contract::Guarantees map
     std::shared_ptr<Contract_Guarantee> contractGuarantees;
 
-
+    // TraCI Interface used to communicate with the SUMO
     Veins::TraCIMobility *mobility;
     Veins::TraCICommandInterface *traci;
     Veins::TraCICommandInterface::Vehicle *traciVehicle;
     BasePositionHelper* positionHelper;
 
-    // Self message to start monitoring
+    // Self message to monitor periodically
     cMessage *monitoringMsg;
 
-    // friend decleration
+    // friend declaration
     friend class Guarantees;
 };
 

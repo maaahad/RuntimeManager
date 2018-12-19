@@ -36,7 +36,10 @@ public:
     virtual ~Contract();
     virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
     virtual bool equal(const Contract &contract) const;
+    virtual void updateOnTransition(Plexe::ACTIVE_CONTROLLER to) = 0;
+    Plexe::ACTIVE_CONTROLLER getController() const;
 
+protected:
     CONTRACT_TYPE type;
     Plexe::ACTIVE_CONTROLLER controller;
 };
