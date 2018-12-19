@@ -21,10 +21,10 @@
 // Contracts's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Contract_Guarantee::Contract_Guarantee() : contractList(std::make_shared<std::multimap<Plexe::ACTIVE_CONTROLLER,std::vector<StateParameter*>>>()) ,
-data(std::make_shared<contract_guarantee>()), cgList(std::make_shared<contract_guarantee_type>()){
+Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : contractList(std::make_shared<std::multimap<Plexe::ACTIVE_CONTROLLER,std::vector<StateParameter*>>>()) ,
+data(std::make_shared<contract_guarantee>()), wifiCG(std::make_shared<contract_guarantee_type>()){
     // TODO Auto-generated constructor stub
-    initContractList();
+    initContractList(rm);
 }
 
 Contract_Guarantee::~Contract_Guarantee() {
@@ -33,69 +33,113 @@ Contract_Guarantee::~Contract_Guarantee() {
 
 // This is for checking TODO will extend later
 void Contract_Guarantee::evaluate(RMLog_Own &state) {
-    std::pair<contract_guarantee::iterator, contract_guarantee::iterator> it = data->equal_range(state.activeController);
-
-    // Looks like iterator is working
-    for( ; it.first != it.second; ++it.first) {
-//        for (auto itS = ((it.first)->second).first.begin(); itS != ((it.first)->second).first.end(); ++itS) {
+//    std::pair<contract_guarantee::iterator, contract_guarantee::iterator> it = data->equal_range(state.activeController);
 //
-//        }
+//    // Looks like iterator is working
+//    for( ; it.first != it.second; ++it.first) {
+////        for (auto itS = ((it.first)->second).first.begin(); itS != ((it.first)->second).first.end(); ++itS) {
+////
+////        }
+//    }
+
+    // Using the unordered_map
+    // Iterate through every single contract of the state and perform the associate guarantees
+    for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
+        if(auto contract = dynamic_cast<WIFIContract *>(*start)) {
+            auto match = wifiCG->find(*contract);
+            if(match != wifiCG->end()) {
+                // Match found and call the provideGuarantee method of the found Guarantee
+                Guarantees guarantee = match->second;
+                guarantee.provideGuarantee();
+            } else {
+                std::cout << "Not match contract found. No action needs to be taken" << std::endl;
+            }
+        }
     }
+
+
 }
 
-void Contract_Guarantee::initContractList() {
-    // Downgrade
-    std::vector<StateParameter *> c2f_down = {new C2X(QUALITY::CRITICAL, ROLE::FRONT)};
-    std::vector<StateParameter *> c2l_down = {new C2X(QUALITY::CRITICAL, ROLE::LEADER)};
-    std::vector<StateParameter *> c2fc2l_down = {new C2X(QUALITY::CRITICAL, ROLE::FRONT), new C2X(QUALITY::CRITICAL, ROLE::LEADER)};
+void Contract_Guarantee::initContractList(RuntimeManager *rm) {
+//    // Downgrade
+//    std::vector<StateParameter *> c2f_down = {new C2X(QUALITY::CRITICAL, ROLE::FRONT)};
+//    std::vector<StateParameter *> c2l_down = {new C2X(QUALITY::CRITICAL, ROLE::LEADER)};
+//    std::vector<StateParameter *> c2fc2l_down = {new C2X(QUALITY::CRITICAL, ROLE::FRONT), new C2X(QUALITY::CRITICAL, ROLE::LEADER)};
+//
+//    // Upgrade
+//    std::vector<StateParameter *> c2f_up = {new C2X(QUALITY::OK, ROLE::FRONT)};
+//    std::vector<StateParameter *> c2l_up = {new C2X(QUALITY::OK, ROLE::LEADER)};
+//    std::vector<StateParameter *> c2fc2l_up = {new C2X(QUALITY::OK, ROLE::FRONT), new C2X(QUALITY::OK, ROLE::LEADER)};
+//
+////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2f_down));
+////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2fc2l_down));
+////
+////
+////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG,c2f_down));
+////
+////
+////
+////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::ACC, c2f_up));
+////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::ACC, c2fc2l_up));
+////
+////    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG, c2l_up));
+//
+//    // Down grade
+//    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2f_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
+//    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2fc2l_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
+//    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2l_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::PLOEG))));
+//
+//
+//    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG, std::make_pair(c2f_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
 
+
+    // Creating the WIFIContract-Guarantee list
+
+    // StateParameters
+    C2X ok_c2f(QUALITY::OK, ROLE::FRONT);
+    C2X critical_c2f(QUALITY::CRITICAL, ROLE::FRONT);
+
+    C2X ok_c2l(QUALITY::OK, ROLE::LEADER);
+    C2X critical_c2l(QUALITY::CRITICAL, ROLE::LEADER);
+
+    // Guarantees
+    Guarantees g2acc(rm, true, Plexe::ACTIVE_CONTROLLER::ACC);
+    Guarantees g2ploeg(rm, true, Plexe::ACTIVE_CONTROLLER::PLOEG);
+    Guarantees g2cacc(rm, true, Plexe::ACTIVE_CONTROLLER::CACC);
+
+
+    // WIFIContract for ACC controller
     // Upgrade
-    std::vector<StateParameter *> c2f_up = {new C2X(QUALITY::OK, ROLE::FRONT)};
-    std::vector<StateParameter *> c2l_up = {new C2X(QUALITY::OK, ROLE::LEADER)};
-    std::vector<StateParameter *> c2fc2l_up = {new C2X(QUALITY::OK, ROLE::FRONT), new C2X(QUALITY::OK, ROLE::LEADER)};
+    WIFIContract acc2cacc(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
+    WIFIContract acc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, critical_c2l);
 
-//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2f_down));
-//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC,c2fc2l_down));
-//
-//
-//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG,c2f_down));
-//
-//
-//
-//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::ACC, c2f_up));
-//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::ACC, c2fc2l_up));
-//
-//    (*contractList).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG, c2l_up));
+    // WIFIContract for PLOEG controller
+    // Upgrade
+    WIFIContract ploeg2cacc(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, ok_c2l);
+    // degrade
+    WIFIContract ploeg2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, ok_c2l);
+    WIFIContract ploeg2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, critical_c2l);
 
-    // Down grade
-    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2f_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
-    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2fc2l_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
-    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::CACC, std::make_pair(c2l_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::PLOEG))));
+    //WIFIContract for CACC
+    // Degrade
+    WIFIContract cacc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, critical_c2l);
+    WIFIContract cacc2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, ok_c2l);
+    WIFIContract cacc2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, critical_c2l);
 
+    // mapping between WIFIContract and Guarantee
+    wifiCG->insert(std::make_pair(acc2cacc, g2cacc));
+    wifiCG->insert(std::make_pair(acc2ploeg, g2ploeg));
 
-    data->insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG, std::make_pair(c2f_down, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC))));
+    wifiCG->insert(std::make_pair(ploeg2cacc, g2cacc));
+    wifiCG->insert(std::make_pair(ploeg2acc1, g2acc));
+    wifiCG->insert(std::make_pair(ploeg2acc2, g2acc));
 
+    wifiCG->insert(std::make_pair(cacc2ploeg, g2ploeg));
+    wifiCG->insert(std::make_pair(cacc2acc1, g2acc));
+    wifiCG->insert(std::make_pair(cacc2acc2, g2acc));
 
+    contract_guarantee_type ::size_type size = wifiCG->size();
 
-//    (*data).insert(std::make_pair(Plexe::ACTIVE_CONTROLLER::PLOEG,std::make_pair(c2f_down, Guarantees(true))));
-
-    // cgList
-//    Contract *cr1 = new WIFIContract(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, C2X(ROLE::FRONT), C2X(ROLE::LEADER));
-//    Contract *cr2 = new WIFIContract(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, C2X(ROLE::FRONT), C2X(ROLE::LEADER));
-//    cgList->insert(std::make_pair(cr1, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC)));
-//    cgList->insert(std::make_pair(cr2, Guarantees(true, Plexe::ACTIVE_CONTROLLER::CACC)));
-
-    WIFIContract cr1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, C2X(QUALITY::OK, ROLE::FRONT), C2X(ROLE::LEADER));
-    WIFIContract cr2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, C2X(QUALITY::OK, ROLE::FRONT), C2X(ROLE::LEADER));
-    WIFIContract cr3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, C2X(ROLE::FRONT), C2X(ROLE::LEADER));
-
-    cgList->insert(std::make_pair(cr1, Guarantees(true, Plexe::ACTIVE_CONTROLLER::ACC)));
-    cgList->insert(std::make_pair(cr2, Guarantees(true, Plexe::ACTIVE_CONTROLLER::CACC)));
-    cgList->insert(std::make_pair(cr3, Guarantees(true, Plexe::ACTIVE_CONTROLLER::CACC)));
-
-
-    contract_guarantee_type ::size_type size = cgList->size();
-    int check = (cr1 == cr2);
     std::cout << "  " <<std::endl;
 
     // downgrade

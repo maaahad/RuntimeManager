@@ -75,7 +75,7 @@ private:
     RMParameters rmParam;
     rm_log rmLog;
 
-    std::shared_ptr<Contract_Guarantee> contracts;
+    std::shared_ptr<Contract_Guarantee> contractGuarantees;
 
 
     Veins::TraCIMobility *mobility;
@@ -85,6 +85,9 @@ private:
 
     // Self message to start monitoring
     cMessage *monitoringMsg;
+
+    // friend decleration
+    friend class Guarantees;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RUNTIMEMANAGER_H_ */

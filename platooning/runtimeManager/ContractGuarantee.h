@@ -28,22 +28,22 @@
 
 
 
-
+class RuntimeManager;
 
 class Contract_Guarantee {
 public:
-    Contract_Guarantee();
+    Contract_Guarantee(RuntimeManager *rm);
     virtual ~Contract_Guarantee();
     void evaluate(RMLog_Own &state);
 private:
     // A companion type
     using contract_guarantee = std::multimap<Plexe::ACTIVE_CONTROLLER, std::pair<std::vector<StateParameter*>, Guarantees>>;
-    void initContractList();
+    void initContractList(RuntimeManager *rm);
     std::shared_ptr<std::multimap<Plexe::ACTIVE_CONTROLLER, std::vector<StateParameter*>>> contractList;
     std::shared_ptr<contract_guarantee> data;
 
     using contract_guarantee_type = std::unordered_map<WIFIContract, Guarantees>;
-    std::shared_ptr<contract_guarantee_type> cgList;
+    std::shared_ptr<contract_guarantee_type> wifiCG;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_ */

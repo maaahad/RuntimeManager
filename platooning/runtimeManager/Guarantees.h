@@ -16,13 +16,16 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_H_
 
+#include "veins/modules/mobility/traci/TraCIMobility.h"
+#include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/application/platooning/CC_Const.h"
 
+class RuntimeManager;
 
 class Guarantees {
 public:
-    Guarantees();
-    Guarantees(bool changeController, Plexe::ACTIVE_CONTROLLER to);
+    Guarantees(RuntimeManager *rm);
+    Guarantees(RuntimeManager *rm, bool changeController, Plexe::ACTIVE_CONTROLLER to);
     virtual ~Guarantees();
     void provideGuarantee();
 
@@ -30,6 +33,12 @@ public:
     bool changeController;
     bool accelerate;
     bool decelerate;
+
+    // These are required for taking action
+    Veins::TraCIMobility *mobility;
+    Veins::TraCICommandInterface *traci;
+    Veins::TraCICommandInterface::Vehicle *traciVehicle;
+    BasePositionHelper* positionHelper;
 };
 
 

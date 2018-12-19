@@ -87,8 +87,8 @@ void RuntimeManager::initialize(int stage) {
         // initialize contract list
         initializeContracts();
 
-        // Initialize the Contracts + Suggestions
-        contracts = std::make_shared<Contract_Guarantee>();
+        // Initialize the Contracts + Guarantees
+        contractGuarantees = std::make_shared<Contract_Guarantee>(this);
 
         // Schedule the monitoring self message
         monitoringMsg = new cMessage("monitoringMsg");
@@ -196,22 +196,15 @@ void RuntimeManager::initializeContracts() {
     (ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::LEADER)));
 
     // [debug
-//    StateParameter *sp1 = new C2X(ROLE::LEADER);
-//    StateParameter *sp2 = new C2X(ROLE::LEADER);
-//
-//    if (*sp1 == *sp2) {
+
+//    Contract *cr1 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::FRONT));
+//    Contract *cr2 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::LEADER), C2X(ROLE::LEADER));
+//    if (*cr1 == *cr2) {
 //        std::cout << "Checking == Operator,,,Equal" << std::endl;
 //    } else {
 //        std::cout << "Checking == Operator,,,Not-Equal" << std::endl;
 //    }
 
-    Contract *cr1 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::FRONT));
-    Contract *cr2 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::LEADER), C2X(ROLE::LEADER));
-    if (*cr1 == *cr2) {
-        std::cout << "Checking == Operator,,,Equal" << std::endl;
-    } else {
-        std::cout << "Checking == Operator,,,Not-Equal" << std::endl;
-    }
     // debug ]
 }
 
@@ -242,10 +235,11 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
 //        }
 //        // debug ]
 //    }
-//    // After evaluating all StateParameters, we match the current state of the vehicle with the Contracts
-//    if(!onPlatoonBeacon) {
-//        contracts->evaluate(std::get<0>(rmLog));
-//    }
+
+    // After evaluating all StateParameters, we match the current state of the vehicle with the Contracts-Guarantee
+    if(!onPlatoonBeacon) {
+        contractGuarantees->evaluate(std::get<0>(rmLog));
+    }
 
 }
 

@@ -30,8 +30,10 @@ void WIFIContract::evaluate(const RMParameters &rmParam, const rm_log &rmLog, co
     c2l.evaluate(rmParam, rmLog, onPlatoonBeacon, index);
 
     // [ debug
-    std::cout << c2f << std::endl;
-    std::cout << c2l << std::endl;
+
+//    std::cout << c2f << std::endl;
+//    std::cout << c2l << std::endl;
+
     // debug ]
 }
 

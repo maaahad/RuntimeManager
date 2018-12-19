@@ -15,18 +15,22 @@
 
 #include <iostream>
 #include "Guarantees.h"
+#include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Guarantees's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Guarantees::Guarantees() : changeController(false), accelerate(false), decelerate(false){
+Guarantees::Guarantees(RuntimeManager *rm) : changeController(false), accelerate(false), decelerate(false){
     // TODO Auto-generated constructor stub
-
 }
 
-Guarantees::Guarantees(bool changeController, Plexe::ACTIVE_CONTROLLER to) : changeController(changeController), to(to),
-        accelerate(false), decelerate(false) {
-
+Guarantees::Guarantees(RuntimeManager *rm, bool changeController, Plexe::ACTIVE_CONTROLLER to) :changeController(changeController), to(to),
+        accelerate(false), decelerate(false){
+        mobility = rm->mobility;
+        traci = rm->traci;
+        traciVehicle = rm->traciVehicle;
+        positionHelper = rm->positionHelper;
 }
 
 Guarantees::~Guarantees() {
@@ -34,13 +38,11 @@ Guarantees::~Guarantees() {
 }
 
 void Guarantees::provideGuarantee() {
-    std::cerr << "Error: " << __FILE__
-              << "\n\tLine: " << __LINE__
-              << "\n\tCompiled on: " << __DATE__
-              << " at " << __TIME__
-              << "\n\tfunction " << __func__
-              << " Has not been implemented yet...!!!"
-              << std::endl;
+    if(changeController) {
+        traciVehicle->setActiveController(to);
+        std::cout << "Vehicle " << positionHelper->getId()
+                  << "\n\t Controller changed!!!" << std::endl;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
