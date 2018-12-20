@@ -51,11 +51,13 @@ public:
     C2X(QUALITY quality, ROLE role);
     virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
     virtual bool equal(const StateParameter &stateParameter) const override;
-    // TODO make these private and the user's class defined as friend
+
+private:
     QUALITY quality;
     ROLE role;
 
     friend std::ostream &operator<<(std::ostream &os, const C2X &c2x);
+    friend std::hash<C2X>;
 };
 
 // template specialization for hash<C2X>
