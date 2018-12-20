@@ -78,9 +78,6 @@ void Guarantees::provideGuarantee(Contract *contract) const{
 
         // Perform the transition
         traciVehicle->setActiveController(to);
-
-//        EV << "Vehicle " << positionHelper->getId()
-//             << "\n\t Controller changed!!!" << std::endl;
     }
 }
 
