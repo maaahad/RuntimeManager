@@ -34,8 +34,7 @@ private:
 };
 
 // Defining template specialization for std::hash<WIFIContract> to use in unordered map
-
-// TODO DONOT FORGET ABOOUT BASE CLASS
+// Not using the base class in Contract-Guarantee map
 
 namespace std{
 template <> struct hash<const WIFIContract> {

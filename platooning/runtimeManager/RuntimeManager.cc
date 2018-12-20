@@ -55,6 +55,11 @@ void RuntimeManager::initialize(int stage) {
             rmParam.nPacketLossCritical = par("nPacketLossCritical").intValue();
 
             rmParam.minSafetyDistance   = par("minSafetyDistance").doubleValue();
+
+            rmParam.actionOnTransitionEnabled  = par("actionOnTransitionEnabled").boolValue();
+            rmParam.accHeadwaytimeGap   = par("accHeadwaytimeGap").doubleValue();
+            rmParam.ploegHeadwayTimeGap = par("ploegHeadwayTimeGap").doubleValue();
+            rmParam.caccConstantSpacing = par("caccConstantSpacing").doubleValue();
         }
     }
 
@@ -98,6 +103,22 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
 
         // Sanity Check for now (WIFIContract only) TODO: need to generalize this
         ASSERT(traciVehicle->getActiveController() == (std::get<0>(rmLog).contracts)->front()->getController());
+
+        // [ debug
+
+//        if(traciVehicle->getActiveController() == Plexe::CACC) {
+//            std::cout << "Vehicle " << positionHelper->getId()
+//                      << ": \tActive Controller: " << traciVehicle->getActiveController()
+//                      << "\tConstantSpacing : "<< traciVehicle->getCACCConstantSpacing()
+//                      <<std::endl;
+//        } else {
+//            std::cout << "Vehicle " << positionHelper->getId()
+//                      << ": \tActive Controller: " << traciVehicle->getActiveController()
+//                      << "\tHeadwayTimeGap : " << traciVehicle->getACCHeadwayTime()
+//                      << std::endl;
+//        }
+
+        // debug ]
 
         // Reschedule the monitoring message. TODO make sure to reschedule the self message
         // after the current evaluation and transition (if there is any)

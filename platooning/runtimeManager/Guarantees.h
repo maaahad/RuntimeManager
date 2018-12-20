@@ -29,6 +29,8 @@ public:
     Guarantees(RuntimeManager *rm, bool changeController, Plexe::ACTIVE_CONTROLLER to);
     virtual ~Guarantees();
     void provideGuarantee(Contract *contract) const;
+private:
+   void actionOnTransition() const;
 
     Plexe::ACTIVE_CONTROLLER to;
     bool changeController;
@@ -40,6 +42,8 @@ public:
     Veins::TraCICommandInterface *traci;
     Veins::TraCICommandInterface::Vehicle *traciVehicle;
     BasePositionHelper* positionHelper;
+
+    RMParameters &rmParam;
 };
 
 

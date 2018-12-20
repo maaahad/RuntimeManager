@@ -25,12 +25,20 @@ simple BaseRuntimeManager like IBaseApplLayer {
         
         double rmMonitorInterval @unit("s") 	= default(.10s);  
         double expectedBeconInterval @unit("s") = default(.05s);
-                
+        
+        // WIFI connection quality check        
         int nPacketLossModerate  = default(1);
         int nPacketLossPoor      = default(2);
         int nPacketLossCritical  = default(3);
         
+        // minimum distance between two vehicles
         double minSafetyDistance @unit("m")= default(2m);
+        
+        // actions to be taken on transition if enabled actionOnTransition
+        bool actionOnTransitionEnabled        = default(true);
+        double accHeadwaytimeGap @unit("s")   = default(1.2s);
+        double ploegHeadwayTimeGap @unit("s") = default(1.0s);
+        double caccConstantSpacing @unit("m") = default(5m);
     gates:
         input lowerLayerIn; // from mac layer
         output lowerLayerOut; // to mac layer

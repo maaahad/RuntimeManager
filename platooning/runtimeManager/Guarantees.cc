@@ -21,12 +21,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Guarantees's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Guarantees::Guarantees(RuntimeManager *rm) : changeController(false), accelerate(false), decelerate(false){
+Guarantees::Guarantees(RuntimeManager *rm) : changeController(false), accelerate(false), decelerate(false), rmParam(rm->rmParam){
     // TODO Auto-generated constructor stub
 }
 
 Guarantees::Guarantees(RuntimeManager *rm, bool changeController, Plexe::ACTIVE_CONTROLLER to) :changeController(changeController), to(to),
-        accelerate(false), decelerate(false){
+        accelerate(false), decelerate(false), rmParam(rm->rmParam){
+
         mobility = rm->mobility;
         traci = rm->traci;
         traciVehicle = rm->traciVehicle;
@@ -35,6 +36,25 @@ Guarantees::Guarantees(RuntimeManager *rm, bool changeController, Plexe::ACTIVE_
 
 Guarantees::~Guarantees() {
     // TODO Auto-generated destructor stub
+}
+
+void Guarantees::actionOnTransition() const {
+
+    if(to == Plexe::ACC) {
+        traciVehicle->setACCHeadwayTime(rmParam.accHeadwaytimeGap);
+    } else if(to == Plexe::PLOEG){
+        traciVehicle->setACCHeadwayTime(rmParam.ploegHeadwayTimeGap);
+    } else if(to == Plexe::CACC) {
+        traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing);
+    } else {
+        std::cerr << "Error: " << __FILE__
+                  << "\n\tLine: " << __LINE__
+                  << "\n\tCompiled on: " << __DATE__
+                  << " at " << __TIME__
+                  << "\n\tfunction " << __func__
+                  << " Wrong Controller!!!"
+                  << std::endl;
+    }
 }
 
 void Guarantees::provideGuarantee(Contract *contract) const{
@@ -52,6 +72,10 @@ void Guarantees::provideGuarantee(Contract *contract) const{
         // update the vehicle's current contract status for the Active controller
         // As the consecutive Guarantee requires the current active controller (included in the key_type of the Contract-Guarantee unordered_map )
         contract->updateOnTransition(to);
+
+        // perform actionOnTransition if enabled
+        if(rmParam.actionOnTransitionEnabled) actionOnTransition();
+
         // Perform the transition
         traciVehicle->setActiveController(to);
 

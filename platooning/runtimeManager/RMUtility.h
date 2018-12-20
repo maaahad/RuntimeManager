@@ -31,6 +31,11 @@ class Contract;
         int nPacketLossCritical;
 
         double minSafetyDistance;
+
+        bool actionOnTransitionEnabled;
+        double accHeadwaytimeGap;
+        double ploegHeadwayTimeGap;
+        double caccConstantSpacing;
     };
 
     /**
