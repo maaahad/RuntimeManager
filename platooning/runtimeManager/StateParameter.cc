@@ -40,7 +40,7 @@ bool StateParameter::equal(const StateParameter &stateParameter) const {
     return false;
 }
 
-void StateParameter::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+void StateParameter::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
               << "\n\tCompiled on: " << __DATE__
@@ -66,7 +66,7 @@ C2X::C2X(QUALITY quality, ROLE role) : quality(quality), role(role) {
 
 }
 
-template <typename T> void C2X::c2xQualityCheck(const RMParameters &rmParam, const T &other) {
+template <typename T> void C2X::c2xQualityCheck(const RM::RMParameters &rmParam, const T &other) {
     // c2xInitiated ensures that we have logged the last received beacon
     if(other.common.c2xInitiated) {
         SimTime currentTime = simTime();
@@ -91,18 +91,20 @@ template <typename T> void C2X::c2xQualityCheck(const RMParameters &rmParam, con
     }
 }
 
-void C2X::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+void C2X::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     if(onPlatoonBeacon) {
         // Right now there is nothing to do here!!!
     } else {
         // This is called during monitoring from self message
         if(role == ROLE::FRONT) {
 //            const auto &other = std::get<1>(rmLog);
-            const RMLog_Front &other = std::get<1>(rmLog);
+            const RM::RMLog_Front &other = std::get<1>(rmLog);
             c2xQualityCheck(rmParam, other);
+
+            // TODO In case of c2f, we need to check the distance to the front vehicle
         } else if (role == ROLE::LEADER) {
 //            const auto &other = std::get<2>(rmLog);
-            const RMLog_Leader &other = std::get<2>(rmLog);
+            const RM::RMLog_Leader &other = std::get<2>(rmLog);
             c2xQualityCheck(rmParam, other);
         } else {
             std::cerr << "Error: " << __FILE__

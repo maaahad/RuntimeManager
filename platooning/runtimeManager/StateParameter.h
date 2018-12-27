@@ -34,7 +34,7 @@ class StateParameter {
 public:
     StateParameter();
     virtual ~StateParameter();
-    virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
+    virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
     virtual bool equal(const StateParameter &stateParameter) const = 0;
 };
 
@@ -45,11 +45,11 @@ enum ROLE {
 
 class C2X : public StateParameter {
 private:
-    template <typename T> void c2xQualityCheck(const RMParameters &rmParam, const T &other);
+    template <typename T> void c2xQualityCheck(const RM::RMParameters &rmParam, const T &other);
 public:
     C2X(ROLE role);
     C2X(QUALITY quality, ROLE role);
-    virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
+    virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
     virtual bool equal(const StateParameter &stateParameter) const override;
 
 private:

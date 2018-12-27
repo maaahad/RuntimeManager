@@ -56,14 +56,22 @@ Define_Module(HumanInterferingProtocol)
         // beaconing interval in seconds
         beaconingInterval = SimTime(par("beaconingInterval").doubleValue());
         // platooning message packet size
-        packetSize = par("packetSize").longValue();
+//        packetSize = par("packetSize").longValue(); // Default
+
+        packetSize = par("packetSize").intValue();     // Ahad
+
+
         // priority of platooning message
-        priority = par("priority").longValue();
+//        priority = par("priority").longValue(); // Default
+        priority = par("priority").intValue();
+
+
         ASSERT2(priority >= 0 && priority <= 7, "priority value must be between 0 and 7");
         // tx power
         txPower = par("txPower").doubleValue();
         // bit rate
-        bitrate = par("bitrate").doubleValue();
+//        bitrate = par("bitrate").doubleValue(); // Default
+        bitrate = par("bitrate").intValue();      // Ahad
 
         // init messages for scheduleAt
         sendBeacon = new cMessage("sendBeacon");

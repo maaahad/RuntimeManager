@@ -25,7 +25,7 @@ class WIFIContract : public Contract {
 public:
     WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2X c2f, C2X c2l);
     virtual ~WIFIContract();
-    virtual void evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
+    virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
     virtual bool equal(const Contract &contract) const override;
     virtual void updateOnTransition(Plexe::ACTIVE_CONTROLLER to) override;
 private:

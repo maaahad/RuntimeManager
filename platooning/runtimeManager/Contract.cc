@@ -24,7 +24,7 @@ Contract::~Contract() {
     // TODO Auto-generated destructor stub
 }
 
-void Contract::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+void Contract::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
               << "\n\tCompiled on: " << __DATE__

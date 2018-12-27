@@ -16,6 +16,7 @@
 // Forward declaration
 class StateParameter;
 class Contract;
+namespace RM {
 
 /**
      * This structure represents the RMLog, that is the information that RM
@@ -84,5 +85,6 @@ class Contract;
 
     // Some companion type
     using rm_log = std::tuple<RMLog_Own, RMLog_Front, RMLog_Leader>;
+}
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMUTILITY_H_ */

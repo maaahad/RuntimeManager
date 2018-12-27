@@ -144,7 +144,7 @@ template <typename T> void RuntimeManager::commonLog(const PlatooningBeacon *pb,
 void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime currentTime) {
     // We are only interested in storing log for front and leader vehicle
     if(pb->getVehicleId() == positionHelper->getFrontId()) {
-        RMLog_Front &frontLog = std::get<1>(rmLog);
+        RM::RMLog_Front &frontLog = std::get<1>(rmLog);
         commonLog(pb, frontLog, currentTime);
 
         // TODO : log if there is any front specific log required
@@ -179,7 +179,7 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
     // In that case we want to logged for both leader and the front vehicle
     // In case of other vehicles onley one of the condition will be satisfied
     if(pb->getVehicleId() == positionHelper->getLeaderId()) {
-        RMLog_Leader &leaderLog = std::get<2>(rmLog);
+        RM::RMLog_Leader &leaderLog = std::get<2>(rmLog);
         commonLog(pb, leaderLog, currentTime);
         // TODO : log if there is any leader specific log required
         // Evaluate StateParameters for possible upgrade
@@ -191,7 +191,7 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
 
 
 void RuntimeManager::initializeContracts() {
-    RMLog_Own &ego = std::get<0>(rmLog);
+    RM::RMLog_Own &ego = std::get<0>(rmLog);
     ego.contracts  = std::make_shared<std::vector<Contract *>>();
 
     // WIFIContract
@@ -217,7 +217,7 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
     // Sanity Check
     ASSERT2(onPlatoonBeacon ? index >= 0 : index < 0, "Problem with default argument in evaluate() methods in RuntimeManager");
 
-    RMLog_Own &ego = std::get<0>(rmLog);
+    RM::RMLog_Own &ego = std::get<0>(rmLog);
     for(auto it = (ego.contracts)->begin(); it != (ego.contracts)->end(); ++it) {
         if(onPlatoonBeacon) {
             (*it)->evaluate(rmParam, rmLog, onPlatoonBeacon, index);

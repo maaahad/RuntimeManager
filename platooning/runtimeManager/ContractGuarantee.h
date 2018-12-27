@@ -34,7 +34,7 @@ class Contract_Guarantee {
 public:
     Contract_Guarantee(RuntimeManager *rm);
     virtual ~Contract_Guarantee();
-    void evaluate(RMLog_Own &state);
+    void evaluate(RM::RMLog_Own &state);
 private:
     void initContractList(RuntimeManager *rm);
     using contract_guarantee_type = std::unordered_map<const WIFIContract, const Guarantees>;

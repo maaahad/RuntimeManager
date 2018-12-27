@@ -31,7 +31,7 @@ Contract_Guarantee::~Contract_Guarantee() {
 }
 
 // This is for checking TODO will extend later
-void Contract_Guarantee::evaluate(RMLog_Own &state) {
+void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
     // Iterate through every single contract of the state and perform the associate guarantees
     for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
         if(auto contract = dynamic_cast<WIFIContract *>(*start)) {
@@ -57,9 +57,11 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
     // StateParameters
     C2X ok_c2f(QUALITY::OK, ROLE::FRONT);
+    C2X poor_c2f(QUALITY::POOR, ROLE::FRONT);
     C2X critical_c2f(QUALITY::CRITICAL, ROLE::FRONT);
 
     C2X ok_c2l(QUALITY::OK, ROLE::LEADER);
+    C2X poor_c2l(QUALITY::POOR, ROLE::LEADER);
     C2X critical_c2l(QUALITY::CRITICAL, ROLE::LEADER);
 
     // Guarantees
@@ -79,6 +81,9 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // degrade
     WIFIContract ploeg2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, ok_c2l);
     WIFIContract ploeg2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, critical_c2l);
+    // decelerate TODO need to define the contracts by only contract as we are concerned with the quality of c2f, not c2l
+//    WIFIContract ploegDecelerate1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, ok_c2l);
+//    WIFIContract ploegDecelerate2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, critical_c2l);
 
     //WIFIContract for CACC
     // Degrade

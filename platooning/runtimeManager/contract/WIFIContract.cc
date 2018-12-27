@@ -25,7 +25,7 @@ WIFIContract::~WIFIContract() {
     // TODO Auto-generated destructor stub
 }
 
-void WIFIContract::evaluate(const RMParameters &rmParam, const rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+void WIFIContract::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     c2f.evaluate(rmParam, rmLog, onPlatoonBeacon, index);
     c2l.evaluate(rmParam, rmLog, onPlatoonBeacon, index);
 

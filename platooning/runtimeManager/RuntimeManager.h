@@ -72,9 +72,9 @@ private:
     void initializeContracts();
 
     // RuntimeManager's parameter
-    RMParameters rmParam;
+    RM::RMParameters rmParam;
     // Log to be done by RuntimeManager
-    rm_log rmLog;
+    RM::rm_log rmLog;
     // Reference to the full list of Contract::Guarantees map
     std::shared_ptr<Contract_Guarantee> contractGuarantees;
 

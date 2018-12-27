@@ -43,7 +43,7 @@ private:
     Veins::TraCICommandInterface::Vehicle *traciVehicle;
     BasePositionHelper* positionHelper;
 
-    RMParameters &rmParam;
+    RM::RMParameters &rmParam;
 };
 
 
