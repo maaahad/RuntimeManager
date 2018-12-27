@@ -21,13 +21,13 @@
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
 
 
-enum QUALITY {
-    CRITICAL,
-    POOR,
-    MODERATE,
-    OK,
+enum WIFI_QUALITY {
+    CRITICAL = 1 << 0,
+    POOR     = 1 << 1,
+    MODERATE = 1 << 2,
+    OK       = 1 << 3,
+    ALL      = CRITICAL | POOR | MODERATE |OK,
 };
-
 
 class StateParameter {
     friend bool operator==(const StateParameter &sp1, const StateParameter &sp2);
@@ -43,18 +43,19 @@ enum ROLE {
     LEADER,
 };
 
+// TODO make the C2X class abstract Later
 class C2X : public StateParameter {
-private:
+protected:
     template <typename T> void c2xQualityCheck(const RM::RMParameters &rmParam, const T &other);
 public:
     C2X(ROLE role);
-    C2X(QUALITY quality);
-    C2X(QUALITY quality, ROLE role);
+    C2X(WIFI_QUALITY quality);
+    C2X(WIFI_QUALITY quality, ROLE role);
     virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
     virtual bool equal(const StateParameter &stateParameter) const override;
 
 protected:
-    QUALITY quality;
+    WIFI_QUALITY quality;
     ROLE role;
 
     friend std::ostream &operator<<(std::ostream &os, const C2X &c2x);
@@ -68,7 +69,7 @@ template <> struct hash<C2X> {
   using result_type = size_t;
   using argument_type = C2X;
   result_type operator()(const argument_type &c2x) const {
-      return std::hash<std::underlying_type<QUALITY>::type>()(c2x.quality) ^
+      return std::hash<std::underlying_type<WIFI_QUALITY>::type>()(c2x.quality) ^
              std::hash<std::underlying_type<ROLE>::type>()(c2x.role);
   }
 };
@@ -80,13 +81,13 @@ template <> struct hash<C2X> {
  */
 class C2F : public C2X {
 public:
-    C2F(QUALITY quality, bool atSafeDistance) : C2X(quality), atSafeDistance(atSafeDistance) {
-
-    }
+    C2F(WIFI_QUALITY quality = WIFI_QUALITY::CRITICAL, bool atSafeDistance = true);
     virtual bool equal(const StateParameter &stateParameter) const override;
+    virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
 private:
     bool atSafeDistance;
 
+    friend std::ostream &operator<<(std::ostream &os, const C2F &c2f);
     friend std::hash<C2F>;
 };
 
@@ -97,7 +98,7 @@ template <> struct hash<C2F> {
   using return_type   = size_t;
   using argument_type = C2F;
   return_type operator()(const argument_type &c2f) const {
-      return std::hash<std::underlying_type<QUALITY>::type>()(c2f.quality) ^
+      return std::hash<std::underlying_type<WIFI_QUALITY>::type>()(c2f.quality) ^
              std::hash<bool>()(c2f.atSafeDistance);
   }
 };
@@ -109,11 +110,11 @@ template <> struct hash<C2F> {
  */
 class C2L : public C2X {
 public:
-    C2L(QUALITY quality) : C2X(quality) {
-
-    }
+    C2L(WIFI_QUALITY quality = WIFI_QUALITY::CRITICAL);
     virtual bool equal(const StateParameter &stateParameter) const override;
+    virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
 
+    friend std::ostream &operator<<(std::ostream &os, const C2L &c2l);
     friend std::hash<C2L>;
 };
 
@@ -123,7 +124,7 @@ template <> struct hash<C2L> {
   using return_type   = size_t;
   using argument_type = C2L;
   return_type operator()(const C2L &c2l) const {
-      return std::hash<std::underlying_type<QUALITY>::type>()(c2l.quality);
+      return std::hash<std::underlying_type<WIFI_QUALITY>::type>()(c2l.quality);
   }
 };
 }

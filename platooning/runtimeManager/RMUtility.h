@@ -21,13 +21,13 @@ namespace RM {
      * RM custom active controller
      * WARNING!!! This requires loads of change in code.....!!!!????
      */
-    enum class CUSTOM_ACTIVE_CONTROLLER {
-      ACC   = 1 << 0,
-      PLOEG = 1 << 1,
-      CACC  = 1 << 2,
-      PLOEG_N_CACC = PLOEG | CACC,
-      ALL   = ACC | PLOEG | CACC,
-    };
+//    enum class CUSTOM_ACTIVE_CONTROLLER {
+//      ACC   = 1 << 0,
+//      PLOEG = 1 << 1,
+//      CACC  = 1 << 2,
+//      PLOEG_N_CACC = PLOEG | CACC,
+//      ALL   = ACC | PLOEG | CACC,
+//    };
 
     /**
          * This structure represents the RMLog, that is the information that RM

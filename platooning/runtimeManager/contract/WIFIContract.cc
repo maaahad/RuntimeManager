@@ -16,7 +16,7 @@
 #include <iostream>
 #include "WIFIContract.h"
 
-WIFIContract::WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2X c2f, C2X c2l) : Contract(type, controller), c2f(c2f), c2l(c2l) {
+WIFIContract::WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2F c2f, C2L c2l) : Contract(type, controller), c2f(c2f), c2l(c2l) {
     // TODO Auto-generated constructor stub
 
 }

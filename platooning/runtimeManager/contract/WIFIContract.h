@@ -23,14 +23,19 @@
 class WIFIContract : public Contract {
     friend class std::hash<const WIFIContract>;
 public:
-    WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2X c2f, C2X c2l);
+//    WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2X c2f, C2X c2l);
+    WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2F c2f, C2L c2l);
+
     virtual ~WIFIContract();
     virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
     virtual bool equal(const Contract &contract) const override;
     virtual void updateOnTransition(Plexe::ACTIVE_CONTROLLER to) override;
 private:
-    C2X c2f;
-    C2X c2l;
+//    C2X c2f;
+//    C2X c2l;
+
+    C2F c2f;
+    C2L c2l;
 };
 
 // Defining template specialization for std::hash<WIFIContract> to use in unordered map
@@ -41,10 +46,14 @@ template <> struct hash<const WIFIContract> {
    typedef size_t result_type;
    typedef WIFIContract argument_type;
    result_type operator()(const argument_type &wifi_contract) const {
+//       return std::hash<std::underlying_type<CONTRACT_TYPE>::type>()(wifi_contract.type) ^
+//              std::hash<std::underlying_type<Plexe::ACTIVE_CONTROLLER>::type>()(wifi_contract.controller) ^
+//              std::hash<C2X>()(wifi_contract.c2f) ^
+//              std::hash<C2X>()(wifi_contract.c2l);
        return std::hash<std::underlying_type<CONTRACT_TYPE>::type>()(wifi_contract.type) ^
               std::hash<std::underlying_type<Plexe::ACTIVE_CONTROLLER>::type>()(wifi_contract.controller) ^
-              std::hash<C2X>()(wifi_contract.c2f) ^
-              std::hash<C2X>()(wifi_contract.c2l);
+              std::hash<C2F>()(wifi_contract.c2f) ^
+              std::hash<C2L>()(wifi_contract.c2l);
    }
 };
 }

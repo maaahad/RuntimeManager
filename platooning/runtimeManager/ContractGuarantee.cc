@@ -56,13 +56,22 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // Creating the WIFIContract-Guarantee list
 
     // StateParameters
-    C2X ok_c2f(QUALITY::OK, ROLE::FRONT);
-    C2X poor_c2f(QUALITY::POOR, ROLE::FRONT);
-    C2X critical_c2f(QUALITY::CRITICAL, ROLE::FRONT);
+//    C2X ok_c2f(WIFI_QUALITY::OK, ROLE::FRONT);
+//    C2X poor_c2f(WIFI_QUALITY::POOR, ROLE::FRONT);
+//    C2X critical_c2f(WIFI_QUALITY::CRITICAL, ROLE::FRONT);
+//
+//    C2X ok_c2l(WIFI_QUALITY::OK, ROLE::LEADER);
+//    C2X poor_c2l(WIFI_QUALITY::POOR, ROLE::LEADER);
+//    C2X critical_c2l(WIFI_QUALITY::CRITICAL, ROLE::LEADER);
 
-    C2X ok_c2l(QUALITY::OK, ROLE::LEADER);
-    C2X poor_c2l(QUALITY::POOR, ROLE::LEADER);
-    C2X critical_c2l(QUALITY::CRITICAL, ROLE::LEADER);
+    // StateParameters C2F : atSafetyDistance = true (default)
+    C2F ok_c2f(WIFI_QUALITY::OK);
+    C2F poor_c2f(WIFI_QUALITY::POOR);
+    C2F critical_c2f(WIFI_QUALITY::CRITICAL);
+    // StateParameters C2L
+    C2L ok_c2l(WIFI_QUALITY::OK);
+    C2L poor_c2l(WIFI_QUALITY::POOR);
+    C2L critical_c2l(WIFI_QUALITY::CRITICAL);
 
     // Guarantees
     Guarantees g2acc(rm, true, Plexe::ACTIVE_CONTROLLER::ACC);
@@ -82,8 +91,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     WIFIContract ploeg2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, ok_c2l);
     WIFIContract ploeg2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, critical_c2l);
     // decelerate TODO need to define the contracts by only contract as we are concerned with the quality of c2f, not c2l
-//    WIFIContract ploegDecelerate1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, ok_c2l);
-//    WIFIContract ploegDecelerate2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, critical_c2l);
+
 
     //WIFIContract for CACC
     // Degrade
@@ -103,9 +111,9 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     wifiCG->insert(std::make_pair(cacc2acc1, g2acc));
     wifiCG->insert(std::make_pair(cacc2acc2, g2acc));
 
-//    contract_guarantee_type ::size_type size = wifiCG->size();
-//
-//    std::cout << "  " <<std::endl;
+    contract_guarantee_type::size_type size = wifiCG->size();
+
+    std::cout << "  " <<std::endl;
 
 }
 

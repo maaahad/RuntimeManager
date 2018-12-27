@@ -194,8 +194,12 @@ void RuntimeManager::initializeContracts() {
     RM::RMLog_Own &ego = std::get<0>(rmLog);
     ego.contracts  = std::make_shared<std::vector<Contract *>>();
 
-    // WIFIContract
-    (ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::LEADER)));
+    // Old WIFIContract
+//    (ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::LEADER)));
+
+
+    // New WIFIContract
+    (ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2F(), C2L()));
 
     // TODO other Contracts, if there is any
     // [debug
@@ -229,6 +233,7 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
     // Vehicles StateParameters related to the provided contract has been evaluated,
     // Now, we need to match the current state of the vehicle's contract with the Contracts-Guarantee
     // to ensure the appropriate Guarantee
+
     if(!onPlatoonBeacon) {
         contractGuarantees->evaluate(std::get<0>(rmLog));
     }

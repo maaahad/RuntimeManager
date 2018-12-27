@@ -37,7 +37,7 @@ bool StateParameter::equal(const StateParameter &stateParameter) const {
               << "\n\tfunction " << __func__
               << " This method should never be called!!!"
               << std::endl;
-    return false;
+    return true;
 }
 
 void StateParameter::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
@@ -58,15 +58,15 @@ bool operator==(const StateParameter &sp1, const StateParameter &sp2) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // C2X's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-C2X::C2X(ROLE role) : quality(QUALITY::CRITICAL), role(role) {
+C2X::C2X(ROLE role) : quality(WIFI_QUALITY::CRITICAL), role(role) {
 
 }
 
-C2X::C2X(QUALITY quality) : quality(quality){
+C2X::C2X(WIFI_QUALITY quality) : quality(quality){
 
 }
 
-C2X::C2X(QUALITY quality, ROLE role) : quality(quality), role(role) {
+C2X::C2X(WIFI_QUALITY quality, ROLE role) : quality(quality), role(role) {
 
 }
 
@@ -79,47 +79,55 @@ template <typename T> void C2X::c2xQualityCheck(const RM::RMParameters &rmParam,
         std::cout << "nBeaconMiss: " << nBeaconMiss << std::endl;
 
         if(nBeaconMiss >= rmParam.nPacketLossCritical) {
-            quality = QUALITY::CRITICAL;
+            quality = WIFI_QUALITY::CRITICAL;
         } else if (nBeaconMiss < rmParam.nPacketLossCritical && nBeaconMiss >= rmParam.nPacketLossPoor) {
-            quality = QUALITY::POOR;
+            quality = WIFI_QUALITY::POOR;
         } else if (nBeaconMiss < rmParam.nPacketLossPoor && nBeaconMiss >= rmParam.nPacketLossModerate) {
-            quality = QUALITY::MODERATE;
+            quality = WIFI_QUALITY::MODERATE;
         } else {
-            quality = QUALITY::OK;
+            quality = WIFI_QUALITY::OK;
         }
 
     } else {
         // Sanity check
-        ASSERT(quality == QUALITY::CRITICAL);
+        ASSERT(quality == WIFI_QUALITY::CRITICAL);
         return;
     }
 }
 
 void C2X::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
-    if(onPlatoonBeacon) {
-        // Right now there is nothing to do here!!!
-    } else {
-        // This is called during monitoring from self message
-        if(role == ROLE::FRONT) {
-//            const auto &other = std::get<1>(rmLog);
-            const RM::RMLog_Front &other = std::get<1>(rmLog);
-            c2xQualityCheck(rmParam, other);
+//    if(onPlatoonBeacon) {
+//        // Right now there is nothing to do here!!!
+//    } else {
+//        // This is called during monitoring from self message
+//        if(role == ROLE::FRONT) {
+////            const auto &other = std::get<1>(rmLog);
+//            const RM::RMLog_Front &other = std::get<1>(rmLog);
+//            c2xQualityCheck(rmParam, other);
+//
+//            // TODO In case of c2f, we need to check the distance to the front vehicle
+//        } else if (role == ROLE::LEADER) {
+////            const auto &other = std::get<2>(rmLog);
+//            const RM::RMLog_Leader &other = std::get<2>(rmLog);
+//            c2xQualityCheck(rmParam, other);
+//        } else {
+//            std::cerr << "Error: " << __FILE__
+//                      << "\n\tLine: " << __LINE__
+//                      << "\n\tCompiled on: " << __DATE__
+//                      << " at " << __TIME__
+//                      << "\n\tfunction " << __func__
+//                      << " Wrong vehicle type!!!"
+//                      << std::endl;
+//        }
+//    }
 
-            // TODO In case of c2f, we need to check the distance to the front vehicle
-        } else if (role == ROLE::LEADER) {
-//            const auto &other = std::get<2>(rmLog);
-            const RM::RMLog_Leader &other = std::get<2>(rmLog);
-            c2xQualityCheck(rmParam, other);
-        } else {
-            std::cerr << "Error: " << __FILE__
-                      << "\n\tLine: " << __LINE__
-                      << "\n\tCompiled on: " << __DATE__
-                      << " at " << __TIME__
-                      << "\n\tfunction " << __func__
-                      << " Wrong vehicle type!!!"
-                      << std::endl;
-        }
-    }
+    std::cerr << "Error: " << __FILE__
+                          << "\n\tLine: " << __LINE__
+                          << "\n\tCompiled on: " << __DATE__
+                          << " at " << __TIME__
+                          << "\n\tfunction " << __func__
+                          << " Should be overriden by the derived class C2F and C2L!!!"
+                          << std::endl;
 }
 
 // Operator overloaded
@@ -140,16 +148,58 @@ std::ostream &operator<<(std::ostream &os, const C2X &c2x){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // C2F's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+C2F::C2F(WIFI_QUALITY quality, bool atSafeDistance) : C2X(quality), atSafeDistance(atSafeDistance) {
+
+}
+
+
 bool C2F::equal(const StateParameter &stateParameter) const {
     auto rhs = dynamic_cast<const C2F &>(stateParameter);
     return (quality == rhs.quality) &&
            (atSafeDistance == rhs.atSafeDistance);
 }
 
+void C2F::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+    if(onPlatoonBeacon) {
+        // Right now there is nothing to do here!!!
+    } else {
+//      const auto &other = std::get<1>(rmLog);
+        const RM::RMLog_Front &other = std::get<1>(rmLog);
+        c2xQualityCheck(rmParam, other);
+        // TODO we need to check the distance to the front vehicle
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, const C2F &c2f) {
+    os << "C2F: \n\tQuality : " << (int)c2f.quality << "\n\tatSafeDistance: " << c2f.atSafeDistance;
+    return os;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // C2L's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+C2L::C2L(WIFI_QUALITY quality) : C2X(quality) {
+
+}
+
 bool C2L::equal(const StateParameter &stateParameter) const {
     auto rhs = dynamic_cast<const C2L &>(stateParameter);
     return (quality == rhs.quality);
+}
+
+void C2L::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+    if(onPlatoonBeacon) {
+        // Right now there is nothing to do here!!!
+    } else {
+//      const auto &other = std::get<2>(rmLog);
+        const RM::RMLog_Leader &other = std::get<2>(rmLog);
+        c2xQualityCheck(rmParam, other);
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, const C2L &c2l) {
+    os << "C2L: \n\tQuality : " << (int)c2l.quality;
+    return os;
 }
