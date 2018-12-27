@@ -48,11 +48,12 @@ private:
     template <typename T> void c2xQualityCheck(const RM::RMParameters &rmParam, const T &other);
 public:
     C2X(ROLE role);
+    C2X(QUALITY quality);
     C2X(QUALITY quality, ROLE role);
     virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
     virtual bool equal(const StateParameter &stateParameter) const override;
 
-private:
+protected:
     QUALITY quality;
     ROLE role;
 
@@ -69,6 +70,60 @@ template <> struct hash<C2X> {
   result_type operator()(const argument_type &c2x) const {
       return std::hash<std::underlying_type<QUALITY>::type>()(c2x.quality) ^
              std::hash<std::underlying_type<ROLE>::type>()(c2x.role);
+  }
+};
+}
+
+
+/**
+ * Subclass of C2X
+ */
+class C2F : public C2X {
+public:
+    C2F(QUALITY quality, bool atSafeDistance) : C2X(quality), atSafeDistance(atSafeDistance) {
+
+    }
+    virtual bool equal(const StateParameter &stateParameter) const override;
+private:
+    bool atSafeDistance;
+
+    friend std::hash<C2F>;
+};
+
+// template specialization for hash<C2F>
+
+namespace std{
+template <> struct hash<C2F> {
+  using return_type   = size_t;
+  using argument_type = C2F;
+  return_type operator()(const argument_type &c2f) const {
+      return std::hash<std::underlying_type<QUALITY>::type>()(c2f.quality) ^
+             std::hash<bool>()(c2f.atSafeDistance);
+  }
+};
+
+}
+
+/**
+ * Subclass of C2X
+ */
+class C2L : public C2X {
+public:
+    C2L(QUALITY quality) : C2X(quality) {
+
+    }
+    virtual bool equal(const StateParameter &stateParameter) const override;
+
+    friend std::hash<C2L>;
+};
+
+// Template specialization for hash<C2L>
+namespace std {
+template <> struct hash<C2L> {
+  using return_type   = size_t;
+  using argument_type = C2L;
+  return_type operator()(const C2L &c2l) const {
+      return std::hash<std::underlying_type<QUALITY>::type>()(c2l.quality);
   }
 };
 }

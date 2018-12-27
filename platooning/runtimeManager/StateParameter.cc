@@ -62,6 +62,10 @@ C2X::C2X(ROLE role) : quality(QUALITY::CRITICAL), role(role) {
 
 }
 
+C2X::C2X(QUALITY quality) : quality(quality){
+
+}
+
 C2X::C2X(QUALITY quality, ROLE role) : quality(quality), role(role) {
 
 }
@@ -130,4 +134,22 @@ bool C2X::equal(const StateParameter &stateParameter) const {
 std::ostream &operator<<(std::ostream &os, const C2X &c2x){
     os << "C2X: \n\tQuality : " << (int)c2x.quality << "\n\trole: " << (int)c2x.role;
     return os;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// C2F's Member function's implementation
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool C2F::equal(const StateParameter &stateParameter) const {
+    auto rhs = dynamic_cast<const C2F &>(stateParameter);
+    return (quality == rhs.quality) &&
+           (atSafeDistance == rhs.atSafeDistance);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// C2L's Member function's implementation
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool C2L::equal(const StateParameter &stateParameter) const {
+    auto rhs = dynamic_cast<const C2L &>(stateParameter);
+    return (quality == rhs.quality);
 }
