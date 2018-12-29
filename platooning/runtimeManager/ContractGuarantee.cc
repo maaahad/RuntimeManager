@@ -21,7 +21,8 @@
 // Contracts's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : wifiCG(std::make_shared<contract_guarantee_type>()){
+Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : wifiCG(std::make_shared<contract_guarantee_type>()) ,
+rmcg(std::make_shared<std::map<CONTRACT_TYPE, RMContainer *>>()){
     // TODO Auto-generated constructor stub
     initContractList(rm);
 }
@@ -113,7 +114,18 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
     contract_guarantee_type::size_type size = wifiCG->size();
 
-    std::cout << "  " <<std::endl;
 
+    // Checking new RMContainer
+
+    //RMCGContainer<WIFIContract, Guarantees> *con = new RMCGContainer<WIFIContract, Guarantees>(acc2cacc, g2acc, CONTRACT_TYPE::WIFI);
+    RMContainer *con = new RMCGContainer<WIFIContract, Guarantees>(acc2cacc, g2acc, CONTRACT_TYPE::WIFI);
+
+
+    rmcg->insert(std::make_pair(CONTRACT_TYPE::WIFI, con));
+
+    auto sz = rmcg->size();
+
+    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->elements)->find(acc2cacc);
+    std::cout << cc->first <<std::endl;
 }
 

@@ -13,15 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_WIFICONTRACT_H_
-#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_WIFICONTRACT_H_
+#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_WIFICONTRACT_H_
+#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_WIFICONTRACT_H_
 
+#include<iostream>
 #include "veins/modules/application/platooning/runtimeManager/Contract.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
 
 
 class WIFIContract : public Contract {
     friend class std::hash<const WIFIContract>;
+    friend std::ostream &operator<<(std::ostream &os, const WIFIContract &contract);
 public:
 //    WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2X c2f, C2X c2l);
     WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2F c2f, C2L c2l);
@@ -58,4 +60,4 @@ template <> struct hash<const WIFIContract> {
 };
 }
 
-#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_WIFICONTRACT_H_ */
+#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_WIFICONTRACT_H_ */

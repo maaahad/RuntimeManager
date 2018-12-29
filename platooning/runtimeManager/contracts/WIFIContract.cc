@@ -13,8 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include "../contracts/WIFIContract.h"
+
 #include <iostream>
-#include "WIFIContract.h"
 
 WIFIContract::WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2F c2f, C2L c2l) : Contract(type, controller), c2f(c2f), c2l(c2l) {
     // TODO Auto-generated constructor stub
@@ -47,3 +48,8 @@ bool WIFIContract::equal(const Contract &contract) const {
 void WIFIContract::updateOnTransition(Plexe::ACTIVE_CONTROLLER to) {
     controller = to;
 }
+
+std::ostream &operator<<(std::ostream &os, const WIFIContract &contract) {
+    return os << "WIFIContract: \n\t" << contract.c2f << "\n\t" << contract.c2l;
+}
+

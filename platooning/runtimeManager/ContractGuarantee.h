@@ -16,15 +16,18 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_
 
-#include<vector>
-#include<memory>
+#include <vector>
+#include <memory>
 #include <unordered_map>
-#include<map>
+#include <map>
 
+#include "contracts/WIFIContract.h"
 #include "veins/modules/application/platooning/CC_Const.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
-#include "veins/modules/application/platooning/runtimeManager/contract/WIFIContract.h"
+#include "veins/modules/application/platooning/runtimeManager/rmContainer/RMCGContainer.h"
+
+
 
 
 
@@ -39,6 +42,9 @@ private:
     void initContractList(RuntimeManager *rm);
     using contract_guarantee_type = std::unordered_map<const WIFIContract, const Guarantees>;
     std::shared_ptr<contract_guarantee_type> wifiCG;
+
+    // Use of new RMContainer
+    std::shared_ptr<std::map<CONTRACT_TYPE, RMContainer *>> rmcg;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_ */

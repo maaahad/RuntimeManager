@@ -17,13 +17,13 @@
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RUNTIMEMANAGER_H_
 
 
+#include "contracts/WIFIContract.h"
 #include "ContractGuarantee.h"
 #include "veins/base/modules/BaseApplLayer.h"
 #include "veins/modules/application/platooning/messages/PlatooningBeacon_m.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
-#include "veins/modules/application/platooning/runtimeManager/contract/WIFIContract.h"
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
 
 
