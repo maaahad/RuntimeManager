@@ -52,22 +52,22 @@ public:
     using container_type = std::unordered_map<const C, const G>;
     RMCGContainer(const C &c, const G &g, CONTRACT_TYPE ctype);
     ~RMCGContainer();
-    void addElement(const C &c, const G &g);
+    void addCG(const C &c, const G &g);
 //private:
-    std::shared_ptr<container_type> elements;
+    std::shared_ptr<container_type> cgs;
 };
 
 template <typename C, typename G> RMCGContainer<C,G>::RMCGContainer(const C &c, const G &g, CONTRACT_TYPE ctype) : RMContainer(ctype) ,
-        elements(std::make_shared<container_type>()){
-    elements->insert(std::make_pair(c,g));
+        cgs(std::make_shared<container_type>()){
+    cgs->insert(std::make_pair(c,g));
 }
 
 template <typename C, typename G> RMCGContainer<C,G>::~RMCGContainer() {
 
 }
 
-template <typename C, typename G> void RMCGContainer<C,G>::addElement(const C &c, const G &g) {
-    elements->insert(std::make_pair(c,g));
+template <typename C, typename G> void RMCGContainer<C,G>::addCG(const C &c, const G &g) {
+    cgs->insert(std::make_pair(c,g));
 }
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCGCONTAINER_H_ */

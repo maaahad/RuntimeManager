@@ -54,6 +54,10 @@ Plexe::ACTIVE_CONTROLLER Contract::getController() const {
     return controller;
 }
 
+CONTRACT_TYPE Contract::getContractType() const {
+    return type;
+}
+
 // Contract free == operator
 bool operator==(const Contract &cr1, const Contract &cr2 ) {
     return (typeid(cr1) == typeid(cr2)) && cr1.equal(cr2);

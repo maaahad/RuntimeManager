@@ -38,6 +38,7 @@ public:
     virtual bool equal(const Contract &contract) const;
     virtual void updateOnTransition(Plexe::ACTIVE_CONTROLLER to) = 0;
     Plexe::ACTIVE_CONTROLLER getController() const;
+    CONTRACT_TYPE getContractType() const;
 
 protected:
     CONTRACT_TYPE type;

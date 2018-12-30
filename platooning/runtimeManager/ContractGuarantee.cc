@@ -33,25 +33,70 @@ Contract_Guarantee::~Contract_Guarantee() {
 
 // This is for checking TODO will extend later
 void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
-    // Iterate through every single contract of the state and perform the associate guarantees
+
+//    // OLD Iterate through every single contract of the state and perform the associate guarantees
+//    for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
+//        if(auto contract = dynamic_cast<WIFIContract *>(*start)) {
+//            // match should be unique
+//            auto match = wifiCG->find(*contract);
+//            if(match != wifiCG->end()) {
+//                // Match found and call the provideGuarantee method of the found Guarantee
+//                Guarantees guarantee = match->second;
+//                guarantee.provideGuarantee(*start);
+//            } else {
+//                std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
+//            }
+//            // each contract of a vehicle should be exclusive to only one particular Contract_Guarantee list
+//            continue;
+//        }
+//
+//        // TODO check in other Contract_Gurantee list
+//    }
+
+
+
+    // TRYING WITH new RMContainer
     for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
         if(auto contract = dynamic_cast<WIFIContract *>(*start)) {
-            // match should be unique
-            auto match = wifiCG->find(*contract);
-            if(match != wifiCG->end()) {
-                // Match found and call the provideGuarantee method of the found Guarantee
-                Guarantees guarantee = match->second;
-                guarantee.provideGuarantee(*start);
-            } else {
-                std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
+            // Sanity check
+            ASSERT(contract->getContractType() == CONTRACT_TYPE::WIFI);
+            // get the all contract-guarantee list from rmcg for CONTRACT_TYPE::WIFI
+            auto match = rmcg->find(CONTRACT_TYPE::WIFI);
+            if(match != rmcg->end()){
+                // We found a list of contract-guarantee for WIFI contract type
+                auto matchedCGContainer = static_cast<RMCGContainer<WIFIContract, Guarantees> *>(match->second);
+                auto matchedCG = (matchedCGContainer->cgs)->find(*contract); //TODO Delegate this to Container
+                if(matchedCG != (matchedCGContainer->cgs)->end()) {
+                    // Match found and call the provideGuarantee method of the found Guarantee
+                    Guarantees guarantee = matchedCG->second;
+                    guarantee.provideGuarantee(*start);
+                } else {
+                    std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
+                }
             }
-            // each contract of a vehicle should be exclusive to only one particular Contract_Guarantee list
             continue;
         }
 
         // TODO check in other Contract_Gurantee list
     }
 }
+
+
+template <typename C, typename G> void Contract_Guarantee::addCG(const C &c, const G &g) {
+    auto cgList = rmcg->find(c.getContractType());
+    if(cgList != rmcg->end()) {
+        if(c.getContractType() == CONTRACT_TYPE::WIFI) {
+            // add the new element to the match
+            (static_cast<RMCGContainer<WIFIContract, Guarantees> *>(cgList->second))->addCG(c, g);
+        }
+        // TODO add for other contract type
+    } else {
+        if(c.getContractType() == CONTRACT_TYPE::WIFI) {
+            rmcg->insert(std::make_pair(CONTRACT_TYPE::WIFI, new RMCGContainer<WIFIContract, Guarantees>(c, g, CONTRACT_TYPE::WIFI)));
+        }
+    }
+}
+
 
 void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // Creating the WIFIContract-Guarantee list
@@ -115,17 +160,29 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     contract_guarantee_type::size_type size = wifiCG->size();
 
 
-    // Checking new RMContainer
+    // ***************** RMContainer ***********************
+    addCG(acc2cacc, g2cacc);
+    addCG(acc2ploeg, g2ploeg);
 
-    //RMCGContainer<WIFIContract, Guarantees> *con = new RMCGContainer<WIFIContract, Guarantees>(acc2cacc, g2acc, CONTRACT_TYPE::WIFI);
-    RMContainer *con = new RMCGContainer<WIFIContract, Guarantees>(acc2cacc, g2acc, CONTRACT_TYPE::WIFI);
+    addCG(ploeg2cacc, g2cacc);
+    addCG(ploeg2acc1, g2acc);
+    addCG(ploeg2acc2, g2acc);
+
+    addCG(cacc2ploeg, g2ploeg);
+    addCG(cacc2acc1, g2acc);
+    addCG(cacc2acc2, g2acc);
+
+    // TODO Test: CHECKING WITH ADDING DUPLICATE element
+//    addCG(acc2cacc, g2cacc);     // test OK
 
 
-    rmcg->insert(std::make_pair(CONTRACT_TYPE::WIFI, con));
+    // TODO Test: try with add different type of contract
 
-    auto sz = rmcg->size();
 
-    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->elements)->find(acc2cacc);
-    std::cout << cc->first <<std::endl;
+
+//    auto sz = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
+//
+//    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(acc2cacc);
+//    std::cout << cc->first <<std::endl;
 }
 
