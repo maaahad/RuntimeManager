@@ -71,7 +71,6 @@ template <typename C, typename G> void RMCGContainer<C,G>::addCG(const C &c, con
     cgs->insert(std::make_pair(c,g));
 }
 
-// This is not proper function
 template <typename C, typename G> void RMCGContainer<C,G>::provideGuarantee(C *c) const {
     auto match = cgs->find(*c);
     if(match != cgs->end()) {

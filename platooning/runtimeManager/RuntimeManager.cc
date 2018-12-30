@@ -100,7 +100,7 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
         EV << "Monitoring message has been arrived. Evaluation started..." << std::endl;
         // TODO toggle comments for the following statement
 
-        evaluate();
+//        evaluate();
 
         // Sanity Check for now (WIFIContract only) TODO: need to generalize this
         ASSERT(traciVehicle->getActiveController() == (std::get<0>(rmLog).contracts)->front()->getController());
@@ -204,6 +204,7 @@ void RuntimeManager::initializeContracts() {
 
     // TODO other Contracts, if there is any
     // [debug
+    std::cout << *(static_cast<WIFIContract *>((*ego.contracts)[0])) << std::endl;
 
 //    Contract *cr1 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::FRONT));
 //    Contract *cr2 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::LEADER), C2X(ROLE::LEADER));

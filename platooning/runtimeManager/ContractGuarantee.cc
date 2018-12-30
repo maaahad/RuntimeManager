@@ -192,12 +192,12 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
 
 
-
-    auto sz = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
-    auto sz2 = rmcg->size();
-
-
-    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(acc2cacc);
-    std::cout << cc->first <<std::endl;
+//
+//    auto sz = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
+//    auto sz2 = rmcg->size();
+//
+//
+//    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(acc2cacc);
+//    std::cout << cc->first <<std::endl;
 }
 

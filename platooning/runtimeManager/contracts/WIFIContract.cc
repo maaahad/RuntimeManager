@@ -50,6 +50,6 @@ void WIFIContract::updateOnTransition(Plexe::ACTIVE_CONTROLLER to) {
 }
 
 std::ostream &operator<<(std::ostream &os, const WIFIContract &contract) {
-    return os << "WIFIContract: \n\t" << contract.c2f << "\n\t" << contract.c2l;
+    return os << "WIFIContract: "<< contract.type << "\n\tActiveController : " << contract.controller << "\n\t" << contract.c2f << "\n\t" << contract.c2l;
 }
 
