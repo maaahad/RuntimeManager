@@ -53,6 +53,7 @@ public:
     RMCGContainer(const C &c, const G &g, CONTRACT_TYPE ctype);
     ~RMCGContainer();
     void addCG(const C &c, const G &g);
+    void provideGuarantee(C *c) const;
 //private:
     std::shared_ptr<container_type> cgs;
 };
@@ -68,6 +69,16 @@ template <typename C, typename G> RMCGContainer<C,G>::~RMCGContainer() {
 
 template <typename C, typename G> void RMCGContainer<C,G>::addCG(const C &c, const G &g) {
     cgs->insert(std::make_pair(c,g));
+}
+
+// This is not proper function
+template <typename C, typename G> void RMCGContainer<C,G>::provideGuarantee(C *c) const {
+    auto match = cgs->find(*c);
+    if(match != cgs->end()) {
+        (match->second).provideGuarantee(c);
+    } else {
+        std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
+    }
 }
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCGCONTAINER_H_ */
