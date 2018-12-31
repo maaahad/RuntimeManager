@@ -15,7 +15,7 @@
 
 #include "Decelerate.h"
 
-Decelerate::Decelerate() {
+Decelerate::Decelerate(RuntimeManager *rm) : Guarantees(rm){
     // TODO Auto-generated constructor stub
 
 }
@@ -24,3 +24,13 @@ Decelerate::~Decelerate() {
     // TODO Auto-generated destructor stub
 }
 
+
+void Decelerate::operator()(Contract *contract) const {
+    std::cerr << "Warning: " << __FILE__
+                     << "\n\tLine: " << __LINE__
+                     << "\n\tCompiled on: " << __DATE__
+                     << " at " << __TIME__
+                     << "\n\tfunction " << __func__
+                     << " ...Not Implemented yet!!!"
+                     << std::endl;
+}

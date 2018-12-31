@@ -15,11 +15,15 @@
 
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_CHANGECONTROLLERANDDECELERATE_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_CHANGECONTROLLERANDDECELERATE_H_
+#include "veins/modules/application/platooning/runtimeManager/guarantees/Decelerate.h"
+#include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeController.h"
 
-class ChangeControllerAndDecelerate {
+
+class ChangeControllerAndDecelerate : public Decelerate, public ChangeController {
 public:
-    ChangeControllerAndDecelerate();
+    ChangeControllerAndDecelerate(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to);
     virtual ~ChangeControllerAndDecelerate();
+    virtual void operator()(Contract *contract) const override;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_CHANGECONTROLLERANDDECELERATE_H_ */

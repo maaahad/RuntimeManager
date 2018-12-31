@@ -19,13 +19,13 @@
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
 
 
-class ChangeController : public Guarantees {
+class ChangeController : virtual public Guarantees {
 public:
     ChangeController(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to);
     virtual ~ChangeController();
     virtual void operator()(Contract *contract) const override;
-private:
-    virtual void actionOnTransition() const override;
+protected:
+    void actionOnTransition() const;
     Plexe::ACTIVE_CONTROLLER to;
 };
 

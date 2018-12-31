@@ -15,11 +15,13 @@
 
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_DECELERATE_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_DECELERATE_H_
+#include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
 
-class Decelerate {
+class Decelerate : virtual public Guarantees {
 public:
-    Decelerate();
+    Decelerate(RuntimeManager *rm);
     virtual ~Decelerate();
+    virtual void operator()(Contract *contract) const override;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_DECELERATE_H_ */

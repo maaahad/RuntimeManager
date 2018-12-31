@@ -15,7 +15,8 @@
 
 #include "ChangeControllerAndDecelerate.h"
 
-ChangeControllerAndDecelerate::ChangeControllerAndDecelerate() {
+ChangeControllerAndDecelerate::ChangeControllerAndDecelerate(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to) : Guarantees(rm),
+Decelerate(rm), ChangeController(rm, to) {
     // TODO Auto-generated constructor stub
 
 }
@@ -23,4 +24,18 @@ ChangeControllerAndDecelerate::ChangeControllerAndDecelerate() {
 ChangeControllerAndDecelerate::~ChangeControllerAndDecelerate() {
     // TODO Auto-generated destructor stub
 }
+
+void ChangeControllerAndDecelerate::operator()(Contract *contract) const {
+    std::cerr << "Warning: " << __FILE__
+                     << "\n\tLine: " << __LINE__
+                     << "\n\tCompiled on: " << __DATE__
+                     << " at " << __TIME__
+                     << "\n\tfunction " << __func__
+                     << " ...Not Implemented yet properly!!!"
+                     << std::endl;
+    // Guarantees are performed through the base classes
+    ChangeController::operator ()(contract);
+    Decelerate::operator ()(contract);
+}
+
 

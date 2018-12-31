@@ -29,7 +29,7 @@ public:
     virtual ~Guarantees();
     virtual void operator()(Contract *contract) const;
 protected:
-    virtual void actionOnTransition() const;
+//    virtual void actionOnTransition() const;
 
     // These are required for taking action
     Veins::TraCIMobility *mobility;

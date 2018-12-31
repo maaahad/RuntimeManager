@@ -48,15 +48,15 @@ Guarantees::~Guarantees() {
     // TODO Auto-generated destructor stub
 }
 
-void Guarantees::actionOnTransition() const {
-    std::cerr << "Error: " << __FILE__
-              << "\n\tLine: " << __LINE__
-              << "\n\tCompiled on: " << __DATE__
-              << " at " << __TIME__
-              << "\n\tfunction " << __func__
-              << " This method should be implemented by the derived method!!!"
-              << std::endl;
-}
+//void Guarantees::actionOnTransition() const {
+//    std::cerr << "Error: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " This method should be implemented by the derived method!!!"
+//              << std::endl;
+//}
 
 void Guarantees::operator()(Contract *contract) const {
         std::cerr << "Error: " << __FILE__
