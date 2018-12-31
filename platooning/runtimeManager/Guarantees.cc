@@ -81,6 +81,17 @@ void Guarantees::provideGuarantee(Contract *contract) const{
     }
 }
 
+
+void Guarantees::operator()(Contract *contract) const {
+        std::cerr << "Error: " << __FILE__
+                  << "\n\tLine: " << __LINE__
+                  << "\n\tCompiled on: " << __DATE__
+                  << " at " << __TIME__
+                  << "\n\tfunction " << __func__
+                  << " This function should be implemented by the derived class!!!"
+                  << std::endl;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Contracts's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

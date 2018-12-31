@@ -29,8 +29,9 @@ public:
     Guarantees(RuntimeManager *rm, bool changeController, Plexe::ACTIVE_CONTROLLER to);
     virtual ~Guarantees();
     void provideGuarantee(Contract *contract) const;
-private:
-   void actionOnTransition() const;
+    virtual void operator()(Contract *contract) const;
+protected:
+    virtual void actionOnTransition() const;
 
     Plexe::ACTIVE_CONTROLLER to;
     bool changeController;

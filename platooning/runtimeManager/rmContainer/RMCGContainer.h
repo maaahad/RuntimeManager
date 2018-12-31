@@ -24,22 +24,6 @@
 #include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
 
-
-
-
-//template <typename C, typename G>class RMCGContainer : public RMContainer{
-//public:
-//    using container_type = std::unordered_map<const C, const G>;
-//    RMCGContainer(const C &c, const G &g, CONTRACT_TYPE ctype) : RMContainer(ctype) ,
-//            elements(std::make_shared<container_type>()){
-//        elements->insert(std::make_pair(c,g));
-//    }
-//private:
-//    std::shared_ptr<container_type> elements;
-//};
-
-
-
 template <typename C, typename G> class RMCGContainer;
 
 template <typename C, typename G> std::ostream &operator<<(std::ostream &os, const RMCGContainer<C,G> &container) {

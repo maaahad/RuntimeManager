@@ -80,7 +80,6 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
             }
             continue;
         }
-
         // TODO check in other Contract_Gurantee list
     }
 }
