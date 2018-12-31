@@ -21,8 +21,7 @@
 // Contracts's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : wifiCG(std::make_shared<contract_guarantee_type>()) ,
-rmcg(std::make_shared<std::map<CONTRACT_TYPE, RMContainer *>>()){
+Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : rmcg(std::make_shared<std::map<CONTRACT_TYPE, RMContainer *>>()){
     // TODO Auto-generated constructor stub
     initContractList(rm);
 }
@@ -80,6 +79,7 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
             }
             continue;
         }
+
         // TODO check in other Contract_Gurantee list
     }
 }
@@ -108,15 +108,6 @@ template <typename C, typename G> void Contract_Guarantee::addCG(const C &c, con
 void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // Creating the WIFIContract-Guarantee list
 
-    // StateParameters
-//    C2X ok_c2f(WIFI_QUALITY::OK, ROLE::FRONT);
-//    C2X poor_c2f(WIFI_QUALITY::POOR, ROLE::FRONT);
-//    C2X critical_c2f(WIFI_QUALITY::CRITICAL, ROLE::FRONT);
-//
-//    C2X ok_c2l(WIFI_QUALITY::OK, ROLE::LEADER);
-//    C2X poor_c2l(WIFI_QUALITY::POOR, ROLE::LEADER);
-//    C2X critical_c2l(WIFI_QUALITY::CRITICAL, ROLE::LEADER);
-
     // StateParameters C2F : atSafetyDistance = true (default)
     C2F ok_c2f(WIFI_QUALITY::OK);
     C2F poor_c2f(WIFI_QUALITY::POOR);
@@ -126,18 +117,15 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     C2L poor_c2l(WIFI_QUALITY::POOR);
     C2L critical_c2l(WIFI_QUALITY::CRITICAL);
 
-    // Guarantees
-//    Guarantees g2acc(rm, true, Plexe::ACTIVE_CONTROLLER::ACC);
-//    Guarantees g2ploeg(rm, true, Plexe::ACTIVE_CONTROLLER::PLOEG);
-//    Guarantees g2cacc(rm, true, Plexe::ACTIVE_CONTROLLER::CACC);
-
-//    Guarantees *g2acc = new Guarantees(rm, true, Plexe::ACTIVE_CONTROLLER::ACC);
-//    Guarantees *g2ploeg = new Guarantees(rm, true, Plexe::ACTIVE_CONTROLLER::PLOEG);
-//    Guarantees *g2cacc = new Guarantees(rm, true, Plexe::ACTIVE_CONTROLLER::CACC);
-
+    // Guarantees (ChangeController)
     Guarantees *g2acc   = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::ACC);
     Guarantees *g2ploeg = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
     Guarantees *g2cacc  = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::CACC);
+
+    // TODO Guarantees (Decelerate)
+
+    // TODO Guarantees (ChangeControllerAndDecelerate)
+
 
 
     // WIFIContract for ACC controller
@@ -151,7 +139,6 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // degrade
     WIFIContract ploeg2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, ok_c2l);
     WIFIContract ploeg2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, critical_c2l);
-    // decelerate TODO need to define the contracts by only contract as we are concerned with the quality of c2f, not c2l
 
 
     //WIFIContract for CACC
@@ -159,24 +146,6 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     WIFIContract cacc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, critical_c2l);
     WIFIContract cacc2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, ok_c2l);
     WIFIContract cacc2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, critical_c2l);
-
-
-
-    // mapping between WIFIContract and Guarantee
-//    wifiCG->insert(std::make_pair(acc2cacc, *g2cacc));
-//    wifiCG->insert(std::make_pair(acc2ploeg, *g2ploeg));
-//
-//    wifiCG->insert(std::make_pair(ploeg2cacc, *g2cacc));
-//    wifiCG->insert(std::make_pair(ploeg2acc1, *g2acc));
-//    wifiCG->insert(std::make_pair(ploeg2acc2, *g2acc));
-//
-//    wifiCG->insert(std::make_pair(cacc2ploeg, *g2ploeg));
-//    wifiCG->insert(std::make_pair(cacc2acc1, *g2acc));
-//    wifiCG->insert(std::make_pair(cacc2acc2, *g2acc));
-//
-//    contract_guarantee_type::size_type size = wifiCG->size();
-
-
 
     // ==============================================================
     // RMCGContainer

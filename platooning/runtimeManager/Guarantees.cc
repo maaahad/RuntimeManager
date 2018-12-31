@@ -56,49 +56,7 @@ void Guarantees::actionOnTransition() const {
               << "\n\tfunction " << __func__
               << " This method should be implemented by the derived method!!!"
               << std::endl;
-
-//    if(to == Plexe::ACC) {
-//        traciVehicle->setACCHeadwayTime(rmParam.accHeadwaytimeGap);
-//    } else if(to == Plexe::PLOEG){
-//        traciVehicle->setACCHeadwayTime(rmParam.ploegHeadwayTimeGap);
-//    } else if(to == Plexe::CACC) {
-//        traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing);
-//    } else {
-//        std::cerr << "Error: " << __FILE__
-//                  << "\n\tLine: " << __LINE__
-//                  << "\n\tCompiled on: " << __DATE__
-//                  << " at " << __TIME__
-//                  << "\n\tfunction " << __func__
-//                  << " Wrong Controller!!!"
-//                  << std::endl;
-//    }
-
 }
-
-//void Guarantees::provideGuarantee(Contract *contract) const{
-////    if(changeController) {
-////        // [ debug
-////        if(to > traciVehicle->getActiveController()) {
-////            std::cout << "Vehicle " << positionHelper->getId()
-////                      << "\n\t Upgrade!!!" << std::endl;
-////        } else {
-////            std::cout << "Vehicle " << positionHelper->getId()
-////                      << "\n\t Degrade!!!" << std::endl;
-////        }
-////        // debug ]
-////
-////        // update the vehicle's current contract status for the Active controller
-////        // As the consecutive Guarantee requires the current active controller (included in the key_type of the Contract-Guarantee unordered_map )
-////        contract->updateOnTransition(to);
-////
-////        // perform actionOnTransition if enabled
-////        if(rmParam.actionOnTransitionEnabled) actionOnTransition();
-////
-////        // Perform the transition
-////        traciVehicle->setActiveController(to);
-////    }
-//}
-
 
 void Guarantees::operator()(Contract *contract) const {
         std::cerr << "Error: " << __FILE__

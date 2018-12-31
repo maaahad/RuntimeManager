@@ -63,11 +63,9 @@ template <typename C, typename G> void RMCGContainer<C,G>::addCG(const C &c, con
 template <typename C, typename G> void RMCGContainer<C,G>::provideGuarantee(C *c) const {
     auto match = cgs->find(*c);
     if(match != cgs->end()) {
-//        (match->second).provideGuarantee(c); // In case of reference
-//        (match->second)->provideGuarantee(c);  // in case of pointer
         (*(match->second))(c);
     } else {
-        std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
+        std::cout << "Not matched contract found. No action needs to be taken...." << std::endl;
     }
 }
 
