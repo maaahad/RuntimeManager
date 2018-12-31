@@ -26,6 +26,8 @@
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
 #include "veins/modules/application/platooning/runtimeManager/rmContainer/RMCGContainer.h"
+#include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeController.h"
+
 
 
 
@@ -40,7 +42,7 @@ public:
     void evaluate(RM::RMLog_Own &state);
 private:
     void initContractList(RuntimeManager *rm);
-    template <typename C, typename G> void addCG(const C &c, const G &g);
+    template <typename C, typename G> void addCG(const C &c, const G *g);
     using contract_guarantee_type = std::unordered_map<const WIFIContract, const Guarantees>;
     std::shared_ptr<contract_guarantee_type> wifiCG;
 

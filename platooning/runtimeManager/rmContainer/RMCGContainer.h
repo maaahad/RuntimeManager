@@ -23,6 +23,11 @@
 #include "veins/modules/application/platooning/runtimeManager/Contract.h"
 #include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
+#include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeController.h"
+
+
+
+
 
 template <typename C, typename G> class RMCGContainer;
 
@@ -33,16 +38,16 @@ template <typename C, typename G> std::ostream &operator<<(std::ostream &os, con
 template <typename C, typename G> class RMCGContainer : public RMContainer{
     friend std::ostream &operator<<<C,G>(std::ostream &os, const RMCGContainer<C,G> &container);
 public:
-    using container_type = std::unordered_map<const C, const G>;
-    RMCGContainer(const C &c, const G &g, CONTRACT_TYPE ctype);
+    using container_type = std::unordered_map<const C, const G *>;
+    RMCGContainer(const C &c, const G *g, CONTRACT_TYPE ctype);
     ~RMCGContainer();
-    void addCG(const C &c, const G &g);
+    void addCG(const C &c, const G *g);
     void provideGuarantee(C *c) const;
-//private:
+private:
     std::shared_ptr<container_type> cgs;
 };
 
-template <typename C, typename G> RMCGContainer<C,G>::RMCGContainer(const C &c, const G &g, CONTRACT_TYPE ctype) : RMContainer(ctype) ,
+template <typename C, typename G> RMCGContainer<C,G>::RMCGContainer(const C &c, const G *g, CONTRACT_TYPE ctype) : RMContainer(ctype) ,
         cgs(std::make_shared<container_type>()){
     cgs->insert(std::make_pair(c,g));
 }
@@ -51,14 +56,16 @@ template <typename C, typename G> RMCGContainer<C,G>::~RMCGContainer() {
 
 }
 
-template <typename C, typename G> void RMCGContainer<C,G>::addCG(const C &c, const G &g) {
+template <typename C, typename G> void RMCGContainer<C,G>::addCG(const C &c, const G *g) {
     cgs->insert(std::make_pair(c,g));
 }
 
 template <typename C, typename G> void RMCGContainer<C,G>::provideGuarantee(C *c) const {
     auto match = cgs->find(*c);
     if(match != cgs->end()) {
-        (match->second).provideGuarantee(c);
+//        (match->second).provideGuarantee(c); // In case of reference
+//        (match->second)->provideGuarantee(c);  // in case of pointer
+        (*(match->second))(c);
     } else {
         std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
     }

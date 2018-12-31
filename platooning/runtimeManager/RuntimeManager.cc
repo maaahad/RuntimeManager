@@ -100,7 +100,7 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
         EV << "Monitoring message has been arrived. Evaluation started..." << std::endl;
         // TODO toggle comments for the following statement
 
-//        evaluate();
+        evaluate();
 
         // Sanity Check for now (WIFIContract only) TODO: need to generalize this
         ASSERT(traciVehicle->getActiveController() == (std::get<0>(rmLog).contracts)->front()->getController());

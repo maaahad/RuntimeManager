@@ -26,17 +26,17 @@ class RuntimeManager;
 class Guarantees {
 public:
     Guarantees(RuntimeManager *rm);
-    Guarantees(RuntimeManager *rm, bool changeController, Plexe::ACTIVE_CONTROLLER to);
+//    Guarantees(RuntimeManager *rm, bool changeController, Plexe::ACTIVE_CONTROLLER to);
     virtual ~Guarantees();
-    void provideGuarantee(Contract *contract) const;
+//    void provideGuarantee(Contract *contract) const;
     virtual void operator()(Contract *contract) const;
 protected:
     virtual void actionOnTransition() const;
 
-    Plexe::ACTIVE_CONTROLLER to;
-    bool changeController;
-    bool accelerate;
-    bool decelerate;
+//    Plexe::ACTIVE_CONTROLLER to;
+//    bool changeController;
+//    bool accelerate;
+//    bool decelerate;
 
     // These are required for taking action
     Veins::TraCIMobility *mobility;
@@ -47,10 +47,4 @@ protected:
     RM::RMParameters &rmParam;
 };
 
-
-//class ControllerTransition : public Guarantees {
-//public:
-//    ControllerTransition();
-//    virtual void provideGuarantee() override;
-//};
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_H_ */

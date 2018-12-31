@@ -40,6 +40,14 @@ void ChangeController::actionOnTransition() const {
                   << " Wrong Controller!!!"
                   << std::endl;
     }
+
+    std::cerr << "Warning: " << __FILE__
+                     << "\n\tLine: " << __LINE__
+                     << "\n\tCompiled on: " << __DATE__
+                     << " at " << __TIME__
+                     << "\n\tfunction " << __func__
+                     << " This method requires experiment on different action!!!"
+                     << std::endl;
 }
 
 void ChangeController::operator()(Contract *contract) const {
