@@ -27,7 +27,7 @@
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
 #include "veins/modules/application/platooning/runtimeManager/rmContainer/RMCGContainer.h"
 #include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeController.h"
-
+#include "veins/modules/application/platooning/runtimeManager/guarantees/Decelerate.h"
 
 
 

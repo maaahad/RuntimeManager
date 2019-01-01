@@ -106,14 +106,19 @@ template <typename C, typename G> void Contract_Guarantee::addCG(const C &c, con
 
 
 void Contract_Guarantee::initContractList(RuntimeManager *rm) {
+
+    // TODO all dynamically allocated object should use smart pointer rather that built-in pointer :: Later
+
     // Creating the WIFIContract-Guarantee list
 
     // StateParameters C2F : atSafetyDistance = true (default)
     C2F ok_c2f(WIFI_QUALITY::OK);
+    C2F moderate_c2f(WIFI_QUALITY::MODERATE);
     C2F poor_c2f(WIFI_QUALITY::POOR);
     C2F critical_c2f(WIFI_QUALITY::CRITICAL);
     // StateParameters C2L
     C2L ok_c2l(WIFI_QUALITY::OK);
+    C2L moderate_c2l(WIFI_QUALITY::MODERATE);
     C2L poor_c2l(WIFI_QUALITY::POOR);
     C2L critical_c2l(WIFI_QUALITY::CRITICAL);
 
@@ -123,6 +128,10 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     Guarantees *g2cacc  = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::CACC);
 
     // TODO Guarantees (Decelerate)
+    // ploeg
+
+    // cacc
+    Guarantees *g2dcacc = new Decelerate(rm);
 
     // TODO Guarantees (ChangeControllerAndDecelerate)
 
@@ -146,38 +155,54 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     WIFIContract cacc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, critical_c2l);
     WIFIContract cacc2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, ok_c2l);
     WIFIContract cacc2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, critical_c2l);
+    // Decelerate
+    WIFIContract cacc2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, ok_c2l);
+    WIFIContract cacc2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, moderate_c2l);
+    WIFIContract cacc2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, critical_c2l);
 
     // ==============================================================
     // RMCGContainer
     // ==============================================================
-    addCG(acc2cacc, g2cacc);
-    addCG(acc2ploeg, g2ploeg);
 
-    addCG(ploeg2cacc, g2cacc);
-    addCG(ploeg2acc1, g2acc);
-    addCG(ploeg2acc2, g2acc);
+//    // ======= acc
+//    // Change controller
+//    addCG(acc2cacc, g2cacc);
+//    addCG(acc2ploeg, g2ploeg);
+//
+//    // ======= ploeg
+//    // change controller
+//    addCG(ploeg2cacc, g2cacc);
+//    addCG(ploeg2acc1, g2acc);
+//    addCG(ploeg2acc2, g2acc);
+//
+//    // ======= cacc
+//    // Change controller
+//    addCG(cacc2ploeg, g2ploeg);
+//    addCG(cacc2acc1, g2acc);
+//    addCG(cacc2acc2, g2acc);
 
-    addCG(cacc2ploeg, g2ploeg);
-    addCG(cacc2acc1, g2acc);
-    addCG(cacc2acc2, g2acc);
+    // Decelerate
+    addCG(cacc2d1, g2dcacc);
+    addCG(cacc2d2, g2dcacc);
+    addCG(cacc2d3, g2dcacc);
 
-    // TODO Test: CHECKING WITH ADDING DUPLICATE element
+    // ============== Test: CHECKING WITH ADDING DUPLICATE element
 //    addCG(acc2cacc, g2cacc);     // test OK
 
 
-    // TODO Test: try with add different type of contract: Test OK
+    // ============== Test: try with add different type of contract: Test OK
 //    WIFIContract acc2caccC(CONTRACT_TYPE::INTERNAL_ERROR, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
 //    Guarantees g2accC(rm, true, Plexe::ACTIVE_CONTROLLER::ACC);
 //    addCG(acc2caccC, g2accC);
 
 
 
-//
-//    auto sz = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
-//    auto sz2 = rmcg->size();
-//
-//
-//    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(acc2cacc);
-//    std::cout << cc->first <<std::endl;
+
+    auto sz = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
+    auto sz2 = rmcg->size();
+
+
+    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(cacc2d1);
+    std::cout << cc->first <<std::endl;
 }
 

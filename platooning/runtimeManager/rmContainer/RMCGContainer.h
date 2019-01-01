@@ -43,7 +43,7 @@ public:
     ~RMCGContainer();
     void addCG(const C &c, const G *g);
     void provideGuarantee(C *c) const;
-private:
+//private:
     std::shared_ptr<container_type> cgs;
 };
 
