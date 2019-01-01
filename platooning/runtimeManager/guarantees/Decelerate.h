@@ -16,6 +16,7 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_DECELERATE_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_DECELERATE_H_
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
+#include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
 
 class Decelerate : virtual public Guarantees {
 public:

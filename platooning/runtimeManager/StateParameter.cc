@@ -76,7 +76,9 @@ template <typename T> void C2X::c2xQualityCheck(const RM::RMParameters &rmParam,
         SimTime currentTime = simTime();
         int nBeaconMiss = (int)((currentTime.dbl() - other.common.lastBeaconArrivalTime) / rmParam.expectedBeconInterval);
 
-        std::cout << "nBeaconMiss: " << nBeaconMiss << std::endl;
+
+//        std::cout << "nBeaconMiss: " << nBeaconMiss << std::endl;
+
 
         if(nBeaconMiss >= rmParam.nPacketLossCritical) {
             quality = WIFI_QUALITY::CRITICAL;
@@ -172,7 +174,7 @@ void C2F::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
 }
 
 std::ostream &operator<<(std::ostream &os, const C2F &c2f) {
-    os << "C2F: \n\tQuality : " << (int)c2f.quality << "\n\tatSafeDistance: " << c2f.atSafeDistance;
+    os << "C2F: \n\t\t\tQuality : " << (int)c2f.quality << "\n\t\t\tatSafeDistance: " << c2f.atSafeDistance;
     return os;
 }
 
@@ -200,6 +202,6 @@ void C2L::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
 }
 
 std::ostream &operator<<(std::ostream &os, const C2L &c2l) {
-    os << "C2L: \n\tQuality : " << (int)c2l.quality;
+    os << "C2L: \n\t\t\tQuality : " << (int)c2l.quality;
     return os;
 }

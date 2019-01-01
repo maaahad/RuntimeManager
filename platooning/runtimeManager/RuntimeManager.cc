@@ -60,6 +60,31 @@ void RuntimeManager::initialize(int stage) {
             rmParam.accHeadwaytimeGap   = par("accHeadwaytimeGap").doubleValue();
             rmParam.ploegHeadwayTimeGap = par("ploegHeadwayTimeGap").doubleValue();
             rmParam.caccConstantSpacing = par("caccConstantSpacing").doubleValue();
+
+            std::cerr << "rmMonitorInterval: " << rmParam.rmMonitorInterval << std::endl;
+
+
+            std::cerr << "expectedBeconInterval: " << rmParam.expectedBeconInterval << std::endl;
+
+            std::cerr << "nPacketLossModerate: " << rmParam.nPacketLossModerate << std::endl;
+            std::cerr << "nPacketLossPoor: " << rmParam.nPacketLossPoor << std::endl;
+            std::cerr << "nPacketLossCritical: " << rmParam.nPacketLossCritical << std::endl;
+
+            std::cerr << "minSafetyDistance: " << rmParam.minSafetyDistance << std::endl;
+
+            std::cerr << "actionOnTransitionEnabled: " << rmParam.actionOnTransitionEnabled << std::endl;
+
+            std::cerr << "accHeadwaytimeGap: " << rmParam.accHeadwaytimeGap << std::endl;
+
+            std::cerr << "ploegHeadwayTimeGap: " << rmParam.ploegHeadwayTimeGap << std::endl;
+
+            std::cerr << "caccConstantSpacing: " << rmParam.caccConstantSpacing << std::endl;
+
+
+
+//            std::cerr << "caccConstantSpacing: " << rmParam.caccConstantSpacing << std::endl;
+
+
         }
     }
 
@@ -204,7 +229,7 @@ void RuntimeManager::initializeContracts() {
 
     // TODO other Contracts, if there is any
     // [debug
-    std::cout << *(static_cast<WIFIContract *>((*ego.contracts)[0])) << std::endl;
+    std::cout << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(static_cast<WIFIContract *>((*ego.contracts)[0])) << std::endl;
 
 //    Contract *cr1 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::FRONT));
 //    Contract *cr2 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::LEADER), C2X(ROLE::LEADER));
@@ -231,6 +256,14 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
             (*it)->evaluate(rmParam, rmLog);
         }
     }
+
+    // [ Debug
+    if(positionHelper->getId() == 7) {
+//        std::cerr << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(static_cast<WIFIContract *>((*ego.contracts)[0])) << std::endl;
+    }
+    // Debug ]
+
+
 
     // Vehicles StateParameters related to the provided contract has been evaluated,
     // Now, we need to match the current state of the vehicle's contract with the Contracts-Guarantee

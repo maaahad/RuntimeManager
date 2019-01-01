@@ -65,7 +65,7 @@ template <typename C, typename G> void RMCGContainer<C,G>::provideGuarantee(C *c
     if(match != cgs->end()) {
         (*(match->second))(c);
     } else {
-        std::cout << "Not matched contract found. No action needs to be taken...." << std::endl;
+        //std::cout << "Not matched contract found. No action needs to be taken...." << std::endl;
     }
 }
 

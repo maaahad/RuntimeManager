@@ -26,11 +26,21 @@ Decelerate::~Decelerate() {
 
 
 void Decelerate::operator()(Contract *contract) const {
-    std::cerr << "Warning: " << __FILE__
-                     << "\n\tLine: " << __LINE__
-                     << "\n\tCompiled on: " << __DATE__
-                     << " at " << __TIME__
-                     << "\n\tfunction " << __func__
-                     << " ...Not Implemented yet!!!"
-                     << std::endl;
+//    std::cerr << "Warning: " << __FILE__
+//                     << "\n\tLine: " << __LINE__
+//                     << "\n\tCompiled on: " << __DATE__
+//                     << " at " << __TIME__
+//                     << "\n\tfunction: " << __func__
+//                     << " ...Not Implemented yet!!!"
+//                     << std::endl;
+
+    if(positionHelper->getId() == 1) {
+        //std::cerr << "Before: " << *(static_cast<WIFIContract *>(contract)) << std::endl;
+        //std::cerr << "CACCConstantSpacing:" << traciVehicle->getCACCConstantSpacing() << "RMParam::CACCConstantSpacing: " << rmParam.caccConstantSpacing << std::endl;
+        // Test for active Controller CACC
+        //traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing);
+        traciVehicle->setCACCConstantSpacing(20.0);
+        //std::cerr << "After: " << *(static_cast<WIFIContract *>(contract)) << std::endl;
+    }
+
 }
