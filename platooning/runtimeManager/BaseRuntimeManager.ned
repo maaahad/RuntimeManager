@@ -27,7 +27,7 @@ simple BaseRuntimeManager like IBaseApplLayer {
         double expectedBeconInterval @unit("s") = default(.05s);
         
         // WIFI connection quality check        
-        int nPacketLossModerate  = default(1);
+        //int nPacketLossModerate  = default(1);
         int nPacketLossPoor      = default(2);
         int nPacketLossCritical  = default(3);
         

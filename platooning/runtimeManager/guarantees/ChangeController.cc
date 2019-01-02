@@ -15,6 +15,29 @@
 
 #include "ChangeController.h"
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// enum Plexe::ACTIVE_CONTROLLERY << implementation :: Utility
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::ostream &operator<<(std::ostream &os, const Plexe::ACTIVE_CONTROLLER value) {
+    std::map<Plexe::ACTIVE_CONTROLLER, std::string> enum2string;
+    if (enum2string.size() == 0) {
+#define INSERT(v) enum2string[v] = #v
+    INSERT(Plexe::ACTIVE_CONTROLLER::DRIVER);
+    INSERT(Plexe::ACTIVE_CONTROLLER::ACC);
+    INSERT(Plexe::ACTIVE_CONTROLLER::CACC);
+    INSERT(Plexe::ACTIVE_CONTROLLER::FAKED_CACC);
+    INSERT(Plexe::ACTIVE_CONTROLLER::PLOEG);
+    INSERT(Plexe::ACTIVE_CONTROLLER::CONSENSUS);
+    INSERT(Plexe::ACTIVE_CONTROLLER::FLATBED);
+#undef INSERT
+    }
+    return os << enum2string[value];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ChangeController's methods implementation
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ChangeController::ChangeController(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to) : Guarantees(rm), to(to){
     // TODO Auto-generated constructor stub
 
@@ -52,13 +75,19 @@ void ChangeController::actionOnTransition() const {
 
 void ChangeController::operator()(Contract *contract) const {
     // [ debug
-    if(to > traciVehicle->getActiveController()) {
-        std::cout << "Vehicle " << positionHelper->getId()
-                  << "\n\t Upgrade!!!" << std::endl;
-    } else {
-        std::cout << "Vehicle " << positionHelper->getId()
-                  << "\n\t Degrade!!!" << std::endl;
-    }
+//    if(to > traciVehicle->getActiveController()) {
+//        std::cout << "Vehicle " << positionHelper->getId()
+//                  << "\n\t Upgrade : From " << traciVehicle->getActiveController() << " to " << to << std::endl;
+//    } else {
+//        std::cout << "Vehicle " << positionHelper->getId()
+//                  << "\n\t Degrade : From " << traciVehicle->getActiveController() << " to " << to << std::endl;
+//    }
+
+    std::cout << "Vehicle " << positionHelper->getId()
+              << "\n\t Controller Change : From "
+              << (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController()
+              << " to " << (Plexe::ACTIVE_CONTROLLER)to << std::endl;
+
     // debug ]
 
     // update the vehicle's current contract status for the Active controller

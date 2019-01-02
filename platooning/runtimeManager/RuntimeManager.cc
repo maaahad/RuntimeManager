@@ -50,7 +50,7 @@ void RuntimeManager::initialize(int stage) {
             rmParam.rmMonitorInterval     = par("rmMonitorInterval").doubleValue();
             rmParam.expectedBeconInterval = par("expectedBeconInterval").doubleValue();
 
-            rmParam.nPacketLossModerate = par("nPacketLossModerate").intValue();
+//            rmParam.nPacketLossModerate = par("nPacketLossModerate").intValue();
             rmParam.nPacketLossPoor     = par("nPacketLossPoor").intValue();
             rmParam.nPacketLossCritical = par("nPacketLossCritical").intValue();
 
@@ -61,28 +61,18 @@ void RuntimeManager::initialize(int stage) {
             rmParam.ploegHeadwayTimeGap = par("ploegHeadwayTimeGap").doubleValue();
             rmParam.caccConstantSpacing = par("caccConstantSpacing").doubleValue();
 
-            std::cerr << "rmMonitorInterval: " << rmParam.rmMonitorInterval << std::endl;
-
-
-            std::cerr << "expectedBeconInterval: " << rmParam.expectedBeconInterval << std::endl;
-
-            std::cerr << "nPacketLossModerate: " << rmParam.nPacketLossModerate << std::endl;
-            std::cerr << "nPacketLossPoor: " << rmParam.nPacketLossPoor << std::endl;
-            std::cerr << "nPacketLossCritical: " << rmParam.nPacketLossCritical << std::endl;
-
-            std::cerr << "minSafetyDistance: " << rmParam.minSafetyDistance << std::endl;
-
-            std::cerr << "actionOnTransitionEnabled: " << rmParam.actionOnTransitionEnabled << std::endl;
-
-            std::cerr << "accHeadwaytimeGap: " << rmParam.accHeadwaytimeGap << std::endl;
-
-            std::cerr << "ploegHeadwayTimeGap: " << rmParam.ploegHeadwayTimeGap << std::endl;
-
-            std::cerr << "caccConstantSpacing: " << rmParam.caccConstantSpacing << std::endl;
-
-
-
+            // [ Debug
+//            std::cerr << "rmMonitorInterval: " << rmParam.rmMonitorInterval << std::endl;
+//            std::cerr << "expectedBeconInterval: " << rmParam.expectedBeconInterval << std::endl;
+//            std::cerr << "nPacketLossModerate: " << rmParam.nPacketLossModerate << std::endl;
+//            std::cerr << "nPacketLossPoor: " << rmParam.nPacketLossPoor << std::endl;
+//            std::cerr << "nPacketLossCritical: " << rmParam.nPacketLossCritical << std::endl;
+//            std::cerr << "minSafetyDistance: " << rmParam.minSafetyDistance << std::endl;
+//            std::cerr << "actionOnTransitionEnabled: " << rmParam.actionOnTransitionEnabled << std::endl;
+//            std::cerr << "accHeadwaytimeGap: " << rmParam.accHeadwaytimeGap << std::endl;
+//            std::cerr << "ploegHeadwayTimeGap: " << rmParam.ploegHeadwayTimeGap << std::endl;
 //            std::cerr << "caccConstantSpacing: " << rmParam.caccConstantSpacing << std::endl;
+            // Debug ]
 
 
         }

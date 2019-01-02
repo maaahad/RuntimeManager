@@ -28,6 +28,8 @@
 #include "veins/modules/application/platooning/runtimeManager/rmContainer/RMCGContainer.h"
 #include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeController.h"
 #include "veins/modules/application/platooning/runtimeManager/guarantees/Decelerate.h"
+#include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeControllerAndDecelerate.h"
+
 
 
 

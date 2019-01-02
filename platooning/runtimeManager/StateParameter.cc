@@ -16,6 +16,22 @@
 #include "StateParameter.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// enum WIFI_QUALITY << implementation
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::ostream &operator<<(std::ostream &os, const WIFI_QUALITY value) {
+    std::map<WIFI_QUALITY, std::string> enum2string;
+    if (enum2string.size() == 0) {
+#define INSERT(v) enum2string[v] = #v
+    INSERT(WIFI_QUALITY::CRITICAL);
+    INSERT(WIFI_QUALITY::POOR);
+    INSERT(WIFI_QUALITY::OK);
+    INSERT(WIFI_QUALITY::ALL);
+#undef INSERT
+    }
+    return os << enum2string[value];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // StateParameter's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 StateParameter::StateParameter() {
@@ -58,7 +74,7 @@ bool operator==(const StateParameter &sp1, const StateParameter &sp2) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // C2X's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-C2X::C2X(ROLE role) : quality(WIFI_QUALITY::CRITICAL), role(role) {
+C2X::C2X(ROLE role) : quality(WIFI_QUALITY::CRITICAL){
 
 }
 
@@ -66,9 +82,9 @@ C2X::C2X(WIFI_QUALITY quality) : quality(quality){
 
 }
 
-C2X::C2X(WIFI_QUALITY quality, ROLE role) : quality(quality), role(role) {
-
-}
+//C2X::C2X(WIFI_QUALITY quality, ROLE role) : quality(quality), role(role) {
+//
+//}
 
 template <typename T> void C2X::c2xQualityCheck(const RM::RMParameters &rmParam, const T &other) {
     // c2xInitiated ensures that we have logged the last received beacon
@@ -79,16 +95,23 @@ template <typename T> void C2X::c2xQualityCheck(const RM::RMParameters &rmParam,
 
 //        std::cout << "nBeaconMiss: " << nBeaconMiss << std::endl;
 
-
         if(nBeaconMiss >= rmParam.nPacketLossCritical) {
             quality = WIFI_QUALITY::CRITICAL;
         } else if (nBeaconMiss < rmParam.nPacketLossCritical && nBeaconMiss >= rmParam.nPacketLossPoor) {
             quality = WIFI_QUALITY::POOR;
-        } else if (nBeaconMiss < rmParam.nPacketLossPoor && nBeaconMiss >= rmParam.nPacketLossModerate) {
-            quality = WIFI_QUALITY::MODERATE;
         } else {
             quality = WIFI_QUALITY::OK;
         }
+
+//        if(nBeaconMiss >= rmParam.nPacketLossCritical) {
+//            quality = WIFI_QUALITY::CRITICAL;
+//        } else if (nBeaconMiss < rmParam.nPacketLossCritical && nBeaconMiss >= rmParam.nPacketLossPoor) {
+//            quality = WIFI_QUALITY::POOR;
+//        } else if (nBeaconMiss < rmParam.nPacketLossPoor && nBeaconMiss >= rmParam.nPacketLossModerate) {
+//            quality = WIFI_QUALITY::MODERATE;
+//        } else {
+//            quality = WIFI_QUALITY::OK;
+//        }
 
     } else {
         // Sanity check
@@ -136,14 +159,13 @@ void C2X::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
 
 bool C2X::equal(const StateParameter &stateParameter) const {
     auto rhs = dynamic_cast<const C2X &>(stateParameter);
-    return (quality == rhs.quality) &&
-           (role == rhs.role);
+    return (quality == rhs.quality);
 }
 
 
 std::ostream &operator<<(std::ostream &os, const C2X &c2x){
-    os << "C2X: \n\tQuality : " << (int)c2x.quality << "\n\trole: " << (int)c2x.role;
-    return os;
+//    return os << "C2X: \n\tQuality : " << (int)c2x.quality << "\n\trole: " << (int)c2x.role;
+    return os << "C2X: \n\tQuality : " << (int)c2x.quality;
 }
 
 
@@ -174,7 +196,7 @@ void C2F::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
 }
 
 std::ostream &operator<<(std::ostream &os, const C2F &c2f) {
-    os << "C2F: \n\t\t\tQuality : " << (int)c2f.quality << "\n\t\t\tatSafeDistance: " << c2f.atSafeDistance;
+    os << "C2F: \n\t\t\tQuality : " << (WIFI_QUALITY)c2f.quality << "\n\t\t\tatSafeDistance: " << c2f.atSafeDistance;
     return os;
 }
 
@@ -202,6 +224,8 @@ void C2L::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
 }
 
 std::ostream &operator<<(std::ostream &os, const C2L &c2l) {
-    os << "C2L: \n\t\t\tQuality : " << (int)c2l.quality;
+    os << "C2L: \n\t\t\tQuality : " << (WIFI_QUALITY)c2l.quality;
     return os;
 }
+
+

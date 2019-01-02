@@ -21,12 +21,19 @@
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
 
 
+//enum WIFI_QUALITY {
+//    CRITICAL = 1 << 0,
+//    POOR     = 1 << 1,
+//    MODERATE = 1 << 2,
+//    OK       = 1 << 3,
+//    ALL      = CRITICAL | POOR | MODERATE |OK,
+//};
+
 enum WIFI_QUALITY {
     CRITICAL = 1 << 0,
     POOR     = 1 << 1,
-    MODERATE = 1 << 2,
-    OK       = 1 << 3,
-    ALL      = CRITICAL | POOR | MODERATE |OK,
+    OK       = 1 << 2,
+    ALL      = CRITICAL | POOR |OK,
 };
 
 class StateParameter {
@@ -50,13 +57,13 @@ protected:
 public:
     C2X(ROLE role);
     C2X(WIFI_QUALITY quality);
-    C2X(WIFI_QUALITY quality, ROLE role);
+//    C2X(WIFI_QUALITY quality, ROLE role);
     virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
     virtual bool equal(const StateParameter &stateParameter) const override;
 
 protected:
     WIFI_QUALITY quality;
-    ROLE role;
+//    ROLE role;
 
     friend std::ostream &operator<<(std::ostream &os, const C2X &c2x);
     friend std::hash<C2X>;
@@ -69,8 +76,7 @@ template <> struct hash<C2X> {
   using result_type = size_t;
   using argument_type = C2X;
   result_type operator()(const argument_type &c2x) const {
-      return std::hash<std::underlying_type<WIFI_QUALITY>::type>()(c2x.quality) ^
-             std::hash<std::underlying_type<ROLE>::type>()(c2x.role);
+      return std::hash<std::underlying_type<WIFI_QUALITY>::type>()(c2x.quality);
   }
 };
 }

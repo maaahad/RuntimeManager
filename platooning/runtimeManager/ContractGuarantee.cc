@@ -113,12 +113,12 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
     // StateParameters C2F : atSafetyDistance = true (default)
     C2F ok_c2f(WIFI_QUALITY::OK);
-    C2F moderate_c2f(WIFI_QUALITY::MODERATE);
+//    C2F moderate_c2f(WIFI_QUALITY::MODERATE);
     C2F poor_c2f(WIFI_QUALITY::POOR);
     C2F critical_c2f(WIFI_QUALITY::CRITICAL);
     // StateParameters C2L
     C2L ok_c2l(WIFI_QUALITY::OK);
-    C2L moderate_c2l(WIFI_QUALITY::MODERATE);
+//    C2L moderate_c2l(WIFI_QUALITY::MODERATE);
     C2L poor_c2l(WIFI_QUALITY::POOR);
     C2L critical_c2l(WIFI_QUALITY::CRITICAL);
 
@@ -128,63 +128,75 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     Guarantees *g2cacc  = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::CACC);
 
     // TODO Guarantees (Decelerate)
-    // ploeg
-
-    // cacc
-    Guarantees *g2dcacc = new Decelerate(rm);
+    Guarantees *g2d = new Decelerate(rm);
 
     // TODO Guarantees (ChangeControllerAndDecelerate)
+    Guarantees *g2ploegN2d = new ChangeControllerAndDecelerate(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
 
 
 
-    // WIFIContract for ACC controller
+    // ========== WIFIContract for ACC controller
     // Upgrade
     WIFIContract acc2cacc(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
     WIFIContract acc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, critical_c2l);
 
-    // WIFIContract for PLOEG controller
+    // ========== WIFIContract for PLOEG controller
     // Upgrade
     WIFIContract ploeg2cacc(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, ok_c2l);
     // degrade
     WIFIContract ploeg2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, ok_c2l);
     WIFIContract ploeg2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, critical_c2l);
+    // Decelerate
+    WIFIContract ploeg2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, poor_c2l);
+    WIFIContract ploeg2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, critical_c2l);
 
 
-    //WIFIContract for CACC
+    //========== WIFIContract for CACC
     // Degrade
     WIFIContract cacc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, critical_c2l);
+    // TODO The following three should be combined in one based on WIFI_QUALITY::ALL
     WIFIContract cacc2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, ok_c2l);
-    WIFIContract cacc2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, critical_c2l);
+    WIFIContract cacc2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, poor_c2l);
+    WIFIContract cacc2acc3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, critical_c2l);
     // Decelerate
-    WIFIContract cacc2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, ok_c2l);
-    WIFIContract cacc2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, moderate_c2l);
+    WIFIContract cacc2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, poor_c2l);
+    WIFIContract cacc2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, ok_c2l);
     WIFIContract cacc2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, poor_c2l);
+    // ChangeController and Decelerate
+    WIFIContract cacc2ploegN2d(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, critical_c2l);
+
 
     // ==============================================================
     // RMCGContainer
     // ==============================================================
 
-//    // ======= acc
+//    // ========== acc ==========
 //    // Change controller
 //    addCG(acc2cacc, g2cacc);
 //    addCG(acc2ploeg, g2ploeg);
 //
-//    // ======= ploeg
-//    // change controller
+//    // ========== ploeg ==========
+//    // ChangeController
 //    addCG(ploeg2cacc, g2cacc);
 //    addCG(ploeg2acc1, g2acc);
 //    addCG(ploeg2acc2, g2acc);
-//
-//    // ======= cacc
-//    // Change controller
-//    addCG(cacc2ploeg, g2ploeg);
-//    addCG(cacc2acc1, g2acc);
-//    addCG(cacc2acc2, g2acc);
+//    // decelerate
+//    addCG(ploeg2d1, g2d);
+//    addCG(ploeg2d2, g2d);
 
+
+    // ========== cacc ==========
+    // Change controller
+    addCG(cacc2ploeg, g2ploeg);
+    addCG(cacc2acc1, g2acc);
+    addCG(cacc2acc2, g2acc);
+    addCG(cacc2acc3, g2acc);
     // Decelerate
-    addCG(cacc2d1, g2dcacc);
-    addCG(cacc2d2, g2dcacc);
-    addCG(cacc2d3, g2dcacc);
+    addCG(cacc2d1, g2d);
+    addCG(cacc2d2, g2d);
+    addCG(cacc2d3, g2d);
+    // ChangeControllerAndDecelerate
+    addCG(cacc2ploegN2d,g2ploegN2d);
 
     // ============== Test: CHECKING WITH ADDING DUPLICATE element
 //    addCG(acc2cacc, g2cacc);     // test OK

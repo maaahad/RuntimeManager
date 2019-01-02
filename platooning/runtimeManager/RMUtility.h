@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 #include "veins/modules/application/platooning/CC_Const.h"
 
 
@@ -18,16 +19,15 @@ class StateParameter;
 class Contract;
 namespace RM {
     /**
-     * RM custom active controller
-     * WARNING!!! This requires loads of change in code.....!!!!????
+     * These vector of string is displaying some output to the standard output (console)
      */
-//    enum class CUSTOM_ACTIVE_CONTROLLER {
-//      ACC   = 1 << 0,
-//      PLOEG = 1 << 1,
-//      CACC  = 1 << 2,
-//      PLOEG_N_CACC = PLOEG | CACC,
-//      ALL   = ACC | PLOEG | CACC,
-//    };
+    // ========== Controller
+    // DRIVER = 0, ACC = 1, CACC = 2, FAKED_CACC = 3, PLOEG = 4, CONSENSUS = 5, FLATBED = 6
+//    std::vector<std::string> controller = {"\"DRIVER\"", "\"ACC\"", "\"CACC\"", "\"FAKED_CACC\"", "\"PLOEG\"", "vCONSENSUS\"", "\"FLATBED\""};
+    // ========== Wifi_quality
+    // CRITICAL = 1 << 0, POOR = 1 << 1, OK = 1 << 2, ALL = CRITICAL | POOR |OK,
+//    std::vector<std::string> quality = {"", "\"CRITICAL\"","\"POOR\"", "", "\"OK\"", "", "", "\"ALL\""};;
+
 
     /**
          * This structure represents the RMLog, that is the information that RM
@@ -38,7 +38,7 @@ namespace RM {
             double rmMonitorInterval;
             double expectedBeconInterval;
 
-            int nPacketLossModerate;
+//            int nPacketLossModerate;
             int nPacketLossPoor;
             int nPacketLossCritical;
 
