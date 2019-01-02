@@ -39,6 +39,9 @@ simple BaseRuntimeManager like IBaseApplLayer {
         double accHeadwaytimeGap @unit("s")   = default(1.2s);
         double ploegHeadwayTimeGap @unit("s") = default(1.0s);
         double caccConstantSpacing @unit("m") = default(5m);
+        
+        double emergencyCaccConstantSpacingFactor = default(.50);
+        
     gates:
         input lowerLayerIn; // from mac layer
         output lowerLayerOut; // to mac layer

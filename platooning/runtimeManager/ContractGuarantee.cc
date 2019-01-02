@@ -128,8 +128,8 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     Guarantees *g2cacc  = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::CACC);
 
     // TODO Guarantees (Gap2Front)
+    Guarantees *g2d_df = new AdjustGap2Front(rm, GAP2FRONT::DEFAULT);
     Guarantees *g2d_i = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
-    Guarantees *g2d_d = new AdjustGap2Front(rm, GAP2FRONT::DECREASE);       // DECREASE SHOULD BE REPLACE BY DEFAULT!?!?!
 
 
     // TODO Guarantees (ChangeControllerAndDecelerate)
@@ -191,20 +191,22 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
     // ========== cacc ==========
     // Change controller
-    addCG(cacc2ploeg, g2ploeg);
-    addCG(cacc2acc1, g2acc);
-    addCG(cacc2acc2, g2acc);
-    addCG(cacc2acc3, g2acc);
+//    addCG(cacc2ploeg, g2ploeg);
+//    addCG(cacc2acc1, g2acc);
+//    addCG(cacc2acc2, g2acc);
+//    addCG(cacc2acc3, g2acc);
     // Gap2Front
     addCG(cacc2d1, g2d_i);
     addCG(cacc2d2, g2d_i);
     addCG(cacc2d3, g2d_i);
 
-    addCG(cacc2d4, g2d_d);
+    addCG(cacc2d4, g2d_df);
 
 
     // ChangeControllerAndDecelerate
-    addCG(cacc2ploegN2d,g2ploegN2d_i);
+//    addCG(cacc2ploegN2d,g2ploegN2d_i);
+
+    // ==================== [ Debug ====================
 
     // ============== Test: CHECKING WITH ADDING DUPLICATE element
 //    addCG(acc2cacc, g2cacc);     // test OK
@@ -224,5 +226,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 //
 //    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(cacc2d1);
 //    std::cout << cc->first <<std::endl;
+    // ==================== Debug ] ====================
+
 }
 

@@ -15,13 +15,19 @@
 
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_ADJUSTGAP2FRONT_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_ADJUSTGAP2FRONT_H_
+
+#include <iostream>
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
 #include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
 
 enum class GAP2FRONT {
+    DEFAULT,
     INCREASE,
     DECREASE,
 };
+
+std::ostream &operator<<(std::ostream &os, const GAP2FRONT gap2front);
+
 
 class AdjustGap2Front : virtual public Guarantees {
 public:
