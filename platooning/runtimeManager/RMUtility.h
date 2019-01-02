@@ -17,6 +17,9 @@
 // Forward declaration
 class StateParameter;
 class Contract;
+
+std::ostream &operator<<(std::ostream &os, const Plexe::ACTIVE_CONTROLLER value);
+
 namespace RM {
     /**
      * These vector of string is displaying some output to the standard output (console)

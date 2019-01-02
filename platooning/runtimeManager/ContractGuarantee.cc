@@ -127,11 +127,13 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     Guarantees *g2ploeg = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
     Guarantees *g2cacc  = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::CACC);
 
-    // TODO Guarantees (Decelerate)
-    Guarantees *g2d = new Decelerate(rm);
+    // TODO Guarantees (Gap2Front)
+    Guarantees *g2d_i = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
+    Guarantees *g2d_d = new AdjustGap2Front(rm, GAP2FRONT::DECREASE);       // DECREASE SHOULD BE REPLACE BY DEFAULT!?!?!
+
 
     // TODO Guarantees (ChangeControllerAndDecelerate)
-    Guarantees *g2ploegN2d = new ChangeControllerAndDecelerate(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
+    Guarantees *g2ploegN2d_i = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::PLOEG, GAP2FRONT::INCREASE);
 
 
 
@@ -146,7 +148,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // degrade
     WIFIContract ploeg2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, ok_c2l);
     WIFIContract ploeg2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, critical_c2l);
-    // Decelerate
+    // Gap2Front
     WIFIContract ploeg2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, poor_c2l);
     WIFIContract ploeg2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, critical_c2l);
 
@@ -158,11 +160,13 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     WIFIContract cacc2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, ok_c2l);
     WIFIContract cacc2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, poor_c2l);
     WIFIContract cacc2acc3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, critical_c2l);
-    // Decelerate
+    // Gap2Front
     WIFIContract cacc2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, poor_c2l);
     WIFIContract cacc2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, ok_c2l);
     WIFIContract cacc2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, poor_c2l);
-    // ChangeController and Decelerate
+
+    WIFIContract cacc2d4(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, ok_c2l);
+    // ChangeController and Gap2Front
     WIFIContract cacc2ploegN2d(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, critical_c2l);
 
 
@@ -180,7 +184,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 //    addCG(ploeg2cacc, g2cacc);
 //    addCG(ploeg2acc1, g2acc);
 //    addCG(ploeg2acc2, g2acc);
-//    // decelerate
+//    // Gap2Front
 //    addCG(ploeg2d1, g2d);
 //    addCG(ploeg2d2, g2d);
 
@@ -191,12 +195,16 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     addCG(cacc2acc1, g2acc);
     addCG(cacc2acc2, g2acc);
     addCG(cacc2acc3, g2acc);
-    // Decelerate
-    addCG(cacc2d1, g2d);
-    addCG(cacc2d2, g2d);
-    addCG(cacc2d3, g2d);
+    // Gap2Front
+    addCG(cacc2d1, g2d_i);
+    addCG(cacc2d2, g2d_i);
+    addCG(cacc2d3, g2d_i);
+
+    addCG(cacc2d4, g2d_d);
+
+
     // ChangeControllerAndDecelerate
-    addCG(cacc2ploegN2d,g2ploegN2d);
+    addCG(cacc2ploegN2d,g2ploegN2d_i);
 
     // ============== Test: CHECKING WITH ADDING DUPLICATE element
 //    addCG(acc2cacc, g2cacc);     // test OK

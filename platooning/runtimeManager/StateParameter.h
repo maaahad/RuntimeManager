@@ -36,6 +36,9 @@ enum WIFI_QUALITY {
     ALL      = CRITICAL | POOR |OK,
 };
 
+std::ostream &operator<<(std::ostream &os, const WIFI_QUALITY val);
+
+
 class StateParameter {
     friend bool operator==(const StateParameter &sp1, const StateParameter &sp2);
 public:

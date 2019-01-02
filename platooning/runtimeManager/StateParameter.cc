@@ -16,22 +16,6 @@
 #include "StateParameter.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// enum WIFI_QUALITY << implementation
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::ostream &operator<<(std::ostream &os, const WIFI_QUALITY value) {
-    std::map<WIFI_QUALITY, std::string> enum2string;
-    if (enum2string.size() == 0) {
-#define INSERT(v) enum2string[v] = #v
-    INSERT(WIFI_QUALITY::CRITICAL);
-    INSERT(WIFI_QUALITY::POOR);
-    INSERT(WIFI_QUALITY::OK);
-    INSERT(WIFI_QUALITY::ALL);
-#undef INSERT
-    }
-    return os << enum2string[value];
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // StateParameter's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 StateParameter::StateParameter() {
@@ -226,6 +210,22 @@ void C2L::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
 std::ostream &operator<<(std::ostream &os, const C2L &c2l) {
     os << "C2L: \n\t\t\tQuality : " << (WIFI_QUALITY)c2l.quality;
     return os;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// enum WIFI_QUALITY << implementation
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::ostream &operator<<(std::ostream &os, const WIFI_QUALITY value) {
+    std::map<WIFI_QUALITY, std::string> enum2string;
+    if (enum2string.size() == 0) {
+#define INSERT(v) enum2string[v] = #v
+    INSERT(WIFI_QUALITY::CRITICAL);
+    INSERT(WIFI_QUALITY::POOR);
+    INSERT(WIFI_QUALITY::OK);
+    INSERT(WIFI_QUALITY::ALL);
+#undef INSERT
+    }
+    return os << enum2string[value];
 }
 
 

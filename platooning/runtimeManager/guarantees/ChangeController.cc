@@ -16,26 +16,6 @@
 #include "ChangeController.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// enum Plexe::ACTIVE_CONTROLLERY << implementation :: Utility
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::ostream &operator<<(std::ostream &os, const Plexe::ACTIVE_CONTROLLER value) {
-    std::map<Plexe::ACTIVE_CONTROLLER, std::string> enum2string;
-    if (enum2string.size() == 0) {
-#define INSERT(v) enum2string[v] = #v
-    INSERT(Plexe::ACTIVE_CONTROLLER::DRIVER);
-    INSERT(Plexe::ACTIVE_CONTROLLER::ACC);
-    INSERT(Plexe::ACTIVE_CONTROLLER::CACC);
-    INSERT(Plexe::ACTIVE_CONTROLLER::FAKED_CACC);
-    INSERT(Plexe::ACTIVE_CONTROLLER::PLOEG);
-    INSERT(Plexe::ACTIVE_CONTROLLER::CONSENSUS);
-    INSERT(Plexe::ACTIVE_CONTROLLER::FLATBED);
-#undef INSERT
-    }
-    return os << enum2string[value];
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ChangeController's methods implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ChangeController::ChangeController(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to) : Guarantees(rm), to(to){

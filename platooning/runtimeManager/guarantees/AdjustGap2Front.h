@@ -13,17 +13,23 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_CHANGECONTROLLERANDDECELERATE_H_
-#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_CHANGECONTROLLERANDDECELERATE_H_
-#include "veins/modules/application/platooning/runtimeManager/guarantees/Decelerate.h"
-#include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeController.h"
+#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_ADJUSTGAP2FRONT_H_
+#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_ADJUSTGAP2FRONT_H_
+#include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
+#include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
 
-
-class ChangeControllerAndDecelerate : public Decelerate, public ChangeController {
-public:
-    ChangeControllerAndDecelerate(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to);
-    virtual ~ChangeControllerAndDecelerate();
-    virtual void operator()(Contract *contract) const override;
+enum class GAP2FRONT {
+    INCREASE,
+    DECREASE,
 };
 
-#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_CHANGECONTROLLERANDDECELERATE_H_ */
+class AdjustGap2Front : virtual public Guarantees {
+public:
+    AdjustGap2Front(RuntimeManager *rm, GAP2FRONT gap2front);
+    virtual ~AdjustGap2Front();
+    virtual void operator()(Contract *contract) const override;
+protected:
+    GAP2FRONT gap2front;
+};
+
+#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_ADJUSTGAP2FRONT_H_ */

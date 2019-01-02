@@ -22,13 +22,13 @@
 #include <map>
 
 #include "contracts/WIFIContract.h"
+#include "guarantees/AdjustGap2Front.h"
+#include "guarantees/ChangeControllerAndAdjustGap2Front.h"
 #include "veins/modules/application/platooning/CC_Const.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
 #include "veins/modules/application/platooning/runtimeManager/rmContainer/RMCGContainer.h"
 #include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeController.h"
-#include "veins/modules/application/platooning/runtimeManager/guarantees/Decelerate.h"
-#include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeControllerAndDecelerate.h"
 
 
 

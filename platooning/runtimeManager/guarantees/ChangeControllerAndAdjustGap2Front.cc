@@ -13,19 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "ChangeControllerAndDecelerate.h"
+#include "ChangeControllerAndAdjustGap2Front.h"
 
-ChangeControllerAndDecelerate::ChangeControllerAndDecelerate(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to) : Guarantees(rm),
-Decelerate(rm), ChangeController(rm, to) {
+ChangeControllerAndAdjustGap2Front::ChangeControllerAndAdjustGap2Front(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to, GAP2FRONT gap2front) :
+Guarantees(rm), AdjustGap2Front(rm, gap2front), ChangeController(rm, to) {
     // TODO Auto-generated constructor stub
 
 }
 
-ChangeControllerAndDecelerate::~ChangeControllerAndDecelerate() {
+ChangeControllerAndAdjustGap2Front::~ChangeControllerAndAdjustGap2Front() {
     // TODO Auto-generated destructor stub
 }
 
-void ChangeControllerAndDecelerate::operator()(Contract *contract) const {
+void ChangeControllerAndAdjustGap2Front::operator()(Contract *contract) const {
     std::cerr << "Warning: " << __FILE__
                      << "\n\tLine: " << __LINE__
                      << "\n\tCompiled on: " << __DATE__
@@ -35,7 +35,7 @@ void ChangeControllerAndDecelerate::operator()(Contract *contract) const {
                      << std::endl;
     // Guarantees are performed through the base classes
     ChangeController::operator ()(contract);
-    Decelerate::operator ()(contract);
+    AdjustGap2Front::operator ()(contract);
 }
 
 
