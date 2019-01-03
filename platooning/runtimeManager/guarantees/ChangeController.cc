@@ -63,10 +63,10 @@ void ChangeController::operator()(Contract *contract) const {
 //                  << "\n\t Degrade : From " << traciVehicle->getActiveController() << " to " << to << std::endl;
 //    }
 
-    std::cout << "Vehicle " << positionHelper->getId()
-              << "\n\t Controller Change : From "
+    std::cout << "Vehicle " << positionHelper->getId() << "\n\t"
+              << "Controller Change : From "
               << (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController()
-              << " to " << (Plexe::ACTIVE_CONTROLLER)to << std::endl;
+              << " to " << (Plexe::ACTIVE_CONTROLLER)to;
 
     // debug ]
 
@@ -79,4 +79,6 @@ void ChangeController::operator()(Contract *contract) const {
 
     // Perform the transition
     traciVehicle->setActiveController(to);
+
+    std::cout << "\n\t" << "Contract Status: " << *(static_cast<WIFIContract *>(contract)) << std::endl;
 }

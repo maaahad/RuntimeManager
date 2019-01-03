@@ -52,6 +52,7 @@ namespace RM {
             double ploegHeadwayTimeGap;
             double caccConstantSpacing;
 
+            double emergencyPloegHeadwayTimeGapFactor;
             double emergencyCaccConstantSpacingFactor;
         };
 

@@ -61,21 +61,30 @@ void RuntimeManager::initialize(int stage) {
             rmParam.ploegHeadwayTimeGap = par("ploegHeadwayTimeGap").doubleValue();
             rmParam.caccConstantSpacing = par("caccConstantSpacing").doubleValue();
 
+
+            rmParam.emergencyPloegHeadwayTimeGapFactor = par("emergencyPloegHeadwayTimeGapFactor").doubleValue();
             rmParam.emergencyCaccConstantSpacingFactor = par("emergencyCaccConstantSpacingFactor").doubleValue();
 
-            // [ Debug
-            std::cerr << "rmMonitorInterval: " << rmParam.rmMonitorInterval << std::endl;
-            std::cerr << "expectedBeconInterval: " << rmParam.expectedBeconInterval << std::endl;
-//            std::cerr << "nPacketLossModerate: " << rmParam.nPacketLossModerate << std::endl;
-            std::cerr << "nPacketLossPoor: " << rmParam.nPacketLossPoor << std::endl;
-            std::cerr << "nPacketLossCritical: " << rmParam.nPacketLossCritical << std::endl;
-            std::cerr << "minSafetyDistance: " << rmParam.minSafetyDistance << std::endl;
-            std::cerr << "actionOnTransitionEnabled: " << rmParam.actionOnTransitionEnabled << std::endl;
-            std::cerr << "accHeadwaytimeGap: " << rmParam.accHeadwaytimeGap << std::endl;
-            std::cerr << "ploegHeadwayTimeGap: " << rmParam.ploegHeadwayTimeGap << std::endl;
-            std::cerr << "caccConstantSpacing: " << rmParam.caccConstantSpacing << std::endl;
 
-            std::cerr << "emergencyCaccConstantSpacingFactor: " << rmParam.emergencyCaccConstantSpacingFactor << std::endl;
+            // [ Debug
+//            std::cerr << "rmMonitorInterval: " << rmParam.rmMonitorInterval << std::endl;
+//            std::cerr << "expectedBeconInterval: " << rmParam.expectedBeconInterval << std::endl;
+////            std::cerr << "nPacketLossModerate: " << rmParam.nPacketLossModerate << std::endl;
+//            std::cerr << "nPacketLossPoor: " << rmParam.nPacketLossPoor << std::endl;
+//            std::cerr << "nPacketLossCritical: " << rmParam.nPacketLossCritical << std::endl;
+//            std::cerr << "minSafetyDistance: " << rmParam.minSafetyDistance << std::endl;
+//            std::cerr << "actionOnTransitionEnabled: " << rmParam.actionOnTransitionEnabled << std::endl;
+//            std::cerr << "accHeadwaytimeGap: " << rmParam.accHeadwaytimeGap << std::endl;
+//            std::cerr << "ploegHeadwayTimeGap: " << rmParam.ploegHeadwayTimeGap << std::endl;
+//            std::cerr << "caccConstantSpacing: " << rmParam.caccConstantSpacing << std::endl;
+//
+//            std::cerr << "emergencyCaccConstantSpacingFactor: " << rmParam.emergencyCaccConstantSpacingFactor << std::endl;
+//             std::cerr << "emergencyPloegHeadwayTimeGapFactor: " << rmParam.emergencyPloegHeadwayTimeGapFactor << std::endl;
+
+//            double ploegH;
+//            traciVehicle->getParameter(CC_PAR_PLOEG_H, ploegH);
+//            std::cerr << "CC_PAR_PLOEG_H: " << ploegH << std::endl;
+
 
             // Debug ]
 
@@ -224,7 +233,19 @@ void RuntimeManager::initializeContracts() {
 
     // TODO other Contracts, if there is any
     // [debug
+    if(positionHelper->getId() == 0) {
+        std::cout << "======================================== Default Contract ========================================" << std::endl;
+        std::cout << "==================================================================================================" << std::endl;
+    }
     std::cout << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(static_cast<WIFIContract *>((*ego.contracts)[0])) << std::endl;
+    std::cout << "--------------------------------------------------------------------------------------------------" << std::endl;
+    if(positionHelper->getId() == 7) {
+        std::cout << "==================================================================================================" << std::endl;
+        std::cout << "==================================================================================================" << std::endl;
+        std::cout << "\n\n\n";
+
+
+    }
 
 //    Contract *cr1 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::FRONT));
 //    Contract *cr2 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::LEADER), C2X(ROLE::LEADER));

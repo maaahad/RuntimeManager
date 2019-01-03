@@ -42,40 +42,49 @@ void AdjustGap2Front::operator()(Contract *contract) const {
                          << std::endl;
     } else if (traciVehicle->getActiveController() == Plexe::PLOEG) {
 
-        std::cerr << "Warning: " << __FILE__
-                         << "\n\tLine: " << __LINE__
-                         << "\n\tCompiled on: " << __DATE__
-                         << " at " << __TIME__
-                         << "\n\tfunction: " << __func__
-                         << " ...Not Implemented yet!!!"
-                         << std::endl;
-////        if(positionHelper->getId() == 1) {  // ==== Note: This is for debugging purpose
-//            std::cerr << "Before: " << *(static_cast<WIFIContract *>(contract)) << std::endl;
-//            std::cerr << "ploegHeadwayTimeGap:" << traciVehicle->getACCHeadwayTime() << ", RMParam::ploegHeadwayTimeGap: " << rmParam.ploegHeadwayTimeGap << std::endl;
-//            std::cerr << "CruiseControlDesiredSpeed:" << traciVehicle->getCruiseControlDesiredSpeed() << std::endl;
-//
-//            // Test for active Controller CACC
-////            traciVehicle->setACCHeadwayTime(rmParam.ploegHeadwayTimeGap);
-//
-//            traciVehicle->setCruiseControlDesiredSpeed(20.0);
-//
-//            std::cerr << "After: " << *(static_cast<WIFIContract *>(contract)) << std::endl;
-//        }
-    }else if(traciVehicle->getActiveController() == Plexe::CACC) {
+        if(gap2front == GAP2FRONT::DEFAULT) {
+            // go back to the default spacing
+            traciVehicle->setParameter(CC_PAR_PLOEG_H, rmParam.ploegHeadwayTimeGap);
+
+            std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
+                      << gap2front << " headwayTimeGap(" << rmParam.ploegHeadwayTimeGap << "s)"
+                      << "\n\t" << "Contract Status: " << *(static_cast<WIFIContract *>(contract))
+                      << std::endl;
+
+        } else if (gap2front == GAP2FRONT::INCREASE){
+            // increase the gap
+            traciVehicle->setParameter(CC_PAR_PLOEG_H, rmParam.ploegHeadwayTimeGap + rmParam.ploegHeadwayTimeGap * rmParam.emergencyPloegHeadwayTimeGapFactor);
+            std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
+                      << gap2front << " headwayTimeGap(" << (rmParam.ploegHeadwayTimeGap + rmParam.ploegHeadwayTimeGap * rmParam.emergencyPloegHeadwayTimeGapFactor) << "s)"
+                      << "\n\t" << "Contract Status: " << *(static_cast<WIFIContract *>(contract))
+                      << std::endl;
+
+        } else {
+            // TODO decrease the gap
+        }
+
+    } else if(traciVehicle->getActiveController() == Plexe::CACC) {
 //        if(positionHelper->getId() == 7) {  // ==== Note: This is for debugging purpose
-            std::cerr << "Before: " << *(static_cast<WIFIContract *>(contract)) << std::endl;
-            std::cerr << "CACCConstantSpacing:" << traciVehicle->getCACCConstantSpacing() << ", RMParam::CACCConstantSpacing: " << rmParam.caccConstantSpacing << std::endl;
-            // Test for active Controller CACC
+//            std::cerr << "Vehicle " << positionHelper->getId() << "Contract Status: \t\tBefore\n\t " << *(static_cast<WIFIContract *>(contract)) << std::endl;
+//            std::cerr << "CACCConstantSpacing:" << traciVehicle->getCACCConstantSpacing() << ", RMParam::CACCConstantSpacing: " << rmParam.caccConstantSpacing << std::endl;
             if(gap2front == GAP2FRONT::DEFAULT) {
-                // go to the default spacing
+                // go back to the default spacing
                 traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing);
+                std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
+                          << gap2front << " distance(" << rmParam.caccConstantSpacing << "m)"
+                          << "\n\t" << "Contract Status: " << *(static_cast<WIFIContract *>(contract))
+                          << std::endl;
             } else if (gap2front == GAP2FRONT::INCREASE){
                 // increase the gap
                 traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing + rmParam.caccConstantSpacing * rmParam.emergencyCaccConstantSpacingFactor);
+                std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
+                          << gap2front << " distance(" << (rmParam.caccConstantSpacing + rmParam.caccConstantSpacing * rmParam.emergencyCaccConstantSpacingFactor) << "m)"
+                          << "\n\t" << "Contract Status: " << *(static_cast<WIFIContract *>(contract))
+                          << std::endl;
             } else {
-                // decrease the gap
+                // TODO decrease the gap
             }
-            std::cerr << "After: " << *(static_cast<WIFIContract *>(contract)) << std::endl;
+//            std::cerr << "Vehicle " << positionHelper->getId() << " Contract Status: \t\tAfter\n\t " << *(static_cast<WIFIContract *>(contract)) << std::endl;
 //        }
     }
 }

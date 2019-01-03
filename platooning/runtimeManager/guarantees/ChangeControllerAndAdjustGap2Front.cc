@@ -26,16 +26,9 @@ ChangeControllerAndAdjustGap2Front::~ChangeControllerAndAdjustGap2Front() {
 }
 
 void ChangeControllerAndAdjustGap2Front::operator()(Contract *contract) const {
-    std::cerr << "Warning: " << __FILE__
-                     << "\n\tLine: " << __LINE__
-                     << "\n\tCompiled on: " << __DATE__
-                     << " at " << __TIME__
-                     << "\n\tfunction " << __func__
-                     << " ...Not Implemented yet properly!!!"
-                     << std::endl;
     // Guarantees are performed through the base classes
     ChangeController::operator ()(contract);
-    AdjustGap2Front::operator ()(contract);
+    AdjustGap2Front::operator ()(contract);   // This is not done for ploeg yet
 }
 
 

@@ -191,10 +191,10 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
     // ========== cacc ==========
     // Change controller
-//    addCG(cacc2ploeg, g2ploeg);
-//    addCG(cacc2acc1, g2acc);
-//    addCG(cacc2acc2, g2acc);
-//    addCG(cacc2acc3, g2acc);
+    addCG(cacc2ploeg, g2ploeg);
+    addCG(cacc2acc1, g2acc);
+    addCG(cacc2acc2, g2acc);
+    addCG(cacc2acc3, g2acc);
     // Gap2Front
     addCG(cacc2d1, g2d_i);
     addCG(cacc2d2, g2d_i);
@@ -204,7 +204,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
 
     // ChangeControllerAndDecelerate
-//    addCG(cacc2ploegN2d,g2ploegN2d_i);
+    addCG(cacc2ploegN2d,g2ploegN2d_i);
 
     // ==================== [ Debug ====================
 

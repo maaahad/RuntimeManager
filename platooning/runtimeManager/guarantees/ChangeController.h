@@ -17,6 +17,8 @@
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_CHANGECONTROLLER_H_
 
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
+#include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
+
 
 
 class ChangeController : virtual public Guarantees {

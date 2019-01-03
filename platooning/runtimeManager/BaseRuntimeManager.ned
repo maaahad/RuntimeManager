@@ -40,6 +40,7 @@ simple BaseRuntimeManager like IBaseApplLayer {
         double ploegHeadwayTimeGap @unit("s") = default(1.0s);
         double caccConstantSpacing @unit("m") = default(5m);
         
+        double emergencyPloegHeadwayTimeGapFactor = default(.50);
         double emergencyCaccConstantSpacingFactor = default(.50);
         
     gates:

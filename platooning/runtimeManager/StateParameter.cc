@@ -100,7 +100,6 @@ template <typename T> void C2X::c2xQualityCheck(const RM::RMParameters &rmParam,
     } else {
         // Sanity check
         ASSERT(quality == WIFI_QUALITY::CRITICAL);
-        return;
     }
 }
 
@@ -149,7 +148,7 @@ bool C2X::equal(const StateParameter &stateParameter) const {
 
 std::ostream &operator<<(std::ostream &os, const C2X &c2x){
 //    return os << "C2X: \n\tQuality : " << (int)c2x.quality << "\n\trole: " << (int)c2x.role;
-    return os << "C2X: \n\tQuality : " << (int)c2x.quality;
+    return os << "C2X: \n\tQuality : " << (WIFI_QUALITY)c2x.quality;
 }
 
 
