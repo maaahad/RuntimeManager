@@ -129,31 +129,38 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
     // TODO Guarantees (Gap2Front)
     Guarantees *g2d_df = new AdjustGap2Front(rm, GAP2FRONT::DEFAULT);
-    Guarantees *g2d_i = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
+    Guarantees *g2d_i  = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
 
 
     // TODO Guarantees (ChangeControllerAndDecelerate)
     Guarantees *g2ploegN2d_i = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::PLOEG, GAP2FRONT::INCREASE);
+    Guarantees *g2caccN2d_i  = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::CACC, GAP2FRONT::INCREASE);
 
 
 
-    // ========== WIFIContract for ACC controller
+
+    // ==================== WIFIContract for ACC controller ====================
     // Upgrade
     WIFIContract acc2cacc(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
     WIFIContract acc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, critical_c2l);
 
-    // ========== WIFIContract for PLOEG controller
+    // ==================== WIFIContract for PLOEG controller ====================
     // Upgrade
     WIFIContract ploeg2cacc(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, ok_c2l);
     // degrade
     WIFIContract ploeg2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, ok_c2l);
-    WIFIContract ploeg2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, critical_c2l);
+    WIFIContract ploeg2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, poor_c2l);
+    WIFIContract ploeg2acc3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, critical_c2l);
     // Gap2Front
-    WIFIContract ploeg2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, poor_c2l);
-    WIFIContract ploeg2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, critical_c2l);
+    WIFIContract ploeg2d(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, critical_c2l);
+    // default Gap2Front
+    WIFIContract ploeg2d_default(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, critical_c2l);
+    // ChangeController and Gap2Front
+    WIFIContract ploeg2caccN2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, poor_c2l);
+    WIFIContract ploeg2caccN2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, ok_c2l);
+    WIFIContract ploeg2caccN2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, poor_c2l);
 
-
-    //========== WIFIContract for CACC
+    //==================== WIFIContract for CACC controller ====================
     // Degrade
     WIFIContract cacc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, critical_c2l);
     // TODO The following three should be combined in one based on WIFI_QUALITY::ALL
@@ -164,8 +171,8 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     WIFIContract cacc2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, poor_c2l);
     WIFIContract cacc2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, ok_c2l);
     WIFIContract cacc2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, poor_c2l);
-
-    WIFIContract cacc2d4(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, ok_c2l);
+    // default Gap2Front
+    WIFIContract cacc2d_default(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, ok_c2l);
     // ChangeController and Gap2Front
     WIFIContract cacc2ploegN2d(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, critical_c2l);
 
@@ -179,15 +186,21 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 //    addCG(acc2cacc, g2cacc);
 //    addCG(acc2ploeg, g2ploeg);
 //
-//    // ========== ploeg ==========
-//    // ChangeController
-//    addCG(ploeg2cacc, g2cacc);
-//    addCG(ploeg2acc1, g2acc);
-//    addCG(ploeg2acc2, g2acc);
-//    // Gap2Front
-//    addCG(ploeg2d1, g2d);
-//    addCG(ploeg2d2, g2d);
-
+    // ========== ploeg ==========
+    // Upgrade
+    addCG(ploeg2cacc, g2cacc);
+    // degrade
+    addCG(ploeg2acc1, g2acc);
+    addCG(ploeg2acc2, g2acc);
+    addCG(ploeg2acc3, g2acc);
+    // Gap2Front
+    addCG(ploeg2d, g2d_i);
+    // default Gap2Front
+    addCG(ploeg2d_default, g2d_df);
+    // ChangeControllerAndGap2Front
+    addCG(ploeg2caccN2d1, g2caccN2d_i);
+    addCG(ploeg2caccN2d2, g2caccN2d_i);
+    addCG(ploeg2caccN2d3, g2caccN2d_i);
 
     // ========== cacc ==========
     // Change controller
@@ -199,11 +212,9 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     addCG(cacc2d1, g2d_i);
     addCG(cacc2d2, g2d_i);
     addCG(cacc2d3, g2d_i);
-
-    addCG(cacc2d4, g2d_df);
-
-
-    // ChangeControllerAndDecelerate
+    // default Gap2Front
+    addCG(cacc2d_default, g2d_df);
+    // ChangeControllerAndGap2Front
     addCG(cacc2ploegN2d,g2ploegN2d_i);
 
     // ==================== [ Debug ====================
@@ -220,12 +231,12 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
 
 
-//    auto sz = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
-//    auto sz2 = rmcg->size();
-//
-//
-//    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(cacc2d1);
-//    std::cout << cc->first <<std::endl;
+    auto sz = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
+    auto sz2 = rmcg->size();
+
+
+    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(cacc2d1);
+    std::cout << cc->first <<std::endl;
     // ==================== Debug ] ====================
 
 }
