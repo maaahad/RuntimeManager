@@ -22,17 +22,6 @@ std::ostream &operator<<(std::ostream &os, const Plexe::ACTIVE_CONTROLLER value)
 
 namespace RM {
     /**
-     * These vector of string is displaying some output to the standard output (console)
-     */
-    // ========== Controller
-    // DRIVER = 0, ACC = 1, CACC = 2, FAKED_CACC = 3, PLOEG = 4, CONSENSUS = 5, FLATBED = 6
-//    std::vector<std::string> controller = {"\"DRIVER\"", "\"ACC\"", "\"CACC\"", "\"FAKED_CACC\"", "\"PLOEG\"", "vCONSENSUS\"", "\"FLATBED\""};
-    // ========== Wifi_quality
-    // CRITICAL = 1 << 0, POOR = 1 << 1, OK = 1 << 2, ALL = CRITICAL | POOR |OK,
-//    std::vector<std::string> quality = {"", "\"CRITICAL\"","\"POOR\"", "", "\"OK\"", "", "", "\"ALL\""};;
-
-
-    /**
          * This structure represents the RMLog, that is the information that RM
          * stores onPlatoonBeacon from leader or front vehicle
          */
@@ -80,6 +69,7 @@ namespace RM {
          * This is the log for the own vehicle
          */
         struct RMLog_Own {
+            // TODO need to pass custom deleter to shared_ptr or using use of shared_ptr for vector elements
             std::shared_ptr<std::vector<Contract *>> contracts;
         };
         /**

@@ -16,7 +16,7 @@
 #include <iostream>
 #include "Contract.h"
 
-Contract::Contract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller) : type(type), controller(controller) {
+Contract::Contract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller) : type(type), controller(controller), contractChanged(false) {
 
 }
 
@@ -56,6 +56,10 @@ Plexe::ACTIVE_CONTROLLER Contract::getController() const {
 
 CONTRACT_TYPE Contract::getContractType() const {
     return type;
+}
+
+bool Contract::isChanged() const {
+    return contractChanged;
 }
 
 // Contract free == operator

@@ -56,31 +56,32 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
 
     // TRYING WITH new RMContainer
     for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
-        if(auto contract = dynamic_cast<WIFIContract *>(*start)) {
-            // Sanity check
-            ASSERT(contract->getContractType() == CONTRACT_TYPE::WIFI);
-            // get the all contract-guarantee list from rmcg for CONTRACT_TYPE::WIFI
-            auto match = rmcg->find(CONTRACT_TYPE::WIFI);
-            if(match != rmcg->end()){
-                // We found a list of contract-guarantee for WIFI contract type
-                auto matchedCGContainer = static_cast<RMCGContainer<WIFIContract, Guarantees> *>(match->second);
+        if((*start)->isChanged()) {
+            if(auto contract = dynamic_cast<WIFIContract *>(*start)) {
+                // Sanity check
+                ASSERT(contract->getContractType() == CONTRACT_TYPE::WIFI);
+                // get the all contract-guarantee list from rmcg for CONTRACT_TYPE::WIFI
+                auto match = rmcg->find(CONTRACT_TYPE::WIFI);
+                if(match != rmcg->end()){
+                    // We found a list of contract-guarantee for WIFI contract type
+                    auto matchedCGContainer = static_cast<RMCGContainer<WIFIContract, Guarantees> *>(match->second);
 
-                matchedCGContainer->provideGuarantee(contract);
+                    matchedCGContainer->provideGuarantee(contract);
 
-//                auto matchedCG = (matchedCGContainer->cgs)->find(*contract); //TODO Delegate this to Container.. LATER
-//                if(matchedCG != (matchedCGContainer->cgs)->end()) {
-//                    // Match found and call the provideGuarantee method of the found Guarantee
-//                    Guarantees guarantee = matchedCG->second;
-//                    guarantee.provideGuarantee(*start);
-//                } else {
-//                    std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
-//                }
+        //                auto matchedCG = (matchedCGContainer->cgs)->find(*contract); //TODO Delegate this to Container.. LATER
+        //                if(matchedCG != (matchedCGContainer->cgs)->end()) {
+        //                    // Match found and call the provideGuarantee method of the found Guarantee
+        //                    Guarantees guarantee = matchedCG->second;
+        //                    guarantee.provideGuarantee(*start);
+        //                } else {
+        //                    std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
+        //                }
 
+                }
+                continue;
             }
-            continue;
+            // TODO check in other Contract_Gurantee list
         }
-
-        // TODO check in other Contract_Gurantee list
     }
 }
 
@@ -110,7 +111,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // TODO all dynamically allocated object should use smart pointer rather that built-in pointer :: Later
 
     // Creating the WIFIContract-Guarantee list
-
+    // =============================================== StateParameters ================================================
     // StateParameters C2F : atSafetyDistance = true (default)
     C2F ok_c2f(WIFI_QUALITY::OK);
 //    C2F moderate_c2f(WIFI_QUALITY::MODERATE);
@@ -122,6 +123,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     C2L poor_c2l(WIFI_QUALITY::POOR);
     C2L critical_c2l(WIFI_QUALITY::CRITICAL);
 
+    // ================================================== Guarantees ==================================================
     // Guarantees (ChangeController)
     Guarantees *g2acc   = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::ACC);
     Guarantees *g2ploeg = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
@@ -139,12 +141,20 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
 
 
-    // ==================== WIFIContract for ACC controller ====================
+    // ======================================== WIFIContract for ACC controller ========================================
     // Upgrade
     WIFIContract acc2cacc(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
     WIFIContract acc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, critical_c2l);
+    // degrade
+    // ChangeController and Gap2Front
+    WIFIContract acc2ploegN2d(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, critical_c2l);
+    WIFIContract acc2caccN2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, poor_c2l);
+    WIFIContract acc2caccN2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, ok_c2l);
+    WIFIContract acc2caccN2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, poor_c2l);
 
-    // ==================== WIFIContract for PLOEG controller ====================
+
+
+    // ======================================== WIFIContract for PLOEG controller =======================================
     // Upgrade
     WIFIContract ploeg2cacc(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, ok_c2l);
     // degrade
@@ -160,7 +170,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     WIFIContract ploeg2caccN2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, ok_c2l);
     WIFIContract ploeg2caccN2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, poor_c2l);
 
-    //==================== WIFIContract for CACC controller ====================
+    // ======================================== WIFIContract for CACC controller ========================================
     // Degrade
     WIFIContract cacc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, critical_c2l);
     // TODO The following three should be combined in one based on WIFI_QUALITY::ALL
@@ -177,16 +187,22 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     WIFIContract cacc2ploegN2d(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, critical_c2l);
 
 
-    // ==============================================================
+    // ===================================================================================================================
     // RMCGContainer
-    // ==============================================================
+    // ===================================================================================================================
 
-//    // ========== acc ==========
-//    // Change controller
-//    addCG(acc2cacc, g2cacc);
-//    addCG(acc2ploeg, g2ploeg);
-//
-    // ========== ploeg ==========
+    // ==================== acc ====================
+    // Upgrade
+    addCG(acc2cacc, g2cacc);
+    addCG(acc2ploeg, g2ploeg);
+    // Degrade
+    addCG(acc2ploegN2d, g2ploegN2d_i);
+    addCG(acc2caccN2d1, g2caccN2d_i);
+    addCG(acc2caccN2d2, g2caccN2d_i);
+    addCG(acc2caccN2d3, g2caccN2d_i);
+
+
+    // =================== ploeg ===================
     // Upgrade
     addCG(ploeg2cacc, g2cacc);
     // degrade
@@ -202,7 +218,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     addCG(ploeg2caccN2d2, g2caccN2d_i);
     addCG(ploeg2caccN2d3, g2caccN2d_i);
 
-    // ========== cacc ==========
+    // ==================== cacc ===================
     // Change controller
     addCG(cacc2ploeg, g2ploeg);
     addCG(cacc2acc1, g2acc);
@@ -217,7 +233,8 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // ChangeControllerAndGap2Front
     addCG(cacc2ploegN2d,g2ploegN2d_i);
 
-    // ==================== [ Debug ====================
+
+    // ====================================================== [ Debug ======================================================
 
     // ============== Test: CHECKING WITH ADDING DUPLICATE element
 //    addCG(acc2cacc, g2cacc);     // test OK
@@ -237,7 +254,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
     auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(cacc2d1);
     std::cout << cc->first <<std::endl;
-    // ==================== Debug ] ====================
+    // ====================================================== Debug ] =======================================================
 
 }
 

@@ -39,10 +39,12 @@ public:
     virtual void updateOnTransition(Plexe::ACTIVE_CONTROLLER to) = 0;
     Plexe::ACTIVE_CONTROLLER getController() const;
     CONTRACT_TYPE getContractType() const;
+    bool isChanged() const;
 
 protected:
     CONTRACT_TYPE type;
     Plexe::ACTIVE_CONTROLLER controller;
+    bool contractChanged;
 };
 
 

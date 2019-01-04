@@ -27,8 +27,10 @@ WIFIContract::~WIFIContract() {
 }
 
 void WIFIContract::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
-    c2f.evaluate(rmParam, rmLog, onPlatoonBeacon, index);
-    c2l.evaluate(rmParam, rmLog, onPlatoonBeacon, index);
+    contractChanged = c2f.evaluate(rmParam, rmLog, onPlatoonBeacon, index) ||
+                      c2l.evaluate(rmParam, rmLog, onPlatoonBeacon, index);
+//    c2f.evaluate(rmParam, rmLog, onPlatoonBeacon, index);
+//    c2l.evaluate(rmParam, rmLog, onPlatoonBeacon, index);
 
     // [ debug
 

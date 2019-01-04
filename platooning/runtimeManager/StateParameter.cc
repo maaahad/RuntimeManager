@@ -40,7 +40,7 @@ bool StateParameter::equal(const StateParameter &stateParameter) const {
     return true;
 }
 
-void StateParameter::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+bool StateParameter::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
               << "\n\tCompiled on: " << __DATE__
@@ -48,6 +48,7 @@ void StateParameter::evaluate(const RM::RMParameters &rmParam, const RM::rm_log 
               << "\n\tfunction " << __func__
               << " must have to be overriden by the derived class!!!"
               << std::endl;
+    return false;
 }
 
 // Free == operator
@@ -103,7 +104,7 @@ template <typename T> void C2X::c2xQualityCheck(const RM::RMParameters &rmParam,
     }
 }
 
-void C2X::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+bool C2X::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
 //    if(onPlatoonBeacon) {
 //        // Right now there is nothing to do here!!!
 //    } else {
@@ -136,6 +137,7 @@ void C2X::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
                           << "\n\tfunction " << __func__
                           << " Should be overriden by the derived class C2F and C2L!!!"
                           << std::endl;
+    return false;
 }
 
 // Operator overloaded
@@ -167,15 +169,24 @@ bool C2F::equal(const StateParameter &stateParameter) const {
            (atSafeDistance == rhs.atSafeDistance);
 }
 
-void C2F::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+bool C2F::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     if(onPlatoonBeacon) {
         // Right now there is nothing to do here!!!
     } else {
 //      const auto &other = std::get<1>(rmLog);
         const RM::RMLog_Front &other = std::get<1>(rmLog);
+
+        // This is required to check whether the state parameter is changed or not
+        C2F temp = *this;
+
         c2xQualityCheck(rmParam, other);
         // TODO we need to check the distance to the front vehicle
+        if(!(temp == *this)) {
+            // StataParameter has been changed
+            return true;
+        }
     }
+    return false;
 }
 
 std::ostream &operator<<(std::ostream &os, const C2F &c2f) {
@@ -196,14 +207,24 @@ bool C2L::equal(const StateParameter &stateParameter) const {
     return (quality == rhs.quality);
 }
 
-void C2L::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+bool C2L::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     if(onPlatoonBeacon) {
         // Right now there is nothing to do here!!!
     } else {
 //      const auto &other = std::get<2>(rmLog);
         const RM::RMLog_Leader &other = std::get<2>(rmLog);
+
+        // This is required to check whether the state parameter is changed or not
+        C2L temp = *this;
+
         c2xQualityCheck(rmParam, other);
+
+        if(!(temp == *this)) {
+            // StataParameter has been changed
+            return true;
+        }
     }
+    return false;
 }
 
 std::ostream &operator<<(std::ostream &os, const C2L &c2l) {

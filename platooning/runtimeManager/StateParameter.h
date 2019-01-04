@@ -44,7 +44,7 @@ class StateParameter {
 public:
     StateParameter();
     virtual ~StateParameter();
-    virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
+    virtual bool evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
     virtual bool equal(const StateParameter &stateParameter) const = 0;
 };
 
@@ -61,7 +61,7 @@ public:
     C2X(ROLE role);
     C2X(WIFI_QUALITY quality);
 //    C2X(WIFI_QUALITY quality, ROLE role);
-    virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
+    virtual bool evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
     virtual bool equal(const StateParameter &stateParameter) const override;
 
 protected:
@@ -92,7 +92,7 @@ class C2F : public C2X {
 public:
     C2F(WIFI_QUALITY quality = WIFI_QUALITY::CRITICAL, bool atSafeDistance = true);
     virtual bool equal(const StateParameter &stateParameter) const override;
-    virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
+    virtual bool evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
 private:
     bool atSafeDistance;
 
@@ -121,7 +121,7 @@ class C2L : public C2X {
 public:
     C2L(WIFI_QUALITY quality = WIFI_QUALITY::CRITICAL);
     virtual bool equal(const StateParameter &stateParameter) const override;
-    virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
+    virtual bool evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
 
     friend std::ostream &operator<<(std::ostream &os, const C2L &c2l);
     friend std::hash<C2L>;
