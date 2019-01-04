@@ -58,6 +58,14 @@ void BaseApp::initialize(int stage)
         protocol = FindModule<BaseProtocol*>::findSubModule(getParentModule());
         myId = positionHelper->getId();
 
+        // [ =========== Ahad
+        // Setting color of the vehicle
+//        TraCIColor color(std::rand() % 255, std::rand() % 255, std::rand() % 255, 255);
+        TraCIColor color(255, 255, 255, 255);
+        traciVehicle->setColor(color);
+        // =========== Ahad ]
+
+
         // connect application to protocol
         protocol->registerApplication(BaseProtocol::BEACON_TYPE, gate("lowerLayerIn"), gate("lowerLayerOut"), gate("lowerControlIn"), gate("lowerControlOut"));
 
@@ -112,9 +120,17 @@ void BaseApp::logVehicleData(bool crashed)
     traciVehicle->getRadarMeasurements(distance, relSpeed);
     traciVehicle->getVehicleData(&data);
     if (crashed) {
-        distance = 0;
-        stopSimulation = new cMessage("stopSimulation");
-        scheduleAt(simTime() + SimTime(1, SIMTIME_MS), stopSimulation);
+
+        // [ =========== Ahad
+        TraCIColor color(255, 0, 0, 255);
+        traciVehicle->setColor(color);
+        // =========== Ahad ]
+
+        // TODO to stop the simulation after crash, uncomment the following statements (Ahad)
+//        distance = 0;
+//        stopSimulation = new cMessage("stopSimulation");
+//        scheduleAt(simTime() + SimTime(1, SIMTIME_MS), stopSimulation);
+
     }
     // write data to output files
     distanceOut.record(distance);

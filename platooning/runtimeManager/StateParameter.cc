@@ -59,9 +59,9 @@ bool operator==(const StateParameter &sp1, const StateParameter &sp2) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // C2X's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-C2X::C2X(ROLE role) : quality(WIFI_QUALITY::CRITICAL){
-
-}
+//C2X::C2X(ROLE role) : quality(WIFI_QUALITY::CRITICAL){
+//
+//}
 
 C2X::C2X(WIFI_QUALITY quality) : quality(quality){
 
@@ -167,6 +167,8 @@ bool C2F::equal(const StateParameter &stateParameter) const {
     auto rhs = dynamic_cast<const C2F &>(stateParameter);
     return (quality == rhs.quality) &&
            (atSafeDistance == rhs.atSafeDistance);
+//    return C2X::equal(stateParameter) &&
+//            (atSafeDistance == rhs.atSafeDistance);
 }
 
 bool C2F::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
@@ -183,6 +185,7 @@ bool C2F::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
         // TODO we need to check the distance to the front vehicle
         if(!(temp == *this)) {
             // StataParameter has been changed
+//            std::cerr << "this: " << *this  << " \nOld" << temp << std::endl;
             return true;
         }
     }
@@ -204,6 +207,7 @@ C2L::C2L(WIFI_QUALITY quality) : C2X(quality) {
 
 bool C2L::equal(const StateParameter &stateParameter) const {
     auto rhs = dynamic_cast<const C2L &>(stateParameter);
+//    return C2X::equal(stateParameter);
     return (quality == rhs.quality);
 }
 
@@ -221,8 +225,13 @@ bool C2L::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
 
         if(!(temp == *this)) {
             // StataParameter has been changed
+//            std::cerr << "this: " << *this  << " \nOld" << temp << std::endl;
             return true;
         }
+
+        // ========== [ DEBUG
+//        std::cerr << "this: " << *this  << " \nOld" << temp << std::endl;
+        // ==========  DEBUG ]
     }
     return false;
 }

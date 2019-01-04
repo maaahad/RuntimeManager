@@ -75,12 +75,14 @@ void AdjustGap2Front::operator()(Contract *contract) const {
                           << "\n\t" << "Contract Status: " << *(static_cast<WIFIContract *>(contract))
                           << std::endl;
             } else if (gap2front == GAP2FRONT::INCREASE){
-                // increase the gap
-                traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing + rmParam.caccConstantSpacing * rmParam.emergencyCaccConstantSpacingFactor);
-                std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
+//                // increase the gap
+//                traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing + rmParam.caccConstantSpacing * rmParam.emergencyCaccConstantSpacingFactor);
+                if(positionHelper->getId() == 7) std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
                           << gap2front << " distance(" << (rmParam.caccConstantSpacing + rmParam.caccConstantSpacing * rmParam.emergencyCaccConstantSpacingFactor) << "m)"
                           << "\n\t" << "Contract Status: " << *(static_cast<WIFIContract *>(contract))
                           << std::endl;
+                // ===== Testing slowDown method
+                if(positionHelper->getId() == 7) traciVehicle->slowDown(20.0, 1);
             } else {
                 // TODO decrease the gap
             }

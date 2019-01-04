@@ -57,6 +57,7 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
     // TRYING WITH new RMContainer
     for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
         if((*start)->isChanged()) {
+//        std::cout << (*start)->isChanged() << std::endl;
             if(auto contract = dynamic_cast<WIFIContract *>(*start)) {
                 // Sanity check
                 ASSERT(contract->getContractType() == CONTRACT_TYPE::WIFI);
@@ -191,47 +192,47 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // RMCGContainer
     // ===================================================================================================================
 
-    // ==================== acc ====================
-    // Upgrade
-    addCG(acc2cacc, g2cacc);
-    addCG(acc2ploeg, g2ploeg);
-    // Degrade
-    addCG(acc2ploegN2d, g2ploegN2d_i);
-    addCG(acc2caccN2d1, g2caccN2d_i);
-    addCG(acc2caccN2d2, g2caccN2d_i);
-    addCG(acc2caccN2d3, g2caccN2d_i);
-
-
-    // =================== ploeg ===================
-    // Upgrade
-    addCG(ploeg2cacc, g2cacc);
-    // degrade
-    addCG(ploeg2acc1, g2acc);
-    addCG(ploeg2acc2, g2acc);
-    addCG(ploeg2acc3, g2acc);
-    // Gap2Front
-    addCG(ploeg2d, g2d_i);
-    // default Gap2Front
-    addCG(ploeg2d_default, g2d_df);
-    // ChangeControllerAndGap2Front
-    addCG(ploeg2caccN2d1, g2caccN2d_i);
-    addCG(ploeg2caccN2d2, g2caccN2d_i);
-    addCG(ploeg2caccN2d3, g2caccN2d_i);
+//    // ==================== acc ====================
+//    // Upgrade
+//    addCG(acc2cacc, g2cacc);
+//    addCG(acc2ploeg, g2ploeg);
+//    // Degrade
+//    addCG(acc2ploegN2d, g2ploegN2d_i);
+//    addCG(acc2caccN2d1, g2caccN2d_i);
+//    addCG(acc2caccN2d2, g2caccN2d_i);
+//    addCG(acc2caccN2d3, g2caccN2d_i);
+//
+//
+//    // =================== ploeg ===================
+//    // Upgrade
+//    addCG(ploeg2cacc, g2cacc);
+//    // degrade
+//    addCG(ploeg2acc1, g2acc);
+//    addCG(ploeg2acc2, g2acc);
+//    addCG(ploeg2acc3, g2acc);
+//    // Gap2Front
+//    addCG(ploeg2d, g2d_i);
+//    // default Gap2Front
+//    addCG(ploeg2d_default, g2d_df);
+//    // ChangeControllerAndGap2Front
+//    addCG(ploeg2caccN2d1, g2caccN2d_i);
+//    addCG(ploeg2caccN2d2, g2caccN2d_i);
+//    addCG(ploeg2caccN2d3, g2caccN2d_i);
 
     // ==================== cacc ===================
     // Change controller
-    addCG(cacc2ploeg, g2ploeg);
-    addCG(cacc2acc1, g2acc);
-    addCG(cacc2acc2, g2acc);
-    addCG(cacc2acc3, g2acc);
+//    addCG(cacc2ploeg, g2ploeg);
+//    addCG(cacc2acc1, g2acc);
+//    addCG(cacc2acc2, g2acc);
+//    addCG(cacc2acc3, g2acc);
     // Gap2Front
     addCG(cacc2d1, g2d_i);
-    addCG(cacc2d2, g2d_i);
-    addCG(cacc2d3, g2d_i);
-    // default Gap2Front
-    addCG(cacc2d_default, g2d_df);
-    // ChangeControllerAndGap2Front
-    addCG(cacc2ploegN2d,g2ploegN2d_i);
+//    addCG(cacc2d2, g2d_i);
+//    addCG(cacc2d3, g2d_i);
+//    // default Gap2Front
+//    addCG(cacc2d_default, g2d_df);
+//    // ChangeControllerAndGap2Front
+//    addCG(cacc2ploegN2d,g2ploegN2d_i);
 
 
     // ====================================================== [ Debug ======================================================
@@ -248,12 +249,12 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
 
 
-    auto sz = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
-    auto sz2 = rmcg->size();
-
-
-    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(cacc2d1);
-    std::cout << cc->first <<std::endl;
+//    auto sz = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
+//    auto sz2 = rmcg->size();
+//
+//
+//    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(cacc2d1);
+//    std::cout << cc->first <<std::endl;
     // ====================================================== Debug ] =======================================================
 
 }
