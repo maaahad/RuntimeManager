@@ -133,6 +133,8 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // TODO Guarantees (Gap2Front)
     Guarantees *g2d_df = new AdjustGap2Front(rm, GAP2FRONT::DEFAULT);
     Guarantees *g2d_i  = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
+    Guarantees *g2d_adj  = new AdjustGap2Front(rm, GAP2FRONT::ADJUST);
+
 
 
     // TODO Guarantees (ChangeControllerAndDecelerate)
@@ -226,7 +228,11 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 //    addCG(cacc2acc2, g2acc);
 //    addCG(cacc2acc3, g2acc);
     // Gap2Front
-    addCG(cacc2d1, g2d_i);
+//    addCG(cacc2d1, g2d_i);
+
+    // === New ==
+    addCG(cacc2d1, g2d_adj);
+
 //    addCG(cacc2d2, g2d_i);
 //    addCG(cacc2d3, g2d_i);
 //    // default Gap2Front

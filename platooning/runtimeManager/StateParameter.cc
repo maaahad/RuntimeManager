@@ -193,7 +193,7 @@ bool C2F::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
 }
 
 std::ostream &operator<<(std::ostream &os, const C2F &c2f) {
-    os << "C2F: \n\t\t\tQuality : " << (WIFI_QUALITY)c2f.quality << "\n\t\t\tatSafeDistance: " << c2f.atSafeDistance;
+    os << "C2F: \n\t\t\tQuality : " << (WIFI_QUALITY)c2f.quality << "\n\t\t\tatSafeDistance: " << std::boolalpha << c2f.atSafeDistance;
     return os;
 }
 

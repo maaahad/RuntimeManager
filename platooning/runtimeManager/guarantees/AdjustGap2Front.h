@@ -24,6 +24,7 @@ enum class GAP2FRONT {
     DEFAULT,
     INCREASE,
     DECREASE,
+    ADJUST,
 };
 
 std::ostream &operator<<(std::ostream &os, const GAP2FRONT gap2front);
@@ -34,8 +35,14 @@ public:
     AdjustGap2Front(RuntimeManager *rm, GAP2FRONT gap2front);
     virtual ~AdjustGap2Front();
     virtual void operator()(Contract *contract) const override;
-protected:
+private:
+    void gapControll(Contract *contract) const;
     GAP2FRONT gap2front;
+
+
+    // ==== Testing ====
+//public:
+//    mutable bool checked = false;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_ADJUSTGAP2FRONT_H_ */

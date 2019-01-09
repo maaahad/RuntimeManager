@@ -38,6 +38,7 @@ protected:
     BasePositionHelper* positionHelper;
 
     RM::RMParameters &rmParam;
+    RM::rm_log &rmLog;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_H_ */

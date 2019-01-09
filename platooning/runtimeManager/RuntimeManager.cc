@@ -164,6 +164,7 @@ template <typename T> void RuntimeManager::commonLog(const PlatooningBeacon *pb,
     loggedVehicle.common.acceleration = pb->getAcceleration();
     loggedVehicle.common.controllerAcceleration = pb->getControllerAcceleration();
 
+    loggedVehicle.common.time = pb->getTime();
     loggedVehicle.common.lastBeaconArrivalTime = currentTime.dbl();
     loggedVehicle.common.nBeaconReceived++;
 

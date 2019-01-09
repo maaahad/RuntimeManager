@@ -61,6 +61,7 @@ namespace RM {
 
             // TODO more parameters
             bool c2xInitiated = false;
+            double time;
             double lastBeaconArrivalTime;
             int nBeaconReceived = 0;
         };
