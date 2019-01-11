@@ -81,6 +81,8 @@ void BaseApp::initialize(int stage)
         runtimeManager = FindModule<RuntimeManager*>::findSubModule(getParentModule());
         ASSERT2(runtimeManager, "BaseApp failed to find the RuntimeManager!!!!");
 
+//        std::cout << "Desired Speed: " << positionHelper->getId() << "\n\t" << traciVehicle->getCruiseControlDesiredSpeed() << std::endl;
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Ahad End
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////

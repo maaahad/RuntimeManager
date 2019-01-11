@@ -36,6 +36,7 @@ void AdjustGap2Front::gapControll(Contract *contract) const {
     case Plexe::ACC:
         break;
     case Plexe::PLOEG:
+        //
         break;
     case Plexe::CACC:
         // C2F::OK, C2L::POOR
@@ -60,6 +61,7 @@ void AdjustGap2Front::gapControll(Contract *contract) const {
                           << "\n\t" << "Contract Status: " << *(static_cast<WIFIContract *>(contract))
                           << std::endl;
             } else {
+                // TODO Need to check
                 // Spacing is not ok, We need more spacing
                 // we need the acceleration of the front vehicle
                 RM::RMLog_Front &front = std::get<1>(rmLog);
