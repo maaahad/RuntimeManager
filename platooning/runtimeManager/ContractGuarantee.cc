@@ -204,60 +204,54 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // RMCGContainer
     // ===================================================================================================================
 
-    // ==================== acc ====================
-    // Upgrade
-    addCG(acc2cacc, g2cacc);
-    addCG(acc2ploeg, g2ploeg);
-    // ChangeControllerAndGap2Front
-    addCG(acc2ploegN2d1, g2ploegN2d_i);
-    addCG(acc2ploegN2d2, g2ploegN2d_i);
-    addCG(acc2ploegN2d3, g2ploegN2d_i);
+//    // ==================== acc ====================
+//    // Upgrade
+//    addCG(acc2cacc, g2cacc);
+//    addCG(acc2ploeg, g2ploeg);
+//    // ChangeControllerAndGap2Front
+//    addCG(acc2ploegN2d1, g2ploegN2d_i);
+//    addCG(acc2ploegN2d2, g2ploegN2d_i);
+//    addCG(acc2ploegN2d3, g2ploegN2d_i);
+//
+//    addCG(acc2caccN2d1, g2caccN2d_i);
+//
+//
+//
+//    // =================== ploeg ===================
+//    // Upgrade
+//    addCG(ploeg2cacc, g2cacc);
+//    // degrade
+//    addCG(ploeg2acc1, g2acc);
+//    addCG(ploeg2acc2, g2acc);
+//    addCG(ploeg2acc3, g2acc);
+//    // Gap2Front
+//    addCG(ploeg2d1, g2d_i);
+//    addCG(ploeg2d2, g2d_i);
+//    addCG(ploeg2d3, g2d_i);
+//    // default Gap2Front
+//    addCG(ploeg2d_default, g2d_df);
+//    // ChangeControllerAndGap2Front
+//    addCG(ploeg2caccN2d1, g2caccN2d_i);
 
-    addCG(acc2caccN2d1, g2caccN2d_i);
-//    addCG(acc2caccN2d2, g2caccN2d_i);
-//    addCG(acc2caccN2d3, g2caccN2d_i);
-
-
-    // =================== ploeg ===================
-    // Upgrade
-    addCG(ploeg2cacc, g2cacc);
-    // degrade
-    addCG(ploeg2acc1, g2acc);
-    addCG(ploeg2acc2, g2acc);
-    addCG(ploeg2acc3, g2acc);
-    // Gap2Front
-    addCG(ploeg2d1, g2d_i);
-    addCG(ploeg2d2, g2d_i);
-    addCG(ploeg2d3, g2d_i);
-    // default Gap2Front
-    addCG(ploeg2d_default, g2d_df);
-    // ChangeControllerAndGap2Front
-    addCG(ploeg2caccN2d1, g2caccN2d_i);
-//    addCG(ploeg2caccN2d2, g2caccN2d_i);
-//    addCG(ploeg2caccN2d3, g2caccN2d_i);
 
     // ==================== cacc ===================
     // Change controller
-    addCG(cacc2ploeg, g2ploeg);
+//    addCG(cacc2ploeg, g2ploeg);
+
     addCG(cacc2acc1, g2acc);
     addCG(cacc2acc2, g2acc);
     addCG(cacc2acc3, g2acc);
-    // Gap2Front
-    addCG(cacc2d1, g2d_i);
 
-//    addCG(cacc2d2, g2d_i);
-//    addCG(cacc2d3, g2d_i);
-
-    // default Gap2Front
-    addCG(cacc2d_default, g2d_df);
-    // ChangeControllerAndGap2Front
-    addCG(cacc2ploegN2d1,g2ploegN2d_i);
-    addCG(cacc2ploegN2d2,g2ploegN2d_i);
-    addCG(cacc2ploegN2d3,g2ploegN2d_i);
-
-
-    // === New SEEMS TO BE WRONG ==
-//    addCG(cacc2d1, g2d_adj);
+//    // Gap2Front
+//    addCG(cacc2d1, g2d_i);
+//
+//
+//    // default Gap2Front
+//    addCG(cacc2d_default, g2d_df);
+//    // ChangeControllerAndGap2Front
+//    addCG(cacc2ploegN2d1,g2ploegN2d_i);
+//    addCG(cacc2ploegN2d2,g2ploegN2d_i);
+//    addCG(cacc2ploegN2d3,g2ploegN2d_i);
 
     // ====================================================== [ Debug ======================================================
 

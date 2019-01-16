@@ -51,6 +51,11 @@ protected:
     virtual void handleSelfMsg(cMessage* msg) override;
 private:
     /**
+     * This method is used to logged the own vehicle data
+     */
+    void ownLog();
+
+    /**
      * This template function is used to perform log for both the front and the leader vehicle
      */
     template <typename T> void commonLog(const PlatooningBeacon *pb, T &loggedVehicle, const SimTime currentTime);

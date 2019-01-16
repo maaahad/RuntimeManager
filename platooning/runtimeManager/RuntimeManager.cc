@@ -127,8 +127,9 @@ void RuntimeManager::initialize(int stage) {
 void RuntimeManager::handleSelfMsg(cMessage* msg) {
     if(msg == monitoringMsg) {
         EV << "Monitoring message has been arrived. Evaluation started..." << std::endl;
-        // TODO toggle comments for the following statement
-
+        // First we logged the ego vehicle
+        ownLog();
+        // Now we evaluate the current status of the vehicle
         evaluate();
 
         // Sanity Check for now (WIFIContract only) TODO: need to generalize this
@@ -157,18 +158,33 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
     }
 }
 
+void RuntimeManager::ownLog() {
+    Plexe::VEHICLE_DATA vdata;
+    traciVehicle->getVehicleData(&vdata);
+    RM::RMLog_Own &ego = std::get<0>(rmLog);
+    ego.time = vdata.time;
+    ego.acceleration = vdata.acceleration;
+    if(vdata.acceleration < 0.0 && vdata.acceleration < ego.maxDeceleration) {
+        ego.maxDeceleration = vdata.acceleration;
+    }
+    // get the Radar measurements
+    double distance, relativeSpeed;
+    traciVehicle->getRadarMeasurements(distance, relativeSpeed);
+    if(distance != -1 && relativeSpeed != 0 ) {
+        ego.dist2pred = distance;
+    }
+}
 
 template <typename T> void RuntimeManager::commonLog(const PlatooningBeacon *pb, T &loggedVehicle, const SimTime currentTime) {
     if(!loggedVehicle.common.c2xInitiated) loggedVehicle.common.c2xInitiated = true;
-
-    loggedVehicle.common.acceleration = pb->getAcceleration();
-    loggedVehicle.common.controllerAcceleration = pb->getControllerAcceleration();
-
     loggedVehicle.common.time = pb->getTime();
     loggedVehicle.common.lastBeaconArrivalTime = currentTime.dbl();
-    loggedVehicle.common.nBeaconReceived++;
+    loggedVehicle.common.acceleration = pb->getAcceleration();
+    if(pb->getAcceleration() < 0.0 && pb->getAcceleration() < loggedVehicle.common.maxDeceleration) {
+        loggedVehicle.common.maxDeceleration = pb->getAcceleration();
+    }
+    loggedVehicle.common.controllerAcceleration = pb->getControllerAcceleration();
 
-    // TODO log for end to end delay
 }
 
 

@@ -55,23 +55,26 @@ namespace RM {
          * This is common parameters of front and leader vehicle
          */
         struct RMLog {
-            double acceleration;
-            double controllerAcceleration;
-            double ede;     // end to end delay ,, don't know yet how to define and use this
-
-            // TODO more parameters
-            bool c2xInitiated = false;
-            double time;
-            double lastBeaconArrivalTime;
-            int nBeaconReceived = 0;
+            bool c2xInitiated = false;              // helper variable to decide whether logging has started or not
+            double time;                            // information generated time
+            double lastBeaconArrivalTime;           // received time of last beacon (can be done based on time)
+            double acceleration;                    // Acceleration of the vehicle
+            double maxDeceleration = 100;           // Default initialized with a positive value, Deceleration have to be negative
+            double controllerAcceleration;          // Acceleration computed by the Controller
         };
 
         /**
          * This is the log for the own vehicle
          */
         struct RMLog_Own {
+            double time;                            // information generated time
+            double acceleration;                    // Acceleration of the vehicle
+            double maxDeceleration = 100;           // Default initialized with a positive value, Deceleration have to be negative
+            double dist2pred;                       // distance to the front vehicle
+
             // TODO need to pass custom deleter to shared_ptr or using use of shared_ptr for vector elements
             std::shared_ptr<std::vector<Contract *>> contracts;
+            //std::shared_ptr<std::vector<std::shared_ptr<Contract>>> contracts;
         };
         /**
          * This is the log for the front vehicle
