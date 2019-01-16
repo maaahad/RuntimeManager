@@ -34,9 +34,9 @@ class AdjustGap2Front : virtual public Guarantees {
 public:
     AdjustGap2Front(RuntimeManager *rm, GAP2FRONT gap2front);
     virtual ~AdjustGap2Front();
-    virtual void operator()(Contract *contract) const override;
+    virtual void operator()(std::shared_ptr<Contract> contract) const override;
 private:
-    void gapControll(Contract *contract) const;
+    void gapControll(std::shared_ptr<Contract> contract) const;
     GAP2FRONT gap2front;
 
 

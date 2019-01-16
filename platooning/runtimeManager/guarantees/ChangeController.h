@@ -25,7 +25,7 @@ class ChangeController : virtual public Guarantees {
 public:
     ChangeController(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to);
     virtual ~ChangeController();
-    virtual void operator()(Contract *contract) const override;
+    virtual void operator()(std::shared_ptr<Contract> contract) const override;
 protected:
     void actionOnTransition() const;
     Plexe::ACTIVE_CONTROLLER to;

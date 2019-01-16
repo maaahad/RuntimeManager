@@ -73,8 +73,8 @@ namespace RM {
             double dist2pred;                       // distance to the front vehicle
 
             // TODO need to pass custom deleter to shared_ptr or using use of shared_ptr for vector elements
-            std::shared_ptr<std::vector<Contract *>> contracts;
-            //std::shared_ptr<std::vector<std::shared_ptr<Contract>>> contracts;
+            //std::shared_ptr<std::vector<Contract *>> contracts;
+            std::shared_ptr<std::vector<std::shared_ptr<Contract>>> contracts;
         };
         /**
          * This is the log for the front vehicle

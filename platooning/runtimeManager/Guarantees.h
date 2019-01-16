@@ -27,7 +27,7 @@ class Guarantees {
 public:
     Guarantees(RuntimeManager *rm);
     virtual ~Guarantees();
-    virtual void operator()(Contract *contract) const;
+    virtual void operator()(std::shared_ptr<Contract> contract) const;
 protected:
 //    virtual void actionOnTransition() const;
 

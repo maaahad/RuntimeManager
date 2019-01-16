@@ -49,7 +49,11 @@ private:
 //    std::shared_ptr<contract_guarantee_type> wifiCG;
 
     // Use of new RMContainer
-    std::shared_ptr<std::map<CONTRACT_TYPE, RMContainer *>> rmcg;
+    //std::shared_ptr<std::map<CONTRACT_TYPE, RMContainer *>> rmcg;   // Old
+
+    // We need to make RMCGContainer shared_ptr to be destroyed automatically and will be shared
+    std::map<CONTRACT_TYPE, std::shared_ptr<RMContainer>> rmcg;
+
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_ */

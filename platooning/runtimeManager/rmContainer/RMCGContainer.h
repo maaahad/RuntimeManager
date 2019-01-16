@@ -42,7 +42,7 @@ public:
     RMCGContainer(const C &c, const G *g, CONTRACT_TYPE ctype);
     ~RMCGContainer();
     void addCG(const C &c, const G *g);
-    void provideGuarantee(C *c) const;
+    void provideGuarantee(std::shared_ptr<C> c) const;
 //private:
     std::shared_ptr<container_type> cgs;
 };
@@ -53,14 +53,15 @@ template <typename C, typename G> RMCGContainer<C,G>::RMCGContainer(const C &c, 
 }
 
 template <typename C, typename G> RMCGContainer<C,G>::~RMCGContainer() {
-
+    // This is to check whether the container is destroyed
+    std::cout << "RMCGContainer is destroyed...." << std::endl;
 }
 
 template <typename C, typename G> void RMCGContainer<C,G>::addCG(const C &c, const G *g) {
     cgs->insert(std::make_pair(c,g));
 }
 
-template <typename C, typename G> void RMCGContainer<C,G>::provideGuarantee(C *c) const {
+template <typename C, typename G> void RMCGContainer<C,G>::provideGuarantee(std::shared_ptr<C> c) const {
     auto match = cgs->find(*c);
     if(match != cgs->end()) {
         (*(match->second))(c);

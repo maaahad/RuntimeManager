@@ -25,7 +25,7 @@ ChangeControllerAndAdjustGap2Front::~ChangeControllerAndAdjustGap2Front() {
     // TODO Auto-generated destructor stub
 }
 
-void ChangeControllerAndAdjustGap2Front::operator()(Contract *contract) const {
+void ChangeControllerAndAdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
     // Guarantees are performed through the base classes
     ChangeController::operator ()(contract);
     AdjustGap2Front::operator ()(contract);   // This is not done for ploeg yet

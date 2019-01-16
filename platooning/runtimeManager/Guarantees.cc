@@ -58,7 +58,7 @@ Guarantees::~Guarantees() {
 //              << std::endl;
 //}
 
-void Guarantees::operator()(Contract *contract) const {
+void Guarantees::operator()(std::shared_ptr<Contract> contract) const {
         std::cerr << "Error: " << __FILE__
                   << "\n\tLine: " << __LINE__
                   << "\n\tCompiled on: " << __DATE__

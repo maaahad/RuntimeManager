@@ -21,7 +21,9 @@
 // Contracts's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : rmcg(std::make_shared<std::map<CONTRACT_TYPE, RMContainer *>>()){
+//Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : rmcg(std::make_shared<std::map<CONTRACT_TYPE, std::shared_ptr<RMContainer>>()){
+Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) {
+
     // TODO Auto-generated constructor stub
     initContractList(rm);
 }
@@ -58,14 +60,14 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
     for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
         if((*start)->isChanged()) {
 //        std::cout << (*start)->isChanged() << std::endl;
-            if(auto contract = dynamic_cast<WIFIContract *>(*start)) {
+            if(std::shared_ptr<WIFIContract> contract = std::dynamic_pointer_cast<WIFIContract>(*start)) {
                 // Sanity check
                 ASSERT(contract->getContractType() == CONTRACT_TYPE::WIFI);
                 // get the all contract-guarantee list from rmcg for CONTRACT_TYPE::WIFI
-                auto match = rmcg->find(CONTRACT_TYPE::WIFI);
-                if(match != rmcg->end()){
+                auto match = rmcg.find(CONTRACT_TYPE::WIFI);
+                if(match != rmcg.end()){
                     // We found a list of contract-guarantee for WIFI contract type
-                    auto matchedCGContainer = static_cast<RMCGContainer<WIFIContract, Guarantees> *>(match->second);
+                    auto matchedCGContainer = std::static_pointer_cast<RMCGContainer<WIFIContract, Guarantees>>(match->second);
 
                     matchedCGContainer->provideGuarantee(contract);
 
@@ -88,18 +90,20 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
 
 
 template <typename C, typename G> void Contract_Guarantee::addCG(const C &c, const G *g) {
-    auto cgList = rmcg->find(c.getContractType());
-    if(cgList != rmcg->end()) {
+    auto cgList = rmcg.find(c.getContractType());
+    if(cgList != rmcg.end()) {
+        // CG list for this contractType already created
         if(c.getContractType() == CONTRACT_TYPE::WIFI) {
             // add the new element to the match
-            (static_cast<RMCGContainer<WIFIContract, Guarantees> *>(cgList->second))->addCG(c, g);
+            (std::static_pointer_cast<RMCGContainer<WIFIContract, Guarantees>>(cgList->second))->addCG(c, g);
         } else if(c.getContractType() == CONTRACT_TYPE::INTERNAL_ERROR) {
             std::cout<<"Only CONTRACT_TYPE::WIFI is available right now..." << std::endl;
         }
         // TODO add for other contract type
     } else {
+        // CG list for this contractType not exists, needs to be created
         if(c.getContractType() == CONTRACT_TYPE::WIFI) {
-            rmcg->insert(std::make_pair(CONTRACT_TYPE::WIFI, new RMCGContainer<WIFIContract, Guarantees>(c, g, CONTRACT_TYPE::WIFI)));
+            rmcg.insert(std::make_pair(CONTRACT_TYPE::WIFI, std::make_shared<RMCGContainer<WIFIContract, Guarantees>>(c, g, CONTRACT_TYPE::WIFI)));
         } else if(c.getContractType() == CONTRACT_TYPE::INTERNAL_ERROR) {
             std::cout<<"Only CONTRACT_TYPE::WIFI is available right now..." << std::endl;
         }

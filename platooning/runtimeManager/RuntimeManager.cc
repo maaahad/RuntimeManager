@@ -239,14 +239,12 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
 
 void RuntimeManager::initializeContracts() {
     RM::RMLog_Own &ego = std::get<0>(rmLog);
-    ego.contracts  = std::make_shared<std::vector<Contract *>>();
-
-    // Old WIFIContract
-//    (ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::LEADER)));
-
+    ego.contracts  = std::make_shared<std::vector<std::shared_ptr<Contract>>>();
 
     // New WIFIContract
-    (ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2F(), C2L()));
+    //(ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2F(), C2L()));
+    (ego.contracts)->push_back(std::make_shared<WIFIContract>(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2F(), C2L()));
+
 
     // TODO other Contracts, if there is any
     // [debug
@@ -254,7 +252,7 @@ void RuntimeManager::initializeContracts() {
         std::cout << "======================================== Default Contract ========================================"
                   << "\n==================================================================================================" << std::endl;
     }
-    std::cout << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(static_cast<WIFIContract *>((*ego.contracts)[0]))
+    std::cout << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0]))
               << "\n--------------------------------------------------------------------------------------------------" << std::endl;
     if(positionHelper->getId() == 7) {
         std::cout << "=================================================================================================="

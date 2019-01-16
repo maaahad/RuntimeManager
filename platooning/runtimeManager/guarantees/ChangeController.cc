@@ -53,7 +53,7 @@ void ChangeController::actionOnTransition() const {
 //                     << std::endl;
 }
 
-void ChangeController::operator()(Contract *contract) const {
+void ChangeController::operator()(std::shared_ptr<Contract> contract) const {
     // [ debug
 //    if(to > traciVehicle->getActiveController()) {
 //        std::cout << "Vehicle " << positionHelper->getId()
@@ -80,5 +80,5 @@ void ChangeController::operator()(Contract *contract) const {
     // Perform the transition
     traciVehicle->setActiveController(to);
 
-    std::cout << "\n\t" << "Contract Status: " << *(static_cast<WIFIContract *>(contract)) << std::endl;
+    std::cout << "\n\t" << "Contract Status: " << *(std::static_pointer_cast<WIFIContract>(contract)) << std::endl;
 }

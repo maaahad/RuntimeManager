@@ -24,6 +24,7 @@ WIFIContract::WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controll
 
 WIFIContract::~WIFIContract() {
     // TODO Auto-generated destructor stub
+    // std::cout << "Contract is destroyed successfully." << std::endl;
 }
 
 void WIFIContract::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
