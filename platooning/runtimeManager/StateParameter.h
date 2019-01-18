@@ -21,6 +21,7 @@
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
 
 
+
 //enum WIFI_QUALITY {
 //    CRITICAL = 1 << 0,
 //    POOR     = 1 << 1,
@@ -68,6 +69,8 @@ protected:
     WIFI_QUALITY quality;
 //    ROLE role;
 
+    // friend decleration
+    friend class FileWriter;
     friend std::ostream &operator<<(std::ostream &os, const C2X &c2x);
     friend std::hash<C2X>;
 };

@@ -53,8 +53,22 @@ template <typename C, typename G> RMCGContainer<C,G>::RMCGContainer(const C &c, 
 }
 
 template <typename C, typename G> RMCGContainer<C,G>::~RMCGContainer() {
+    // TODO need to destroy the dynamically allocated G objects
+    // This is not possible, as the lists may contain the same pointer to G object for multiple entries
+    // TODO replace with shared pointer,,, It's not possible to delete where they were created, as they were created locally
+    // Another way to use the following is to create the pointer to G as a temporary variable in addCG(), on the fly
+    // Having an error while deleting the elements
+
+//    for(auto it = cgs->begin(); it != cgs->end(); ++it) {
+//        if(it->second) {
+//            delete it->second;
+//            it->second = nullptr;
+//        }
+//    }
+
     // This is to check whether the container is destroyed
     std::cout << "RMCGContainer is destroyed...." << std::endl;
+
 }
 
 template <typename C, typename G> void RMCGContainer<C,G>::addCG(const C &c, const G *g) {

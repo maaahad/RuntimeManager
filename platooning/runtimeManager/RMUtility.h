@@ -67,6 +67,7 @@ namespace RM {
          * This is the log for the own vehicle
          */
         struct RMLog_Own {
+            Plexe::ACTIVE_CONTROLLER activeController;
             double time;                            // information generated time
             double acceleration;                    // Acceleration of the vehicle
             double maxDeceleration = 100;           // Default initialized with a positive value, Deceleration have to be negative

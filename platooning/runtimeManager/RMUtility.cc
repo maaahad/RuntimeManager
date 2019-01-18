@@ -24,13 +24,13 @@ std::ostream &operator<<(std::ostream &os, const Plexe::ACTIVE_CONTROLLER value)
     std::map<Plexe::ACTIVE_CONTROLLER, std::string> enum2string;
     if (enum2string.size() == 0) {
 #define INSERT(v) enum2string[v] = #v
-    INSERT(Plexe::ACTIVE_CONTROLLER::DRIVER);
-    INSERT(Plexe::ACTIVE_CONTROLLER::ACC);
-    INSERT(Plexe::ACTIVE_CONTROLLER::CACC);
-    INSERT(Plexe::ACTIVE_CONTROLLER::FAKED_CACC);
-    INSERT(Plexe::ACTIVE_CONTROLLER::PLOEG);
-    INSERT(Plexe::ACTIVE_CONTROLLER::CONSENSUS);
-    INSERT(Plexe::ACTIVE_CONTROLLER::FLATBED);
+    INSERT(Plexe::DRIVER);
+    INSERT(Plexe::ACC);
+    INSERT(Plexe::CACC);
+    INSERT(Plexe::FAKED_CACC);
+    INSERT(Plexe::PLOEG);
+    INSERT(Plexe::CONSENSUS);
+    INSERT(Plexe::FLATBED);
 #undef INSERT
     }
     return os << enum2string[value];

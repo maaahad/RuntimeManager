@@ -248,10 +248,10 @@ std::ostream &operator<<(std::ostream &os, const WIFI_QUALITY value) {
     std::map<WIFI_QUALITY, std::string> enum2string;
     if (enum2string.size() == 0) {
 #define INSERT(v) enum2string[v] = #v
-    INSERT(WIFI_QUALITY::CRITICAL);
-    INSERT(WIFI_QUALITY::POOR);
-    INSERT(WIFI_QUALITY::OK);
-    INSERT(WIFI_QUALITY::ALL);
+    INSERT(CRITICAL);
+    INSERT(POOR);
+    INSERT(OK);
+    INSERT(ALL);
 #undef INSERT
     }
     return os << enum2string[value];

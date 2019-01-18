@@ -46,6 +46,7 @@ Guarantees::Guarantees(RuntimeManager *rm) : rmParam(rm->rmParam), rmLog(rm->rmL
 
 Guarantees::~Guarantees() {
     // TODO Auto-generated destructor stub
+    std::cout << "Guarantee is destroyed successfully." << std::endl;
 }
 
 //void Guarantees::actionOnTransition() const {

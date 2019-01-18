@@ -26,6 +26,10 @@ simple BaseRuntimeManager like IBaseApplLayer {
         double rmMonitorInterval @unit("s") 	= default(.10s);  
         double expectedBeconInterval @unit("s") = default(.05s);
         
+        // record
+        string outputFilename = default("output/output.txt");
+        bool write2file 	  = default(true);
+        
         // WIFI connection quality check        
         //int nPacketLossModerate  = default(1);
         int nPacketLossPoor      = default(2);

@@ -38,6 +38,9 @@ private:
 
     C2F c2f;
     C2L c2l;
+
+    // friend decleration
+    friend class FileWriter;
 };
 
 // Defining template specialization for std::hash<WIFIContract> to use in unordered map

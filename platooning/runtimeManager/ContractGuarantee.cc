@@ -12,6 +12,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
+
+#include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
 #include "ContractGuarantee.h"
 
 #include <iostream>
@@ -22,7 +24,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : rmcg(std::make_shared<std::map<CONTRACT_TYPE, std::shared_ptr<RMContainer>>()){
-Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) {
+Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : rm(rm) {
 
     // TODO Auto-generated constructor stub
     initContractList(rm);
@@ -34,28 +36,6 @@ Contract_Guarantee::~Contract_Guarantee() {
 
 // This is for checking TODO will extend later
 void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
-
-//    // OLD Iterate through every single contract of the state and perform the associate guarantees
-//    for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
-//        if(auto contract = dynamic_cast<WIFIContract *>(*start)) {
-//            // match should be unique
-//            auto match = wifiCG->find(*contract);
-//            if(match != wifiCG->end()) {
-//                // Match found and call the provideGuarantee method of the found Guarantee
-//                Guarantees guarantee = match->second;
-//                guarantee.provideGuarantee(*start);
-//            } else {
-//                std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
-//            }
-//            // each contract of a vehicle should be exclusive to only one particular Contract_Guarantee list
-//            continue;
-//        }
-//
-//        // TODO check in other Contract_Gurantee list
-//    }
-
-
-
     // TRYING WITH new RMContainer
     for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
         if((*start)->isChanged()) {
@@ -70,21 +50,43 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
                     auto matchedCGContainer = std::static_pointer_cast<RMCGContainer<WIFIContract, Guarantees>>(match->second);
 
                     matchedCGContainer->provideGuarantee(contract);
-
-        //                auto matchedCG = (matchedCGContainer->cgs)->find(*contract); //TODO Delegate this to Container.. LATER
-        //                if(matchedCG != (matchedCGContainer->cgs)->end()) {
-        //                    // Match found and call the provideGuarantee method of the found Guarantee
-        //                    Guarantees guarantee = matchedCG->second;
-        //                    guarantee.provideGuarantee(*start);
-        //                } else {
-        //                    std::cout << "Not match contract found. No action needs to be taken...." << std::endl;
-        //                }
-
                 }
                 continue;
             }
             // TODO check in other Contract_Gurantee list
+        } else {
+            // TODO If state does not change we need to check whether the current state is fulfilling the guarantees
+            // We need to log in case of violation in a txt file that contains all simulation parameters
+            // min safety distance
+            bool distViolated = false;
+            bool decelViolated = false;
+            if(state.dist2pred < rm->rmParam.minSafetyDistance && rm->positionHelper->getId() != 0) {
+                distViolated = true;
+//               std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
+//                         << state.dist2pred << "<" << rm->rmParam.minSafetyDistance
+//                         << " ===> MinSafetyDistance violated!!!" << std::endl;
+            }
+            // maximum deceleration
+//            if((state.maxDeceleration > -5.0 || state.maxDeceleration < -8.0) && rm->positionHelper->getId() != 0) {
+//                std::cerr << "Vehicle : " << rm->positionHelper->getId()
+//                                         << "state.maxDeceleration : " << state.maxDeceleration
+//                                         << " ===> Deceleration condition violated!!!" << std::endl;
+//            }
+
+            if(state.maxDeceleration < -8.0 && rm->positionHelper->getId() != 0) {
+                decelViolated = true;
+//                std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
+//                                         << "state.maxDeceleration : " << state.maxDeceleration
+//                                         << " ===> Deceleration condition violated!!!" << std::endl;
+            }
+            // Report to the output file
+            if(distViolated || decelViolated) {
+                (rm->fileWriter)->addEntries(rm->rmParam, state, distViolated, decelViolated);
+            }
+
         }
+
+
     }
 }
 
@@ -208,7 +210,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // RMCGContainer
     // ===================================================================================================================
 
-//    // ==================== acc ====================
+    // ==================== acc ====================
 //    // Upgrade
 //    addCG(acc2cacc, g2cacc);
 //    addCG(acc2ploeg, g2ploeg);
@@ -236,16 +238,16 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 //    addCG(ploeg2d_default, g2d_df);
 //    // ChangeControllerAndGap2Front
 //    addCG(ploeg2caccN2d1, g2caccN2d_i);
-
-
-    // ==================== cacc ===================
-    // Change controller
+//
+//
+//    // ==================== cacc ===================
+//    // Change controller
 //    addCG(cacc2ploeg, g2ploeg);
-
-    addCG(cacc2acc1, g2acc);
-    addCG(cacc2acc2, g2acc);
-    addCG(cacc2acc3, g2acc);
-
+//
+//    addCG(cacc2acc1, g2acc);
+//    addCG(cacc2acc2, g2acc);
+//    addCG(cacc2acc3, g2acc);
+//
 //    // Gap2Front
 //    addCG(cacc2d1, g2d_i);
 //
@@ -256,6 +258,8 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 //    addCG(cacc2ploegN2d1,g2ploegN2d_i);
 //    addCG(cacc2ploegN2d2,g2ploegN2d_i);
 //    addCG(cacc2ploegN2d3,g2ploegN2d_i);
+
+
 
     // ====================================================== [ Debug ======================================================
 

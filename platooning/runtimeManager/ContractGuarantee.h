@@ -35,6 +35,7 @@
 
 
 
+
 class RuntimeManager;
 
 class Contract_Guarantee {
@@ -53,6 +54,7 @@ private:
 
     // We need to make RMCGContainer shared_ptr to be destroyed automatically and will be shared
     std::map<CONTRACT_TYPE, std::shared_ptr<RMContainer>> rmcg;
+    const RuntimeManager *rm;
 
 };
 

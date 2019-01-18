@@ -16,6 +16,8 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RUNTIMEMANAGER_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RUNTIMEMANAGER_H_
 
+#include<iostream>
+#include<fstream>
 
 #include "contracts/WIFIContract.h"
 #include "ContractGuarantee.h"
@@ -25,6 +27,8 @@
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
+#include "veins/modules/application/platooning/runtimeManager/output/FileWriter.h"
+
 
 
 
@@ -50,6 +54,7 @@ public:
 protected:
     virtual void handleSelfMsg(cMessage* msg) override;
 private:
+
     /**
      * This method is used to logged the own vehicle data
      */
@@ -92,8 +97,15 @@ private:
     // Self message to monitor periodically
     cMessage *monitoringMsg;
 
+    // output file
+    std::shared_ptr<FileWriter> fileWriter;
+    std::string outputFilename;
+    bool write2file;
+
+
     // friend declaration
     friend class Guarantees;
+    friend class Contract_Guarantee;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RUNTIMEMANAGER_H_ */

@@ -14,6 +14,7 @@
 // 
 
 #include <iostream>
+#include <iomanip>
 #include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
 
 using namespace Veins;
@@ -110,6 +111,12 @@ void RuntimeManager::initialize(int stage) {
 //        }
         // ***************************************************************************************************** Debug ]
 
+        // output file
+        write2file = par("write2file").boolValue();
+        outputFilename = par("outputFilename").stdstringValue() + std::to_string(positionHelper->getId()) + ".txt";
+        if(write2file) fileWriter = std::make_shared<FileWriter>(positionHelper->getId(), outputFilename, write2file);
+
+
         // initialize contract list
         initializeContracts();
 
@@ -162,6 +169,7 @@ void RuntimeManager::ownLog() {
     Plexe::VEHICLE_DATA vdata;
     traciVehicle->getVehicleData(&vdata);
     RM::RMLog_Own &ego = std::get<0>(rmLog);
+    ego.activeController = (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController();
     ego.time = vdata.time;
     ego.acceleration = vdata.acceleration;
     if(vdata.acceleration < 0.0 && vdata.acceleration < ego.maxDeceleration) {
@@ -189,6 +197,10 @@ template <typename T> void RuntimeManager::commonLog(const PlatooningBeacon *pb,
 
 
 void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime currentTime) {
+//    // [ Debug : Testing FileWriter
+//    fileWriter->addEntries(rmParam, std::get<0>(rmLog));
+//    // Debug ]
+
     // We are only interested in storing log for front and leader vehicle
     if(pb->getVehicleId() == positionHelper->getFrontId()) {
         RM::RMLog_Front &frontLog = std::get<1>(rmLog);
@@ -290,7 +302,7 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
 
     // [ Debug
     if(positionHelper->getId() == 7) {
-//        std::cerr << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(static_cast<WIFIContract *>((*ego.contracts)[0])) << std::endl;
+//        std::cerr << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0])) << std::endl;
     }
     // Debug ]
 
@@ -303,7 +315,6 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
     if(!onPlatoonBeacon) {
         contractGuarantees->evaluate(std::get<0>(rmLog));
     }
-
 }
 
 
