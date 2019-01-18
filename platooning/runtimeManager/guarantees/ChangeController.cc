@@ -43,32 +43,25 @@ void ChangeController::actionOnTransition() const {
                   << " Wrong Controller!!!"
                   << std::endl;
     }
-
-//    std::cerr << "Warning: " << __FILE__
-//                     << "\n\tLine: " << __LINE__
-//                     << "\n\tCompiled on: " << __DATE__
-//                     << " at " << __TIME__
-//                     << "\n\tfunction " << __func__
-//                     << " This method requires experiment on different action... not implemented properly!!!"
-//                     << std::endl;
 }
 
 void ChangeController::operator()(std::shared_ptr<Contract> contract) const {
-    // [ debug
-//    if(to > traciVehicle->getActiveController()) {
-//        std::cout << "Vehicle " << positionHelper->getId()
-//                  << "\n\t Upgrade : From " << traciVehicle->getActiveController() << " to " << to << std::endl;
-//    } else {
-//        std::cout << "Vehicle " << positionHelper->getId()
-//                  << "\n\t Degrade : From " << traciVehicle->getActiveController() << " to " << to << std::endl;
-//    }
+#if DEBUG_RM && DEBUG_RM1
+    if(to > traciVehicle->getActiveController()) {
+        std::cout << "Vehicle " << positionHelper->getId()
+                  << "\n\t Upgrade : From " << traciVehicle->getActiveController() << " to " << to << std::endl;
+    } else {
+        std::cout << "Vehicle " << positionHelper->getId()
+                  << "\n\t Degrade : From " << traciVehicle->getActiveController() << " to " << to << std::endl;
+    }
+#endif
 
+#if DEBUG_RM
     std::cout << "Vehicle " << positionHelper->getId() << "\n\t"
               << "Controller Change : From "
               << (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController()
               << " to " << (Plexe::ACTIVE_CONTROLLER)to;
-
-    // debug ]
+#endif
 
     // update the vehicle's current contract status for the Active controller
     // As the consecutive Guarantee requires the current active controller (included in the key_type of the Contract-Guarantee unordered_map )
@@ -79,6 +72,8 @@ void ChangeController::operator()(std::shared_ptr<Contract> contract) const {
 
     // Perform the transition
     traciVehicle->setActiveController(to);
-
-    std::cout << "\n\t" << "Contract Status: " << *(std::static_pointer_cast<WIFIContract>(contract)) << std::endl;
+#if DEBUG_RM
+    std::cout << "Vehicle " << positionHelper->getId() << "\n\t"
+              << "Contract Status after Transition: " << *(std::static_pointer_cast<WIFIContract>(contract)) << std::endl;
+#endif
 }

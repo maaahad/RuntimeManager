@@ -38,11 +38,6 @@ public:
 private:
     void gapControll(std::shared_ptr<Contract> contract) const;
     GAP2FRONT gap2front;
-
-
-    // ==== Testing ====
-//public:
-//    mutable bool checked = false;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_ADJUSTGAP2FRONT_H_ */

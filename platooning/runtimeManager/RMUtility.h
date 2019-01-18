@@ -14,6 +14,10 @@
 #include "veins/modules/application/platooning/CC_Const.h"
 
 
+#define DEBUG_RM 1
+#define DEBUG_RM1 1
+
+
 // Forward declaration
 class StateParameter;
 class Contract;

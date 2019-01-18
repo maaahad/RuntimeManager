@@ -62,9 +62,11 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
             bool decelViolated = false;
             if(state.dist2pred < rm->rmParam.minSafetyDistance && rm->positionHelper->getId() != 0) {
                 distViolated = true;
-//               std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
-//                         << state.dist2pred << "<" << rm->rmParam.minSafetyDistance
-//                         << " ===> MinSafetyDistance violated!!!" << std::endl;
+#if DEBUG_RM
+               std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
+                         << state.dist2pred << "<" << rm->rmParam.minSafetyDistance
+                         << " ===> MinSafetyDistance violated!!!" << std::endl;
+#endif
             }
             // maximum deceleration
 //            if((state.maxDeceleration > -5.0 || state.maxDeceleration < -8.0) && rm->positionHelper->getId() != 0) {
@@ -75,9 +77,11 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
 
             if(state.maxDeceleration < -8.0 && rm->positionHelper->getId() != 0) {
                 decelViolated = true;
-//                std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
-//                                         << "state.maxDeceleration : " << state.maxDeceleration
-//                                         << " ===> Deceleration condition violated!!!" << std::endl;
+#if DEBUG_RM
+                std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
+                                         << "state.maxDeceleration : " << state.maxDeceleration
+                                         << " ===> Deceleration condition violated!!!" << std::endl;
+#endif
             }
             // Report to the output file
             if(distViolated || decelViolated) {

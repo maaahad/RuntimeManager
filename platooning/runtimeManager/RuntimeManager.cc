@@ -28,8 +28,9 @@ Define_Module(RuntimeManager);
 
 
 RuntimeManager::RuntimeManager() {
-    // TODO Auto-generated constructor stub
+#if DEBUG_RM
     std::cout << "Module :: RuntimeManager created." << std::endl;
+#endif
 }
 
 RuntimeManager::~RuntimeManager() {
@@ -50,8 +51,6 @@ void RuntimeManager::initialize(int stage) {
         if(rmParam.rmEnabled) {
             rmParam.rmMonitorInterval     = par("rmMonitorInterval").doubleValue();
             rmParam.expectedBeconInterval = par("expectedBeconInterval").doubleValue();
-
-//            rmParam.nPacketLossModerate = par("nPacketLossModerate").intValue();
             rmParam.nPacketLossPoor     = par("nPacketLossPoor").intValue();
             rmParam.nPacketLossCritical = par("nPacketLossCritical").intValue();
 
@@ -67,27 +66,22 @@ void RuntimeManager::initialize(int stage) {
             rmParam.emergencyCaccConstantSpacingFactor = par("emergencyCaccConstantSpacingFactor").doubleValue();
 
 
-            // [ Debug
-//            std::cerr << "rmMonitorInterval: " << rmParam.rmMonitorInterval << std::endl;
-//            std::cerr << "expectedBeconInterval: " << rmParam.expectedBeconInterval << std::endl;
-////            std::cerr << "nPacketLossModerate: " << rmParam.nPacketLossModerate << std::endl;
-//            std::cerr << "nPacketLossPoor: " << rmParam.nPacketLossPoor << std::endl;
-//            std::cerr << "nPacketLossCritical: " << rmParam.nPacketLossCritical << std::endl;
-//            std::cerr << "minSafetyDistance: " << rmParam.minSafetyDistance << std::endl;
-//            std::cerr << "actionOnTransitionEnabled: " << rmParam.actionOnTransitionEnabled << std::endl;
-//            std::cerr << "accHeadwaytimeGap: " << rmParam.accHeadwaytimeGap << std::endl;
-//            std::cerr << "ploegHeadwayTimeGap: " << rmParam.ploegHeadwayTimeGap << std::endl;
-//            std::cerr << "caccConstantSpacing: " << rmParam.caccConstantSpacing << std::endl;
-//
-//            std::cerr << "emergencyCaccConstantSpacingFactor: " << rmParam.emergencyCaccConstantSpacingFactor << std::endl;
-//             std::cerr << "emergencyPloegHeadwayTimeGapFactor: " << rmParam.emergencyPloegHeadwayTimeGapFactor << std::endl;
-
-//            double ploegH;
-//            traciVehicle->getParameter(CC_PAR_PLOEG_H, ploegH);
-//            std::cerr << "CC_PAR_PLOEG_H: " << ploegH << std::endl;
-
-
-            // Debug ]
+#if DEBUG_RM
+            std::cout << "SIMULATION PARAMETERS" << std::endl;
+            std::cout << std::left;
+            std::cout << std::setw(40) << "rmMonitorInterval: " << std::setw(10) << rmParam.rmMonitorInterval << std::endl;
+            std::cout << std::setw(40) << "expectedBeconInterval: " << std::setw(10) << rmParam.expectedBeconInterval << std::endl;
+            std::cout << std::setw(40) << "nPacketLossPoor: " << std::setw(10) << rmParam.nPacketLossPoor << std::endl;
+            std::cout << std::setw(40) << "nPacketLossCritical: " << std::setw(10) << rmParam.nPacketLossCritical << std::endl;
+            std::cout << std::setw(40) << "minSafetyDistance: " << std::setw(10) << rmParam.minSafetyDistance << std::endl;
+            std::cout << std::setw(40) << "actionOnTransitionEnabled: " << std::setw(10) << rmParam.actionOnTransitionEnabled << std::endl;
+            std::cout << std::setw(40) << "accHeadwaytimeGap: " << std::setw(10) << rmParam.accHeadwaytimeGap << std::endl;
+            std::cout << std::setw(40) << "ploegHeadwayTimeGap: " << std::setw(10) << rmParam.ploegHeadwayTimeGap << std::endl;
+            std::cout << std::setw(40) << "caccConstantSpacing: " << std::setw(10) << rmParam.caccConstantSpacing << std::endl;
+            std::cout << std::setw(40) << "emergencyCaccConstantSpacingFactor: "<< std::setw(10)  << rmParam.emergencyCaccConstantSpacingFactor << std::endl;
+            std::cout << std::setw(40) << "emergencyPloegHeadwayTimeGapFactor: " << std::setw(10) << rmParam.emergencyPloegHeadwayTimeGapFactor << std::endl;
+            std::cout << std::right;
+#endif
 
 
         }
@@ -102,14 +96,14 @@ void RuntimeManager::initialize(int stage) {
         traciVehicle = mobility->getVehicleCommandInterface();
         positionHelper = FindModule<BasePositionHelper*>::findSubModule(getParentModule());
 
-        // [ Debug ***************************************************************************************************
-//        if(positionHelper->isLeader()) {
-//            std::cout << "Leader: \n\tactiveController: " << std::get<0>(rmLog).activeController << std::endl;
-//        } else {
-//            std::cout << "VehicleId: " << positionHelper->getId() << "\n\tstd::get<0>(rmLog).activeController: " << std::get<0>(rmLog).activeController << std::endl;
-//
-//        }
-        // ***************************************************************************************************** Debug ]
+#if DEBUG_RM && DEBUG_RM1
+        if(positionHelper->isLeader()) {
+            std::cout << "Leader: \n\tactiveController: " << std::get<0>(rmLog).activeController << std::endl;
+        } else {
+            std::cout << "VehicleId: " << positionHelper->getId() << "\n\tstd::get<0>(rmLog).activeController: " << std::get<0>(rmLog).activeController << std::endl;
+
+        }
+#endif
 
         // output file
         write2file = par("write2file").boolValue();
@@ -142,21 +136,19 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
         // Sanity Check for now (WIFIContract only) TODO: need to generalize this
         ASSERT(traciVehicle->getActiveController() == (std::get<0>(rmLog).contracts)->front()->getController());
 
-        // [ debug
-
-//        if(traciVehicle->getActiveController() == Plexe::CACC) {
-//            std::cout << "Vehicle " << positionHelper->getId()
-//                      << ": \tActive Controller: " << traciVehicle->getActiveController()
-//                      << "\tConstantSpacing : "<< traciVehicle->getCACCConstantSpacing()
-//                      <<std::endl;
-//        } else {
-//            std::cout << "Vehicle " << positionHelper->getId()
-//                      << ": \tActive Controller: " << traciVehicle->getActiveController()
-//                      << "\tHeadwayTimeGap : " << traciVehicle->getACCHeadwayTime()
-//                      << std::endl;
-//        }
-
-        // debug ]
+#if DEBUG_RM && DEBUG_RM1
+        if(traciVehicle->getActiveController() == Plexe::CACC) {
+            std::cout << "Vehicle " << positionHelper->getId()
+                      << ": \tActive Controller: " << traciVehicle->getActiveController()
+                      << "\tConstantSpacing : "<< traciVehicle->getCACCConstantSpacing()
+                      <<std::endl;
+        } else {
+            std::cout << "Vehicle " << positionHelper->getId()
+                      << ": \tActive Controller: " << traciVehicle->getActiveController()
+                      << "\tHeadwayTimeGap : " << traciVehicle->getACCHeadwayTime()
+                      << std::endl;
+        }
+#endif
 
         // Reschedule the monitoring message. TODO make sure to reschedule the self message
         // after the current evaluation and transition (if there is any)
@@ -197,10 +189,6 @@ template <typename T> void RuntimeManager::commonLog(const PlatooningBeacon *pb,
 
 
 void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime currentTime) {
-//    // [ Debug : Testing FileWriter
-//    fileWriter->addEntries(rmParam, std::get<0>(rmLog));
-//    // Debug ]
-
     // We are only interested in storing log for front and leader vehicle
     if(pb->getVehicleId() == positionHelper->getFrontId()) {
         RM::RMLog_Front &frontLog = std::get<1>(rmLog);
@@ -216,22 +204,15 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
         double distance = position.distance(frontPosition) - pb->getLength();
         frontLog.distance = distance; // Distance can be achieved during taking action
 
-        // [ debug
-//        double distanceR, relativeSpeed;
-//        traciVehicle->getRadarMeasurements(distanceR, relativeSpeed);
-//
-//        std::cout << "VehicleId : " << positionHelper->getId()
-//                  << "\n\tdistance: " <<  distance
-//                  << "\n\tdistanceR: " << distanceR
-//                  << std::endl;
-        // debug ]
+#if DEBUG_RM && DEBUG_RM1
+        double distanceR, relativeSpeed;
+        traciVehicle->getRadarMeasurements(distanceR, relativeSpeed);
 
-        // TODO log for end to end delay
-
-        // Evaluate StateParameters for possible upgrade
-        // Second argument is the index of front vehicle log in rmLog
-//        evaluate(true, 1);
-
+        std::cout << "VehicleId : " << positionHelper->getId()
+                  << "\n\tdistance: " <<  distance
+                  << "\n\tdistanceR: " << distanceR
+                  << std::endl;
+#endif
     }
 
     // We need to perform both for front and leader subsequently, as the vehicle with id 0, got the same vehicle as leader and front
@@ -240,10 +221,6 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
     if(pb->getVehicleId() == positionHelper->getLeaderId()) {
         RM::RMLog_Leader &leaderLog = std::get<2>(rmLog);
         commonLog(pb, leaderLog, currentTime);
-        // TODO : log if there is any leader specific log required
-        // Evaluate StateParameters for possible upgrade
-        // Second argument is the index of leader vehicle log in rmLog
-//        evaluate(true, 2);
     }
 }
 
@@ -252,37 +229,19 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
 void RuntimeManager::initializeContracts() {
     RM::RMLog_Own &ego = std::get<0>(rmLog);
     ego.contracts  = std::make_shared<std::vector<std::shared_ptr<Contract>>>();
-
-    // New WIFIContract
-    //(ego.contracts)->push_back(new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2F(), C2L()));
     (ego.contracts)->push_back(std::make_shared<WIFIContract>(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2F(), C2L()));
 
-
     // TODO other Contracts, if there is any
-    // [debug
-    if(positionHelper->getId() == 0) {
-        std::cout << "======================================== Default Contract ========================================"
-                  << "\n==================================================================================================" << std::endl;
-    }
-    std::cout << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0]))
-              << "\n--------------------------------------------------------------------------------------------------" << std::endl;
-    if(positionHelper->getId() == 7) {
-        std::cout << "=================================================================================================="
-                  << "\n=================================================================================================="
-                  << "\n\n\n";
 
+#if DEBUG_RM
+    std::cout << std::setw(40) << std::setfill('=') << "" << " Vehicle " << positionHelper->getId()
+              << " : Default Contract " << std::setw(40) << std::setfill('=') << " " << std::endl
+              << std::setfill(' ');
+    std::cout << "\t" << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0]))
+              << std::endl << std::setw(110) << std::setfill('-') << "" << std::setfill(' ') << std::endl;
+    std::cout << std::setw(110) << std::setfill('=') << "" << std::setfill(' ') << std::endl;
+#endif
 
-    }
-
-//    Contract *cr1 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::FRONT), C2X(ROLE::FRONT));
-//    Contract *cr2 = new WIFIContract(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2X(ROLE::LEADER), C2X(ROLE::LEADER));
-//    if (*cr1 == *cr2) {
-//        std::cout << "Checking == Operator,,,Equal" << std::endl;
-//    } else {
-//        std::cout << "Checking == Operator,,,Not-Equal" << std::endl;
-//    }
-
-    // debug ]
 }
 
 
@@ -300,11 +259,11 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
         }
     }
 
-    // [ Debug
+#if DEBUG_RM && DEBUG_RM1
     if(positionHelper->getId() == 7) {
-//        std::cerr << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0])) << std::endl;
+        std::cerr << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0])) << std::endl;
     }
-    // Debug ]
+#endif
 
 
 
