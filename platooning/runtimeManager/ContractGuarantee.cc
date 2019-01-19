@@ -143,7 +143,8 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // TODO Guarantees (Gap2Front)
     Guarantees *g2d_df = new AdjustGap2Front(rm, GAP2FRONT::DEFAULT);
     Guarantees *g2d_i  = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
-    Guarantees *g2d_adj  = new AdjustGap2Front(rm, GAP2FRONT::ADJUST);
+
+    Guarantees *g2d_adj  = new AdjustGap2Front(rm, GAP2FRONT::ADJUST);  // TODO need to remove this
 
 
 
@@ -165,8 +166,6 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     WIFIContract acc2ploegN2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, critical_c2l);
 
     WIFIContract acc2caccN2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, poor_c2l);
-//    WIFIContract acc2caccN2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, ok_c2l);
-//    WIFIContract acc2caccN2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, poor_c2l);
 
     // default
 
@@ -187,8 +186,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     WIFIContract ploeg2d_default(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, critical_c2l);
     // ChangeController and Gap2Front
     WIFIContract ploeg2caccN2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, poor_c2l);
-//    WIFIContract ploeg2caccN2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, ok_c2l);
-//    WIFIContract ploeg2caccN2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, poor_c2l);
+
 
     // ======================================== WIFIContract for CACC controller ========================================
     // Degrade
@@ -199,8 +197,7 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     WIFIContract cacc2acc3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, critical_c2l);
     // Gap2Front
     WIFIContract cacc2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, poor_c2l);
-//    WIFIContract cacc2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, ok_c2l);
-//    WIFIContract cacc2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, poor_c2l);
+
     // default Gap2Front
     WIFIContract cacc2d_default(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, ok_c2l);
     // ChangeController and Gap2Front
@@ -214,55 +211,68 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // RMCGContainer
     // ===================================================================================================================
 
-    // ==================== acc ====================
-//    // Upgrade
-//    addCG(acc2cacc, g2cacc);
-//    addCG(acc2ploeg, g2ploeg);
-//    // ChangeControllerAndGap2Front
-//    addCG(acc2ploegN2d1, g2ploegN2d_i);
-//    addCG(acc2ploegN2d2, g2ploegN2d_i);
-//    addCG(acc2ploegN2d3, g2ploegN2d_i);
-//
-//    addCG(acc2caccN2d1, g2caccN2d_i);
-//
-//
-//
-//    // =================== ploeg ===================
-//    // Upgrade
-//    addCG(ploeg2cacc, g2cacc);
-//    // degrade
-//    addCG(ploeg2acc1, g2acc);
-//    addCG(ploeg2acc2, g2acc);
-//    addCG(ploeg2acc3, g2acc);
-//    // Gap2Front
-//    addCG(ploeg2d1, g2d_i);
-//    addCG(ploeg2d2, g2d_i);
-//    addCG(ploeg2d3, g2d_i);
-//    // default Gap2Front
-//    addCG(ploeg2d_default, g2d_df);
-//    // ChangeControllerAndGap2Front
-//    addCG(ploeg2caccN2d1, g2caccN2d_i);
-//
-//
-//    // ==================== cacc ===================
-//    // Change controller
-//    addCG(cacc2ploeg, g2ploeg);
-//
-//    addCG(cacc2acc1, g2acc);
-//    addCG(cacc2acc2, g2acc);
-//    addCG(cacc2acc3, g2acc);
-//
-//    // Gap2Front
-//    addCG(cacc2d1, g2d_i);
-//
-//
-//    // default Gap2Front
-//    addCG(cacc2d_default, g2d_df);
-//    // ChangeControllerAndGap2Front
-//    addCG(cacc2ploegN2d1,g2ploegN2d_i);
-//    addCG(cacc2ploegN2d2,g2ploegN2d_i);
-//    addCG(cacc2ploegN2d3,g2ploegN2d_i);
+    // upgrade
+    if(rm->rmParam.upgradationEnabled) {
+        // ==================== acc ====================
+        // acc -> ploeg
+        addCG(acc2ploeg, g2ploeg);
+        // acc->cacc
+        addCG(acc2cacc, g2cacc);
+        // =================== ploeg ===================
+        // ploeg->cacc
+        addCG(ploeg2cacc, g2cacc);
+    }
+    // degrade
+    if(rm->rmParam.degradationEnabled) {
+        // =================== ploeg ===================
+        // ploeg->acc
+        addCG(ploeg2acc1, g2acc);
+        addCG(ploeg2acc2, g2acc);
+        addCG(ploeg2acc3, g2acc);
+        // ===================  cacc ===================
+        // cacc->ploeg
+        addCG(cacc2ploeg, g2ploeg);
+        // cacc->acc
+        addCG(cacc2acc1, g2acc);
+        addCG(cacc2acc2, g2acc);
+        addCG(cacc2acc3, g2acc);
+    }
 
+    // gapcontrol
+    if(rm->rmParam.gapControlEnabled) {
+        // ==================== acc ====================
+        // acc->ploeg->gapControl
+        addCG(acc2ploegN2d1, g2ploegN2d_i);
+        addCG(acc2ploegN2d2, g2ploegN2d_i);
+        addCG(acc2ploegN2d3, g2ploegN2d_i);
+
+        // acc->cacc->gapControl
+        addCG(acc2caccN2d1, g2caccN2d_i);
+
+        // =================== ploeg ===================
+        // ploeg->gapControl(Default)
+        addCG(ploeg2d_default, g2d_df);
+
+        // ploeg->gapControl
+        addCG(ploeg2d1, g2d_i);
+        addCG(ploeg2d2, g2d_i);
+        addCG(ploeg2d3, g2d_i);
+
+        // ploeg->cacc->gapControl
+        addCG(ploeg2caccN2d1, g2caccN2d_i);
+
+        // ===================  cacc ===================
+        // cacc->gapControl(Default)
+        addCG(cacc2d_default, g2d_df);
+
+        // cacc->gapControl
+        addCG(cacc2d1, g2d_i);
+
+        // cacc->ploeg->gapControl
+        addCG(cacc2ploegN2d1,g2ploegN2d_i);
+        addCG(cacc2ploegN2d2,g2ploegN2d_i);
+        addCG(cacc2ploegN2d3,g2ploegN2d_i);
+    }
 
 
     // ====================================================== [ Debug ======================================================
