@@ -23,6 +23,7 @@ simple BaseRuntimeManager like IBaseApplLayer {
         
         bool rmEnabled	 = default(true); 
         
+        // rm monitor
         double rmMonitorInterval @unit("s") 	= default(.10s);  
         double expectedBeconInterval @unit("s") = default(.05s);
         
@@ -31,9 +32,14 @@ simple BaseRuntimeManager like IBaseApplLayer {
         bool write2file 	  = default(true);
         
         // WIFI connection quality check        
-        //int nPacketLossModerate  = default(1);
         int nPacketLossPoor      = default(2);
         int nPacketLossCritical  = default(3);
+        
+        // transition/action to be taken based on wifi connection
+        bool upgradationEnabled = default(true);
+        bool degradationEnabled = default(true);
+        bool gapControlEnabled  = default(true);
+        
         
         // minimum distance between two vehicles
         double minSafetyDistance @unit("m")= default(2m);

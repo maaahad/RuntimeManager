@@ -66,3 +66,16 @@ bool Contract::isChanged() const {
 bool operator==(const Contract &cr1, const Contract &cr2 ) {
     return (typeid(cr1) == typeid(cr2)) && cr1.equal(cr2);
 }
+
+
+// output (<<) for enum CONTRACT_TYPE
+std::ostream &operator<<(std::ostream &os, const CONTRACT_TYPE cType) {
+    std::map<CONTRACT_TYPE, std::string> enum2string;
+    if(enum2string.size() == 0) {
+#define INSERT(v) enum2string[v] = #v
+        INSERT(CONTRACT_TYPE::WIFI);
+        INSERT(CONTRACT_TYPE::INTERNAL_ERROR);
+#undef INSERT
+    }
+    return os << enum2string[cType];
+}

@@ -34,7 +34,6 @@ RuntimeManager::RuntimeManager() {
 }
 
 RuntimeManager::~RuntimeManager() {
-    // TODO REMOVE checkMsg
     if(rmParam.rmEnabled) {
         cancelAndDelete(monitoringMsg);
         monitoringMsg = nullptr;
@@ -51,12 +50,18 @@ void RuntimeManager::initialize(int stage) {
         if(rmParam.rmEnabled) {
             rmParam.rmMonitorInterval     = par("rmMonitorInterval").doubleValue();
             rmParam.expectedBeconInterval = par("expectedBeconInterval").doubleValue();
+
             rmParam.nPacketLossPoor     = par("nPacketLossPoor").intValue();
             rmParam.nPacketLossCritical = par("nPacketLossCritical").intValue();
+
+            rmParam.upgradationEnabled = par("upgradationEnabled").boolValue();
+            rmParam.degradationEnabled = par("degradationEnabled").boolValue();
+            rmParam.gapControlEnabled  = par("gapControlEnabled").boolValue();
 
             rmParam.minSafetyDistance   = par("minSafetyDistance").doubleValue();
 
             rmParam.actionOnTransitionEnabled  = par("actionOnTransitionEnabled").boolValue();
+
             rmParam.accHeadwaytimeGap   = par("accHeadwaytimeGap").doubleValue();
             rmParam.ploegHeadwayTimeGap = par("ploegHeadwayTimeGap").doubleValue();
             rmParam.caccConstantSpacing = par("caccConstantSpacing").doubleValue();
@@ -64,26 +69,6 @@ void RuntimeManager::initialize(int stage) {
 
             rmParam.emergencyPloegHeadwayTimeGapFactor = par("emergencyPloegHeadwayTimeGapFactor").doubleValue();
             rmParam.emergencyCaccConstantSpacingFactor = par("emergencyCaccConstantSpacingFactor").doubleValue();
-
-
-#if DEBUG_RM
-            std::cout << "SIMULATION PARAMETERS" << std::endl;
-            std::cout << std::left;
-            std::cout << std::setw(40) << "rmMonitorInterval: " << std::setw(10) << rmParam.rmMonitorInterval << std::endl;
-            std::cout << std::setw(40) << "expectedBeconInterval: " << std::setw(10) << rmParam.expectedBeconInterval << std::endl;
-            std::cout << std::setw(40) << "nPacketLossPoor: " << std::setw(10) << rmParam.nPacketLossPoor << std::endl;
-            std::cout << std::setw(40) << "nPacketLossCritical: " << std::setw(10) << rmParam.nPacketLossCritical << std::endl;
-            std::cout << std::setw(40) << "minSafetyDistance: " << std::setw(10) << rmParam.minSafetyDistance << std::endl;
-            std::cout << std::setw(40) << "actionOnTransitionEnabled: " << std::setw(10) << rmParam.actionOnTransitionEnabled << std::endl;
-            std::cout << std::setw(40) << "accHeadwaytimeGap: " << std::setw(10) << rmParam.accHeadwaytimeGap << std::endl;
-            std::cout << std::setw(40) << "ploegHeadwayTimeGap: " << std::setw(10) << rmParam.ploegHeadwayTimeGap << std::endl;
-            std::cout << std::setw(40) << "caccConstantSpacing: " << std::setw(10) << rmParam.caccConstantSpacing << std::endl;
-            std::cout << std::setw(40) << "emergencyCaccConstantSpacingFactor: "<< std::setw(10)  << rmParam.emergencyCaccConstantSpacingFactor << std::endl;
-            std::cout << std::setw(40) << "emergencyPloegHeadwayTimeGapFactor: " << std::setw(10) << rmParam.emergencyPloegHeadwayTimeGapFactor << std::endl;
-            std::cout << std::right;
-#endif
-
-
         }
     }
 
@@ -96,11 +81,41 @@ void RuntimeManager::initialize(int stage) {
         traciVehicle = mobility->getVehicleCommandInterface();
         positionHelper = FindModule<BasePositionHelper*>::findSubModule(getParentModule());
 
+
+
+#if DEBUG_RM
+            std::cout << std::setw(110) << std::setfill('#') << "" << std::setfill(' ') << std::endl;
+            std::cout << std::setw(38) << ""
+                      << "VEHICLE " << positionHelper->getId() << " :: SIMULATION PARAMETERS"
+                      << std::setw(38) << ""
+                      << std::endl;
+            std::cout << std::setw(110) << std::setfill('#') << "" << std::setfill(' ') << std::endl;
+
+            std::cout << std::left;
+            std::cout << std::setw(40) << "rmMonitorInterval: " << std::setw(10) << rmParam.rmMonitorInterval << std::endl;
+            std::cout << std::setw(40) << "expectedBeconInterval: " << std::setw(10) << rmParam.expectedBeconInterval << std::endl;
+            std::cout << std::setw(40) << "nPacketLossPoor: " << std::setw(10) << rmParam.nPacketLossPoor << std::endl;
+            std::cout << std::setw(40) << "nPacketLossCritical: " << std::setw(10) << rmParam.nPacketLossCritical << std::endl;
+            std::cout << std::setw(40) << "upgradationEnabled: " << std::setw(10) << std::boolalpha << rmParam.upgradationEnabled << std::endl;
+            std::cout << std::setw(40) << "degradationEnabled: " << std::setw(10) << std::boolalpha << rmParam.degradationEnabled << std::endl;
+            std::cout << std::setw(40) << "gapControlEnabled: " << std::setw(10) << std::boolalpha << rmParam.gapControlEnabled << std::endl;
+            std::cout << std::setw(40) << "minSafetyDistance: " << std::setw(10) << rmParam.minSafetyDistance << std::endl;
+            std::cout << std::setw(40) << "actionOnTransitionEnabled: " << std::setw(10) << std::boolalpha << rmParam.actionOnTransitionEnabled << std::endl;
+            std::cout << std::setw(40) << "accHeadwaytimeGap: " << std::setw(10) << rmParam.accHeadwaytimeGap << std::endl;
+            std::cout << std::setw(40) << "ploegHeadwayTimeGap: " << std::setw(10) << rmParam.ploegHeadwayTimeGap << std::endl;
+            std::cout << std::setw(40) << "caccConstantSpacing: " << std::setw(10) << rmParam.caccConstantSpacing << std::endl;
+            std::cout << std::setw(40) << "emergencyCaccConstantSpacingFactor: "<< std::setw(10)  << rmParam.emergencyCaccConstantSpacingFactor << std::endl;
+            std::cout << std::setw(40) << "emergencyPloegHeadwayTimeGapFactor: " << std::setw(10) << rmParam.emergencyPloegHeadwayTimeGapFactor << std::endl;
+            std::cout << std::right;
+
+            std::cout << std::setw(110) << std::setfill('-') << "" << std::setfill(' ') << std::endl;
+#endif
+
 #if DEBUG_RM && DEBUG_RM1
         if(positionHelper->isLeader()) {
             std::cout << "Leader: \n\tactiveController: " << std::get<0>(rmLog).activeController << std::endl;
         } else {
-            std::cout << "VehicleId: " << positionHelper->getId() << "\n\tstd::get<0>(rmLog).activeController: " << std::get<0>(rmLog).activeController << std::endl;
+            std::cout << "VehicleId: " << positionHelper->getId() << "\n\tactiveController: " << std::get<0>(rmLog).activeController << std::endl;
 
         }
 #endif
@@ -234,12 +249,19 @@ void RuntimeManager::initializeContracts() {
     // TODO other Contracts, if there is any
 
 #if DEBUG_RM
-    std::cout << std::setw(40) << std::setfill('=') << "" << " Vehicle " << positionHelper->getId()
-              << " : Default Contract " << std::setw(40) << std::setfill('=') << " " << std::endl
-              << std::setfill(' ');
-    std::cout << "\t" << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0]))
-              << std::endl << std::setw(110) << std::setfill('-') << "" << std::setfill(' ') << std::endl;
-    std::cout << std::setw(110) << std::setfill('=') << "" << std::setfill(' ') << std::endl;
+
+    std::cout << std::setw(110) << std::setfill('#') << "" << std::setfill(' ') << std::endl;
+    std::cout << std::setw(40) << ""
+              << "VEHICLE " << positionHelper->getId() << " :: DEFAULT CONTRACTS"
+              << std::setw(40) << ""
+              << std::endl;
+    std::cout << std::setw(110) << std::setfill('#') << "" << std::setfill(' ') << std::endl;
+
+    // Currently we are having only only contract
+    std::cout << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0])) << std::endl;
+
+    std::cout << std::setw(110) << std::setfill('-') << "" << std::setfill(' ') << std::endl;
+
 #endif
 
 }

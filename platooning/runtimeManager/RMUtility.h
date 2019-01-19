@@ -15,7 +15,7 @@
 
 
 #define DEBUG_RM 1
-#define DEBUG_RM1 1
+#define DEBUG_RM1 0
 
 
 // Forward declaration
@@ -34,9 +34,12 @@ namespace RM {
             double rmMonitorInterval;
             double expectedBeconInterval;
 
-//            int nPacketLossModerate;
             int nPacketLossPoor;
             int nPacketLossCritical;
+
+            bool upgradationEnabled;
+            bool degradationEnabled;
+            bool gapControlEnabled;
 
             double minSafetyDistance;
 

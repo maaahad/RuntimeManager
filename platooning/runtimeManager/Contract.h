@@ -16,6 +16,8 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_H_
 
+#include <iostream>
+#include <map>
 #include "veins/modules/application/platooning/CC_Const.h"
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
 
@@ -28,6 +30,8 @@ enum CONTRACT_TYPE{
     WIFI,
     INTERNAL_ERROR,
 };
+
+std::ostream &operator<<(std::ostream &os, const CONTRACT_TYPE cType);
 
 class Contract {
     friend bool operator==(const Contract &cr1, const Contract &cr2 );
