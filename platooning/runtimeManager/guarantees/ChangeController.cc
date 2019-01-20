@@ -12,7 +12,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
-
+#include <iomanip>
 #include "ChangeController.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,45 +35,51 @@ void ChangeController::actionOnTransition() const {
     } else if(to == Plexe::CACC) {
         traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing);
     } else {
-        std::cerr << "Error: " << __FILE__
+        std::cerr << "Error: Wrong Controller!!!" << __FILE__
                   << "\n\tLine: " << __LINE__
                   << "\n\tCompiled on: " << __DATE__
                   << " at " << __TIME__
                   << "\n\tfunction " << __func__
-                  << " Wrong Controller!!!"
                   << std::endl;
     }
 }
 
 void ChangeController::operator()(std::shared_ptr<Contract> contract) const {
-#if DEBUG_RM && DEBUG_RM1
-    if(to > traciVehicle->getActiveController()) {
-        std::cout << "Vehicle " << positionHelper->getId()
-                  << "\n\t Upgrade : From " << traciVehicle->getActiveController() << " to " << to << std::endl;
-    } else {
-        std::cout << "Vehicle " << positionHelper->getId()
-                  << "\n\t Degrade : From " << traciVehicle->getActiveController() << " to " << to << std::endl;
-    }
+#if DEBUG_RM
+    std::cout << std::setw(30) << std::setfill('#') << ""
+              << " VEHICLE " << positionHelper->getId() << " ::: "
+              << "Contract's Status BEFORE Transition "
+              << std::setw(30) << std::setfill('#') << "" << "\n"
+              << *(std::static_pointer_cast<WIFIContract>(contract))
+              << std::setfill(' ') << std::endl;
 #endif
 
 #if DEBUG_RM
-    std::cout << "Vehicle " << positionHelper->getId() << "\n\t"
-              << "Controller Change : From "
-              << (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController()
-              << " to " << (Plexe::ACTIVE_CONTROLLER)to;
+    std::cout << std::setw(37) << std::setfill('#') << ""
+              <<" VEHICLE " << positionHelper->getId() << " :: "
+              << "Controller Transition "
+              << std::setw(37) << std::setfill('#') << "" << "\n"
+              << std::setw(37) << std::setfill(' ') << ""
+              << (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController() << " => " << to << std::endl
+              << std::setfill(' ');
 #endif
-
     // update the vehicle's current contract status for the Active controller
     // As the consecutive Guarantee requires the current active controller (included in the key_type of the Contract-Guarantee unordered_map )
     contract->updateOnTransition(to);
 
-    // perform actionOnTransition if enabled
+    // perform actionOnTransition if enabled.
+    // Do it before transition, so that new controller can use it straight away
     if(rmParam.actionOnTransitionEnabled) actionOnTransition();
 
     // Perform the transition
     traciVehicle->setActiveController(to);
+
 #if DEBUG_RM
-    std::cout << "Vehicle " << positionHelper->getId() << "\n\t"
-              << "Contract Status after Transition: " << *(std::static_pointer_cast<WIFIContract>(contract)) << std::endl;
+    std::cout << std::setw(30) << std::setfill('#') << ""
+              << " VEHICLE " << positionHelper->getId() << " :::: "
+              << "Contract's Status AFTER Transition "
+              << std::setw(30) << std::setfill('#') << "" << "\n"
+              << *(std::static_pointer_cast<WIFIContract>(contract))
+              << std::setfill(' ') << std::endl;
 #endif
 }

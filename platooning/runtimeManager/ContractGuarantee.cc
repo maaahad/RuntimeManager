@@ -234,14 +234,14 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     // gapcontrol
     if(rm->rmParam.gapControlEnabled) {
         // ==================== acc ====================
-        // acc->ploeg->gapControl
-        addCG(acc2ploegN2d1, g2ploegN2d_i);
-        addCG(acc2ploegN2d2, g2ploegN2d_i);
-        addCG(acc2ploegN2d3, g2ploegN2d_i);
-
-        // acc->cacc->gapControl
-        addCG(acc2caccN2d1, g2caccN2d_i);
-
+        if(rm->rmParam.upgradationEnabled) {
+            // acc->ploeg->gapControl
+            addCG(acc2ploegN2d1, g2ploegN2d_i);
+            addCG(acc2ploegN2d2, g2ploegN2d_i);
+            addCG(acc2ploegN2d3, g2ploegN2d_i);
+            // acc->cacc->gapControl
+            addCG(acc2caccN2d1, g2caccN2d_i);
+        }
         // =================== ploeg ===================
         // ploeg->gapControl(Default)
         addCG(ploeg2d_default, g2d_df);
@@ -252,8 +252,9 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
         addCG(ploeg2d3, g2d_i);
 
         // ploeg->cacc->gapControl
-        addCG(ploeg2caccN2d1, g2caccN2d_i);
-
+        if(rm->rmParam.upgradationEnabled) {
+            addCG(ploeg2caccN2d1, g2caccN2d_i);
+        }
         // ===================  cacc ===================
         // cacc->gapControl(Default)
         addCG(cacc2d_default, g2d_df);
@@ -262,9 +263,12 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
         addCG(cacc2d1, g2d_i);
 
         // cacc->ploeg->gapControl
-        addCG(cacc2ploegN2d1,g2ploegN2d_i);
-        addCG(cacc2ploegN2d2,g2ploegN2d_i);
-        addCG(cacc2ploegN2d3,g2ploegN2d_i);
+        if(rm->rmParam.degradationEnabled) {
+            addCG(cacc2ploegN2d1,g2ploegN2d_i);
+            addCG(cacc2ploegN2d2,g2ploegN2d_i);
+            addCG(cacc2ploegN2d3,g2ploegN2d_i);
+        }
+
     }
 
 

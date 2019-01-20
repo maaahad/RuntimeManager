@@ -14,6 +14,7 @@
 // 
 
 #include <map>
+#include <iomanip>
 #include <string>
 #include "AdjustGap2Front.h"
 
@@ -31,23 +32,36 @@ AdjustGap2Front::~AdjustGap2Front() {
 }
 
 void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
+#if DEBUG_RM
+    std::cout << std::setw(30) << std::setfill('#') << ""
+              << " VEHICLE " << positionHelper->getId() << " ::: "
+              << "Contract's Status BEFORE GapControl "
+              << std::setw(30) << std::setfill('#') << "" << "\n"
+              << *(std::static_pointer_cast<WIFIContract>(contract))
+              << std::setfill(' ') << std::endl;
+#endif
+
     if(traciVehicle->getActiveController() == Plexe::ACC){
-        std::cerr << "Warning: " << __FILE__
+        std::cerr << "Warning: Nothing is doing for controller Plexe::ACC" << __FILE__
                          << "\n\tLine: " << __LINE__
                          << "\n\tCompiled on: " << __DATE__
                          << " at " << __TIME__
                          << "\n\tfunction: " << __func__
-                         << " ...Not Implemented yet!!!"
                          << std::endl;
     } else if (traciVehicle->getActiveController() == Plexe::PLOEG) {
-
         if(gap2front == GAP2FRONT::DEFAULT) {
             // go back to the default spacing
             traciVehicle->setParameter(CC_PAR_PLOEG_H, rmParam.ploegHeadwayTimeGap);
 #if DEBUG_RM
-            std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
-                      << gap2front << " headwayTimeGap(" << rmParam.ploegHeadwayTimeGap << "s)"
-                      << "\n\t" << "Contract Status: " << *(std::static_pointer_cast<WIFIContract>(contract))
+//            double ploegH = 200;
+//            traciVehicle->getParameter(CC_PAR_PLOEG_H, ploegH);     // This method does nto work
+
+            std::cout << std::setw(34) << std::setfill('#') << ""
+                      << " VEHICLE " << positionHelper->getId() << " ::: " << "PERFORMED " << gap2front << " "
+                      << std::setw(34) << std::setfill('#') << "" << "\n"
+                      << std::setw(34) << std::setfill(' ') << ""
+                      << " Set Default headwayTimeGap : " << rmParam.ploegHeadwayTimeGap << "s"
+                      << std::setfill(' ')
                       << std::endl;
 #endif
 
@@ -55,9 +69,15 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
             // increase the gap
             traciVehicle->setParameter(CC_PAR_PLOEG_H, rmParam.ploegHeadwayTimeGap + rmParam.ploegHeadwayTimeGap * rmParam.emergencyPloegHeadwayTimeGapFactor);
 #if DEBUG_RM
-            std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
-                      << gap2front << " headwayTimeGap(" << (rmParam.ploegHeadwayTimeGap + rmParam.ploegHeadwayTimeGap * rmParam.emergencyPloegHeadwayTimeGapFactor) << "s)"
-                      << "\n\t" << "Contract Status: " << *(std::static_pointer_cast<WIFIContract>(contract))
+//            double ploegH = 200;
+//            traciVehicle->getParameter(CC_PAR_PLOEG_H, ploegH);     // This method does nto work
+
+            std::cout << std::setw(33) << std::setfill('#') << ""
+                      << " VEHICLE " << positionHelper->getId() << " ::: " << "PERFORMED " << gap2front << " "
+                      << std::setw(33) << std::setfill('#') << "" << "\n"
+                      << std::setw(33) << std::setfill(' ') << ""
+                      << " Set headwayTimeGap : " << rmParam.ploegHeadwayTimeGap + rmParam.ploegHeadwayTimeGap * rmParam.emergencyPloegHeadwayTimeGapFactor << "s"
+                      << std::setfill(' ')
                       << std::endl;
 #endif
 
@@ -70,9 +90,12 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
             // go back to the default spacing
             traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing);
 #if DEBUG_RM
-            std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
-                      << gap2front << " distance(" << rmParam.caccConstantSpacing << "m)"
-                      << "\n\t" << "Contract Status: " << *(std::static_pointer_cast<WIFIContract>(contract))
+            std::cout << std::setw(34) << std::setfill('#') << ""
+                      << " VEHICLE " << positionHelper->getId() << " ::: " << "PERFORMED " << gap2front << " "
+                      << std::setw(34) << std::setfill('#') << "" << "\n"
+                      << std::setw(34) << std::setfill(' ') << ""
+                      << " Set Default caccSpacing : " << traciVehicle->getCACCConstantSpacing() << "m"
+                      << std::setfill(' ')
                       << std::endl;
 #endif
         } else if (gap2front == GAP2FRONT::INCREASE){
@@ -80,9 +103,12 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
             // increase the gap
             traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing + rmParam.caccConstantSpacing * rmParam.emergencyCaccConstantSpacingFactor);
 #if DEBUG_RM
-            std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
-                      << gap2front << " distance(" << (rmParam.caccConstantSpacing + rmParam.caccConstantSpacing * rmParam.emergencyCaccConstantSpacingFactor) << "m)"
-                      << "\n\t" << "Contract Status: " << *(std::static_pointer_cast<WIFIContract>(contract))
+            std::cout << std::setw(34) << std::setfill('#') << ""
+                      << " VEHICLE " << positionHelper->getId() << " ::: " << "PERFORMED " << gap2front << " "
+                      << std::setw(34) << std::setfill('#') << "" << "\n"
+                      << std::setw(34) << std::setfill(' ') << ""
+                      << " Set caccSpacing : " << traciVehicle->getCACCConstantSpacing() << "m"
+                      << std::setfill(' ')
                       << std::endl;
 #endif
 
@@ -91,6 +117,15 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
         }
 
     }
+
+#if DEBUG_RM
+    std::cout << std::setw(31) << std::setfill('#') << ""
+              << " VEHICLE " << positionHelper->getId() << " ::: "
+              << "Contract's Status AFTER GapControl "
+              << std::setw(31) << std::setfill('#') << "" << "\n"
+              << *(std::static_pointer_cast<WIFIContract>(contract))
+              << std::setfill(' ') << std::endl;
+#endif
 }
 
 
