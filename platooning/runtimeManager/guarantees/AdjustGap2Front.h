@@ -36,7 +36,6 @@ public:
     virtual ~AdjustGap2Front();
     virtual void operator()(std::shared_ptr<Contract> contract) const override;
 private:
-    void gapControll(std::shared_ptr<Contract> contract) const;
     GAP2FRONT gap2front;
 };
 

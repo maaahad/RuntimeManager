@@ -25,21 +25,17 @@
 
 //Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : rmcg(std::make_shared<std::map<CONTRACT_TYPE, std::shared_ptr<RMContainer>>()){
 Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : rm(rm) {
-
-    // TODO Auto-generated constructor stub
     initContractList(rm);
 }
 
 Contract_Guarantee::~Contract_Guarantee() {
-    // TODO Auto-generated destructor stub
 }
 
-// This is for checking TODO will extend later
+
 void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
     // TRYING WITH new RMContainer
     for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
         if((*start)->isChanged()) {
-//        std::cout << (*start)->isChanged() << std::endl;
             if(std::shared_ptr<WIFIContract> contract = std::dynamic_pointer_cast<WIFIContract>(*start)) {
                 // Sanity check
                 ASSERT(contract->getContractType() == CONTRACT_TYPE::WIFI);
@@ -64,7 +60,7 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
                 distViolated = true;
 #if DEBUG_RM
                std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
-                         << state.dist2pred << "<" << rm->rmParam.minSafetyDistance
+                         << state.dist2pred << " < " << rm->rmParam.minSafetyDistance
                          << " ===> MinSafetyDistance violated!!!" << std::endl;
 #endif
             }
@@ -113,6 +109,7 @@ template <typename C, typename G> void Contract_Guarantee::addCG(const C &c, con
         } else if(c.getContractType() == CONTRACT_TYPE::INTERNAL_ERROR) {
             std::cout<<"Only CONTRACT_TYPE::WIFI is available right now..." << std::endl;
         }
+        // TODO add for other contract type
     }
 }
 
@@ -123,14 +120,13 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
     // Creating the WIFIContract-Guarantee list
     // =============================================== StateParameters ================================================
-    // StateParameters C2F : atSafetyDistance = true (default)
+    // StateParameters C2F : atSafetyDistance = true (default)... This is used right now.
     C2F ok_c2f(WIFI_QUALITY::OK);
-//    C2F moderate_c2f(WIFI_QUALITY::MODERATE);
     C2F poor_c2f(WIFI_QUALITY::POOR);
     C2F critical_c2f(WIFI_QUALITY::CRITICAL);
+
     // StateParameters C2L
     C2L ok_c2l(WIFI_QUALITY::OK);
-//    C2L moderate_c2l(WIFI_QUALITY::MODERATE);
     C2L poor_c2l(WIFI_QUALITY::POOR);
     C2L critical_c2l(WIFI_QUALITY::CRITICAL);
 
@@ -140,15 +136,12 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     Guarantees *g2ploeg = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
     Guarantees *g2cacc  = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::CACC);
 
-    // TODO Guarantees (Gap2Front)
+    // Guarantees (Gap2Front)
     Guarantees *g2d_df = new AdjustGap2Front(rm, GAP2FRONT::DEFAULT);
     Guarantees *g2d_i  = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
 
-    Guarantees *g2d_adj  = new AdjustGap2Front(rm, GAP2FRONT::ADJUST);  // TODO need to remove this
 
-
-
-    // TODO Guarantees (ChangeControllerAndDecelerate)
+    // Guarantees (ChangeControllerAndDecelerate)
     Guarantees *g2ploegN2d_i = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::PLOEG, GAP2FRONT::INCREASE);
     Guarantees *g2caccN2d_i  = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::CACC, GAP2FRONT::INCREASE);
 
@@ -275,27 +268,28 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     }
 
 
-    // ====================================================== [ Debug ======================================================
 
-    // ============== Test: CHECKING WITH ADDING DUPLICATE element
-//    addCG(acc2cacc, g2cacc);     // test OK
+#if DEBUG_RM2
+
+     // ============== Test: CHECKING WITH ADDING DUPLICATE element
+    addCG(acc2cacc, g2cacc);     // test OK
 
 
     // ============== Test: try with add different type of contract: Test OK
-//    WIFIContract acc2caccC(CONTRACT_TYPE::INTERNAL_ERROR, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
-//    Guarantees g2accC(rm, true, Plexe::ACTIVE_CONTROLLER::ACC);
+    WIFIContract acc2caccC(CONTRACT_TYPE::INTERNAL_ERROR, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
+    Guarantees *g2accC = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::ACC);
 //    addCG(acc2caccC, g2accC);
 
+    auto sz = ((std::static_pointer_cast<RMCGContainer<WIFIContract, Guarantees>>(rmcg.find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
+    auto sz2 = rmcg.size();
 
+    ASSERT(sz == 24);
+    ASSERT(sz2 == 1);
 
+    auto cc = ((std::static_pointer_cast<RMCGContainer<WIFIContract, Guarantees>>(rmcg.find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(acc2cacc);
+    std::cout << "Testing find() on CG list: \n" << cc->first <<std::endl;
 
-//    auto sz = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
-//    auto sz2 = rmcg->size();
-//
-//
-//    auto cc = ((static_cast<RMCGContainer<WIFIContract, Guarantees> *>(rmcg->find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(cacc2d1);
-//    std::cout << cc->first <<std::endl;
-    // ====================================================== Debug ] =======================================================
+#endif
 
 }
 

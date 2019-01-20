@@ -30,69 +30,6 @@ AdjustGap2Front::~AdjustGap2Front() {
     // TODO Auto-generated destructor stub
 }
 
-/**
- * The following method whoud be removed
- */
-void AdjustGap2Front::gapControll(std::shared_ptr<Contract> contract) const {
-    switch(traciVehicle->getActiveController()) {
-    case Plexe::ACC:
-        break;
-    case Plexe::PLOEG:
-        //
-        break;
-    case Plexe::CACC:
-        // C2F::OK, C2L::POOR
-        // get the Radar measurements
-        double distance, relativeSpeed;
-        traciVehicle->getRadarMeasurements(distance, relativeSpeed);
-
-        if(distance != -1 && relativeSpeed != 0 ) {
-            double caccSpacingUpperLimit = 30.0;                // TODO as it as a Simulation parameter in omnetpp.ini
-            double dt = 0.01;                                   // TODO this should get from the omnetpp.ini
-            double emergencyCaccConstantSpacingFactor2 = .25;   // TODO as it as a Simulation parameter in omnetpp.ini
-            // Valid radar has been received
-            double spacingError1 = distance - rmParam.caccConstantSpacing;
-            if(spacingError1 > 0) {
-                // Spacing is ok, but as the connection to leader is poor,
-                // We will increase the spacing to be at a safe side
-                double newSpacing = rmParam.caccConstantSpacing + rmParam.emergencyCaccConstantSpacingFactor * rmParam.caccConstantSpacing;
-                traciVehicle->setCACCConstantSpacing(std::max(rmParam.minSafetyDistance, std::min(newSpacing, caccSpacingUpperLimit)));
-
-                std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
-                          << gap2front << " distance(" << traciVehicle->getCACCConstantSpacing() << "m)"
-                          << "\n\t" << "Contract Status: " << *(std::static_pointer_cast<WIFIContract>(contract))
-                          << std::endl;
-            } else {
-                // TODO Need to check
-                // Spacing is not ok, We need more spacing
-                // we need the acceleration of the front vehicle
-                RM::RMLog_Front &front = std::get<1>(rmLog);
-                Plexe::VEHICLE_DATA data;
-                traciVehicle->getVehicleData(&data);
-                double relAcceleration = data.acceleration - front.common.acceleration;
-                double spacingError2 = relativeSpeed * dt + 0.5 * relAcceleration * dt * dt;
-                double newSpacing = rmParam.caccConstantSpacing + rmParam.emergencyCaccConstantSpacingFactor * rmParam.caccConstantSpacing
-                                    - emergencyCaccConstantSpacingFactor2 * spacingError2;
-                traciVehicle->setCACCConstantSpacing(std::max(rmParam.minSafetyDistance, std::min(newSpacing, caccSpacingUpperLimit)));
-                std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed (double)"
-                          << gap2front << " distance(" << traciVehicle->getCACCConstantSpacing() << "m)"
-                          << "\n\t" << "Contract Status: " << *(std::static_pointer_cast<WIFIContract>(contract))
-                          << std::endl;
-            }
-        }
-        break;
-    default:
-        std::cerr << "Error: " << __FILE__
-                                 << "\n\tLine: " << __LINE__
-                                 << "\n\tCompiled on: " << __DATE__
-                                 << " at " << __TIME__
-                                 << "\n\tfunction: " << __func__
-                                 << " Wrong Active Controller!!!"
-                                 << std::endl;
-        break;
-    }
-}
-
 void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
     if(traciVehicle->getActiveController() == Plexe::ACC){
         std::cerr << "Warning: " << __FILE__
@@ -132,10 +69,12 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
         if(gap2front == GAP2FRONT::DEFAULT) {
             // go back to the default spacing
             traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing);
+#if DEBUG_RM
             std::cout << "Vehicle " << positionHelper->getId() << "\n\t" << "performed "
                       << gap2front << " distance(" << rmParam.caccConstantSpacing << "m)"
                       << "\n\t" << "Contract Status: " << *(std::static_pointer_cast<WIFIContract>(contract))
                       << std::endl;
+#endif
         } else if (gap2front == GAP2FRONT::INCREASE){
 
             // increase the gap
@@ -147,11 +86,8 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
                       << std::endl;
 #endif
 
-        } else if (gap2front == GAP2FRONT::ADJUST) {
-            // gap controll
-            gapControll(contract);
         } else {
-            // TODO decrease the gap
+            // TODO decrease the gap. Not interest in increasing right now.
         }
 
     }
