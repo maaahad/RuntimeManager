@@ -60,15 +60,15 @@ void FileWriter::addEntries(const RM::RMParameters &rmParam, const RM::RMLog_Own
 
     // deceleration
     output << "|" << std::setw(14) << std::left << ego.acceleration << "|" << std::right;
-    output << "|" << std::setw(14) << std::left << ego.maxDeceleration << "|" << std::right;
+    output << "|" << std::setw(14) << std::left << (ego.maxDeceleration < 0.0 ? std::to_string(ego.maxDeceleration) : "NA") << "|" << std::right;
 
     // dist2pred violation
-    output << "|" << std::setw(14) << std::left << std::boolalpha << distViolated << "|" << std::right;
+    output << "|" << std::setw(14) << std::left << (distViolated ? "yes" : "no") << "|" << std::right;
     output << "|" << std::setw(14) << std::left << ego.dist2pred << "|" << std::right;
 
     // deceleration violation
-    output << "|" << std::setw(14) << std::left << std::boolalpha << decelViolated << "|" << std::right;
-    output << "|" << std::setw(14) << std::left << ego.maxDeceleration << "|" << std::right;
+    output << "|" << std::setw(14) << std::left << (decelViolated ? "yes" : "no") << "|" << std::right;
+    output << "|" << std::setw(14) << std::left << (ego.maxDeceleration < 0.0 ? std::to_string(ego.maxDeceleration) : "NA") << "|" << std::right;
 
     // time
     output << "|" << std::setw(10) << ego.time << "|";

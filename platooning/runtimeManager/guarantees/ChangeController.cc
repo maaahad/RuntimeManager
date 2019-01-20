@@ -67,9 +67,10 @@ void ChangeController::operator()(std::shared_ptr<Contract> contract) const {
     // As the consecutive Guarantee requires the current active controller (included in the key_type of the Contract-Guarantee unordered_map )
     contract->updateOnTransition(to);
 
-    // perform actionOnTransition if enabled.
+    // perform actionOnTransition by default.
     // Do it before transition, so that new controller can use it straight away
-    if(rmParam.actionOnTransitionEnabled) actionOnTransition();
+    //if(rmParam.actionOnTransitionEnabled) actionOnTransition();
+    actionOnTransition();
 
     // Perform the transition
     traciVehicle->setActiveController(to);

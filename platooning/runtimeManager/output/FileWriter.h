@@ -67,7 +67,7 @@ private:
     std::string maxDecel = "MaxDecel";
 
     // dist2pred violation
-    std::string yesNo = "yes/no";
+    std::string yesNo = "violated?";
     std::string dist2pred = "dist2pred";
 
     // deceleration violation

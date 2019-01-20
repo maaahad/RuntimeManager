@@ -8,6 +8,7 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMUTILITY_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMUTILITY_H_
 
+#include <limits>
 #include <memory>
 #include <vector>
 #include <string>
@@ -67,7 +68,7 @@ namespace RM {
             double time;                            // information generated time
             double lastBeaconArrivalTime;           // received time of last beacon (can be done based on time)
             double acceleration;                    // Acceleration of the vehicle
-            double maxDeceleration = 100;           // Default initialized with a positive value, Deceleration have to be negative
+            double maxDeceleration = 1000;           // Default initialized with a positive value, Deceleration have to be negative
             double controllerAcceleration;          // Acceleration computed by the Controller
         };
 
@@ -76,10 +77,10 @@ namespace RM {
          */
         struct RMLog_Own {
             Plexe::ACTIVE_CONTROLLER activeController;
-            double time;                            // information generated time
-            double acceleration;                    // Acceleration of the vehicle
-            double maxDeceleration = 100;           // Default initialized with a positive value, Deceleration have to be negative
-            double dist2pred;                       // distance to the front vehicle
+            double time;                                                    // information generated time
+            double acceleration;                                            // Acceleration of the vehicle
+            double maxDeceleration = std::numeric_limits<double>::max();    // a default large value
+            double dist2pred = std::numeric_limits<double>::max();          // a default large value
 
             // TODO need to pass custom deleter to shared_ptr or using use of shared_ptr for vector elements
             //std::shared_ptr<std::vector<Contract *>> contracts;
