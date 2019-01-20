@@ -41,7 +41,7 @@ private:
     // Headers
     std::string parameters = "PARAMETERS";
     std::string c2xQuality = "C2X-QUALITY";
-    std::string acceleration = "ACCELERATION";
+    std::string acceleration = "ACCELERATION(mpsps)";
     std::string dist2predViolation = "DIST2PRED VIOLATION";
     std::string decelViolation = "DECELERATION VIOLATION";
     std::string dataRecordedTime = "TIME(s)";
@@ -68,10 +68,10 @@ private:
 
     // dist2pred violation
     std::string yesNo = "violated?";
-    std::string dist2pred = "dist2pred";
+    std::string dist2pred = "dist2pred(m)";
 
     // deceleration violation
-    std::string decel = "decel";
+    std::string decel = "decel(mpsps)";
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_OUTPUT_FILEWRITER_H_ */

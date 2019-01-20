@@ -64,7 +64,7 @@ void FileWriter::addEntries(const RM::RMParameters &rmParam, const RM::RMLog_Own
 
     // dist2pred violation
     output << "|" << std::setw(14) << std::left << (distViolated ? "yes" : "no") << "|" << std::right;
-    output << "|" << std::setw(14) << std::left << ego.dist2pred << "|" << std::right;
+    output << "|" << std::setw(14) << std::left << (ego.crashed ? "crashed" : std::to_string(ego.dist2pred)) << "|" << std::right;
 
     // deceleration violation
     output << "|" << std::setw(14) << std::left << (decelViolated ? "yes" : "no") << "|" << std::right;

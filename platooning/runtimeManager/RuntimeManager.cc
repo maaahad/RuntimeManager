@@ -58,7 +58,9 @@ void RuntimeManager::initialize(int stage) {
             rmParam.degradationEnabled = par("degradationEnabled").boolValue();
             rmParam.gapControlEnabled  = par("gapControlEnabled").boolValue();
 
-            rmParam.minSafetyDistance   = par("minSafetyDistance").doubleValue();
+            rmParam.minSafetyDistance = par("minSafetyDistance").doubleValue();
+            rmParam.maxDeceleration   = par("maxDeceleration").doubleValue();
+
 
             rmParam.actionOnTransitionEnabled  = par("actionOnTransitionEnabled").boolValue();
 
@@ -100,6 +102,7 @@ void RuntimeManager::initialize(int stage) {
             std::cout << std::setw(40) << "degradationEnabled: " << std::setw(10) << std::boolalpha << rmParam.degradationEnabled << std::endl;
             std::cout << std::setw(40) << "gapControlEnabled: " << std::setw(10) << std::boolalpha << rmParam.gapControlEnabled << std::endl;
             std::cout << std::setw(40) << "minSafetyDistance: " << std::setw(10) << rmParam.minSafetyDistance << std::endl;
+            std::cout << std::setw(40) << "maxDeceleration: " << std::setw(10) << rmParam.maxDeceleration << std::endl;
             std::cout << std::setw(40) << "actionOnTransitionEnabled: " << std::setw(10) << std::boolalpha << rmParam.actionOnTransitionEnabled << std::endl;
             std::cout << std::setw(40) << "accHeadwaytimeGap: " << std::setw(10) << rmParam.accHeadwaytimeGap << std::endl;
             std::cout << std::setw(40) << "ploegHeadwayTimeGap: " << std::setw(10) << rmParam.ploegHeadwayTimeGap << std::endl;
@@ -185,8 +188,10 @@ void RuntimeManager::ownLog() {
     // get the Radar measurements
     double distance, relativeSpeed;
     traciVehicle->getRadarMeasurements(distance, relativeSpeed);
-    if(distance != -1 && relativeSpeed != 0 ) {
+    if(distance != -1 && relativeSpeed != 0) {
         ego.dist2pred = distance;
+    } else {
+        ego.crashed = traciVehicle->isCrashed();
     }
 }
 

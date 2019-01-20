@@ -42,7 +42,8 @@ simple BaseRuntimeManager like IBaseApplLayer {
         
         
         // minimum distance between two vehicles
-        double minSafetyDistance @unit("m")= default(2m);
+        double minSafetyDistance @unit("m")   = default(2m);
+        double maxDeceleration @unit("mpsps") = default(-8.0mpsps);
         
         // actions to be taken on transition if enabled actionOnTransition
         bool actionOnTransitionEnabled        = default(true);

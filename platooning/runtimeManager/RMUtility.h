@@ -44,6 +44,7 @@ namespace RM {
             bool gapControlEnabled;
 
             double minSafetyDistance;
+            double maxDeceleration;
 
             bool actionOnTransitionEnabled;
             double accHeadwaytimeGap;
@@ -64,12 +65,12 @@ namespace RM {
          * This is common parameters of front and leader vehicle
          */
         struct RMLog {
-            bool c2xInitiated = false;              // helper variable to decide whether logging has started or not
-            double time;                            // information generated time
-            double lastBeaconArrivalTime;           // received time of last beacon (can be done based on time)
-            double acceleration;                    // Acceleration of the vehicle
-            double maxDeceleration = 1000;           // Default initialized with a positive value, Deceleration have to be negative
-            double controllerAcceleration;          // Acceleration computed by the Controller
+            bool c2xInitiated = false;                                      // helper variable to decide whether logging has started or not
+            double time;                                                    // information generated time
+            double lastBeaconArrivalTime;                                   // received time of last beacon (can be done based on time)
+            double acceleration;                                            // Acceleration of the vehicle
+            double maxDeceleration = std::numeric_limits<double>::max();    // a default large value
+            double controllerAcceleration;                                  // Acceleration computed by the Controller
         };
 
         /**
@@ -81,6 +82,8 @@ namespace RM {
             double acceleration;                                            // Acceleration of the vehicle
             double maxDeceleration = std::numeric_limits<double>::max();    // a default large value
             double dist2pred = std::numeric_limits<double>::max();          // a default large value
+            bool crashed = false;                                           // default value is false
+
 
             // TODO need to pass custom deleter to shared_ptr or using use of shared_ptr for vector elements
             //std::shared_ptr<std::vector<Contract *>> contracts;
@@ -91,7 +94,7 @@ namespace RM {
          */
         struct RMLog_Front {
           RMLog common;
-          double distance;
+          double distance;      // Currently not using...Using it in RMLog_Own
           // TODO more parameters
         };
 

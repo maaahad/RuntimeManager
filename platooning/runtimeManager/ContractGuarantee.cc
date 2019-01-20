@@ -58,29 +58,30 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
             bool decelViolated = false;
             if(state.dist2pred < rm->rmParam.minSafetyDistance && rm->positionHelper->getId() != 0) {
                 distViolated = true;
-#if DEBUG_RM
+#if DEBUG_RM1
                std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
                          << state.dist2pred << " < " << rm->rmParam.minSafetyDistance
                          << " ===> MinSafetyDistance violated!!!" << std::endl;
 #endif
             }
             // maximum deceleration
-//            if((state.maxDeceleration > -5.0 || state.maxDeceleration < -8.0) && rm->positionHelper->getId() != 0) {
+//            if((state.maxDeceleration > -5.0 || state.maxDeceleration < rm->rmParam.maxDeceleration) && rm->positionHelper->getId() != 0) {
+//            decelViolated = true;
 //                std::cerr << "Vehicle : " << rm->positionHelper->getId()
 //                                         << "state.maxDeceleration : " << state.maxDeceleration
 //                                         << " ===> Deceleration condition violated!!!" << std::endl;
 //            }
 
-            if(state.maxDeceleration < -8.0 && rm->positionHelper->getId() != 0) {
+            if(state.maxDeceleration < rm->rmParam.maxDeceleration && rm->positionHelper->getId() != 0) {
                 decelViolated = true;
-#if DEBUG_RM
+#if DEBUG_RM1
                 std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
                                          << "state.maxDeceleration : " << state.maxDeceleration
                                          << " ===> Deceleration condition violated!!!" << std::endl;
 #endif
             }
             // Report to the output file
-            if(distViolated || decelViolated) {
+            if((distViolated || decelViolated) && rm->positionHelper->getId() != 0) {
                 (rm->fileWriter)->addEntries(rm->rmParam, state, distViolated, decelViolated);
             }
 
