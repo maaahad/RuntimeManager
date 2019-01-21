@@ -35,7 +35,7 @@ simple BBaseScenario like BaseScenario
         //headway time for leaders using ACC
         double leaderHeadway @unit("s") = default(1.2s);
         // ahad: caccConstantSpacing (default in Plexe: 5m)
-        double caccSpacing @unit("m") = default(20m);
+        double caccSpacing @unit("m") = default(5m);
         
         //cacc and engine related parameters
         double caccXi = default(1);

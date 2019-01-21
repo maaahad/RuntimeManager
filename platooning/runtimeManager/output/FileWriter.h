@@ -44,7 +44,7 @@ private:
     std::string acceleration = "ACCELERATION(mpsps)";
     std::string dist2predViolation = "DIST2PRED VIOLATION";
     std::string decelViolation = "DECELERATION VIOLATION";
-    std::string dataRecordedTime = "SIM_TIME(s)";
+    std::string dataRecordedTime = "TIME(s)";
 
     // parameters headers
     std::string activeMode = "ActiveMode";

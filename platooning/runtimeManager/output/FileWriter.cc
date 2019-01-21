@@ -50,8 +50,9 @@ void FileWriter::addEntries(const RM::RMParameters &rmParam, const RM::RMLog_Own
     output << "|" << std::setw(13) << std::left << rmParam.emergencyPloegHeadwayTimeGapFactor << "|" << std::right;
     output << "|" << std::setw(14) << std::left << rmParam.emergencyPloegHeadwayTimeGapFactor << "|" << std::right;
 
-    // c2x
+    // contracts
     for(auto it = (ego.contracts)->cbegin(); it != (ego.contracts)->cend(); ++it) {
+        // c2x
         if(std::shared_ptr<WIFIContract> wificontract = std::dynamic_pointer_cast<WIFIContract>(*it)) {
             output << "|" << std::setw(9) << std::left << (wificontract->c2f).quality << "|" << std::right;
             output << "|" << std::setw(9) << std::left << (wificontract->c2l).quality << "|" << std::right;
