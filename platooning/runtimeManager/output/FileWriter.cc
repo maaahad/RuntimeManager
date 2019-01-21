@@ -44,9 +44,9 @@ void FileWriter::addEntries(const RM::RMParameters &rmParam, const RM::RMLog_Own
     output << "|" << std::setw(13) << std::left << rmParam.rmMonitorInterval << "|" << std::right;
     output << "|" << std::setw(13) << std::left << rmParam.nPacketLossPoor << "|" << std::right;
     output << "|" << std::setw(13) << std::left << rmParam.nPacketLossCritical << "|" << std::right;
-    output << "|" << std::setw(13) << std::left << rmParam.accHeadwaytimeGap << "|" << std::right;
-    output << "|" << std::setw(13) << std::left << rmParam.ploegHeadwayTimeGap << "|" << std::right;
-    output << "|" << std::setw(13) << std::left << rmParam.caccConstantSpacing << "|" << std::right;
+    output << "|" << std::setw(13) << std::left << (ego.currentAccH > 0.0 && ego.currentAccH != rmParam.accHeadwaytimeGap? std::to_string(ego.currentAccH) : std::to_string(rmParam.accHeadwaytimeGap) + "(DV)") << "|" << std::right;
+    output << "|" << std::setw(13) << std::left << (ego.currentPloegH > 0.0  && ego.currentPloegH != rmParam.ploegHeadwayTimeGap? std::to_string(ego.currentPloegH) : std::to_string(rmParam.ploegHeadwayTimeGap) + "(DV)") << "|" << std::right;
+    output << "|" << std::setw(13) << std::left << (ego.currentCaccSpacing > 0.0 && ego.currentCaccSpacing != rmParam.caccConstantSpacing? std::to_string(ego.currentCaccSpacing) : std::to_string(rmParam.caccConstantSpacing) + "(DV)") << "|" << std::right;
     output << "|" << std::setw(13) << std::left << rmParam.emergencyPloegHeadwayTimeGapFactor << "|" << std::right;
     output << "|" << std::setw(14) << std::left << rmParam.emergencyPloegHeadwayTimeGapFactor << "|" << std::right;
 
@@ -81,6 +81,9 @@ void FileWriter::addEntries(const RM::RMParameters &rmParam, const RM::RMLog_Own
 
 void FileWriter::writeHeaders() {
     output << "VEHICLE: " << vehicleId << std::endl;
+    // Abbreviation
+    output << "\tAbbreviations: " << std::endl;
+    output << "\t\tDV: Default Value" << std::endl;
     output << "|" << std::setfill('=') << std::setw(280) << "" << "|"<< std::setfill(' ');
     output << std::endl;
 

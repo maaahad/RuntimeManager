@@ -28,12 +28,16 @@ ChangeController::~ChangeController() {
 }
 
 void ChangeController::actionOnTransition() const {
+    RM::RMLog_Own &ego = std::get<0>(rmLog);
     if(to == Plexe::ACC) {
         traciVehicle->setACCHeadwayTime(rmParam.accHeadwaytimeGap);
+        ego.currentAccH = traciVehicle->getACCHeadwayTime();
     } else if(to == Plexe::PLOEG){
         traciVehicle->setACCHeadwayTime(rmParam.ploegHeadwayTimeGap);
+        ego.currentPloegH = rmParam.ploegHeadwayTimeGap;
     } else if(to == Plexe::CACC) {
         traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing);
+        ego.currentCaccSpacing = traciVehicle->getCACCConstantSpacing();
     } else {
         std::cerr << "Error: Wrong Controller!!!" << __FILE__
                   << "\n\tLine: " << __LINE__

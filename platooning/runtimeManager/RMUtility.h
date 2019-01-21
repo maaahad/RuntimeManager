@@ -80,13 +80,17 @@ namespace RM {
             Plexe::ACTIVE_CONTROLLER activeController;
             double time;                                                    // information generated time
             double acceleration;                                            // Acceleration of the vehicle
+
+            // There is possibility that we will write the following to output before setting values,
+            // so we define some default value (that van not be the value) to test during writing to output
             double maxDeceleration = std::numeric_limits<double>::max();    // a default large value
-            double dist2pred = std::numeric_limits<double>::max();          // a default large value
-            bool crashed = false;                                           // default value is false
+            double dist2pred       = std::numeric_limits<double>::max();    // a default large value
+            bool crashed           = false;                                 // default value is false
 
+            double currentAccH        = -1.0;        // acc headway time gap with a negative value : to output current value
+            double currentPloegH      = -1.0;        // ploeg headway time gap with a negative value : to output current value
+            double currentCaccSpacing = -1.0;        // cacc spacing with a negative value : to output current value
 
-            // TODO need to pass custom deleter to shared_ptr or using use of shared_ptr for vector elements
-            //std::shared_ptr<std::vector<Contract *>> contracts;
             std::shared_ptr<std::vector<std::shared_ptr<Contract>>> contracts;
         };
         /**

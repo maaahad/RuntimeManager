@@ -262,7 +262,7 @@ void RuntimeManager::initializeContracts() {
               << std::endl;
     std::cout << std::setw(110) << std::setfill('#') << "" << std::setfill(' ') << std::endl;
 
-    // Currently we are having only only contract
+    // Currently we are having only only contractStart
     std::cout << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0])) << std::endl;
 
     std::cout << std::setw(110) << std::setfill('-') << "" << std::setfill(' ') << std::endl;

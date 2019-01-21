@@ -40,7 +40,8 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
               << *(std::static_pointer_cast<WIFIContract>(contract))
               << std::setfill(' ') << std::endl;
 #endif
-
+    // We need to store the current headway +/ spacing for output file
+    RM::RMLog_Own &ego = std::get<0>(rmLog);
     if(traciVehicle->getActiveController() == Plexe::ACC){
         std::cerr << "Warning: Nothing is doing for controller Plexe::ACC" << __FILE__
                          << "\n\tLine: " << __LINE__
@@ -51,7 +52,8 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
     } else if (traciVehicle->getActiveController() == Plexe::PLOEG) {
         if(gap2front == GAP2FRONT::DEFAULT) {
             // go back to the default spacing
-            traciVehicle->setParameter(CC_PAR_PLOEG_H, rmParam.ploegHeadwayTimeGap);
+            ego.currentPloegH = rmParam.ploegHeadwayTimeGap;
+            traciVehicle->setParameter(CC_PAR_PLOEG_H, ego.currentPloegH);
 #if DEBUG_RM
 //            double ploegH = 200;
 //            traciVehicle->getParameter(CC_PAR_PLOEG_H, ploegH);     // This method does nto work
@@ -60,14 +62,15 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
                       << " VEHICLE " << positionHelper->getId() << " ::: " << "PERFORMED " << gap2front << " "
                       << std::setw(34) << std::setfill('#') << "" << "\n"
                       << std::setw(34) << std::setfill(' ') << ""
-                      << " Set Default headwayTimeGap : " << rmParam.ploegHeadwayTimeGap << "s"
+                      << " Set Default headwayTimeGap : " << ego.currentPloegH << "s"
                       << std::setfill(' ')
                       << std::endl;
 #endif
 
         } else if (gap2front == GAP2FRONT::INCREASE){
             // increase the gap
-            traciVehicle->setParameter(CC_PAR_PLOEG_H, rmParam.ploegHeadwayTimeGap + rmParam.ploegHeadwayTimeGap * rmParam.emergencyPloegHeadwayTimeGapFactor);
+            ego.currentPloegH = rmParam.ploegHeadwayTimeGap + rmParam.ploegHeadwayTimeGap * rmParam.emergencyPloegHeadwayTimeGapFactor;
+            traciVehicle->setParameter(CC_PAR_PLOEG_H, ego.currentPloegH);
 #if DEBUG_RM
 //            double ploegH = 200;
 //            traciVehicle->getParameter(CC_PAR_PLOEG_H, ploegH);     // This method does nto work
@@ -76,7 +79,7 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
                       << " VEHICLE " << positionHelper->getId() << " ::: " << "PERFORMED " << gap2front << " "
                       << std::setw(33) << std::setfill('#') << "" << "\n"
                       << std::setw(33) << std::setfill(' ') << ""
-                      << " Set headwayTimeGap : " << rmParam.ploegHeadwayTimeGap + rmParam.ploegHeadwayTimeGap * rmParam.emergencyPloegHeadwayTimeGapFactor << "s"
+                      << " Set headwayTimeGap : " << ego.currentPloegH << "s"
                       << std::setfill(' ')
                       << std::endl;
 #endif
@@ -89,25 +92,28 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
         if(gap2front == GAP2FRONT::DEFAULT) {
             // go back to the default spacing
             traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing);
+            ego.currentCaccSpacing = traciVehicle->getCACCConstantSpacing();
 #if DEBUG_RM
             std::cout << std::setw(34) << std::setfill('#') << ""
                       << " VEHICLE " << positionHelper->getId() << " ::: " << "PERFORMED " << gap2front << " "
                       << std::setw(34) << std::setfill('#') << "" << "\n"
                       << std::setw(34) << std::setfill(' ') << ""
-                      << " Set Default caccSpacing : " << traciVehicle->getCACCConstantSpacing() << "m"
+                      << " Set Default caccSpacing : " << ego.currentCaccSpacing << "m"
                       << std::setfill(' ')
                       << std::endl;
 #endif
         } else if (gap2front == GAP2FRONT::INCREASE){
 
             // increase the gap
+
             traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing + rmParam.caccConstantSpacing * rmParam.emergencyCaccConstantSpacingFactor);
+            ego.currentCaccSpacing = traciVehicle->getCACCConstantSpacing();
 #if DEBUG_RM
             std::cout << std::setw(34) << std::setfill('#') << ""
                       << " VEHICLE " << positionHelper->getId() << " ::: " << "PERFORMED " << gap2front << " "
                       << std::setw(34) << std::setfill('#') << "" << "\n"
                       << std::setw(34) << std::setfill(' ') << ""
-                      << " Set caccSpacing : " << traciVehicle->getCACCConstantSpacing() << "m"
+                      << " Set caccSpacing : " << ego.currentCaccSpacing << "m"
                       << std::setfill(' ')
                       << std::endl;
 #endif

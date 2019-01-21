@@ -20,11 +20,11 @@
 #include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
 #include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
 
+
 enum class GAP2FRONT {
     DEFAULT,
     INCREASE,
     DECREASE,
-    ADJUST,
 };
 
 std::ostream &operator<<(std::ostream &os, const GAP2FRONT gap2front);
