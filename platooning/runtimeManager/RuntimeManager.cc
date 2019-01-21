@@ -144,6 +144,9 @@ void RuntimeManager::initialize(int stage) {
 
 
 void RuntimeManager::handleSelfMsg(cMessage* msg) {
+    // Checking
+    std::cout << "Current caccspacing: " << traciVehicle->getCACCConstantSpacing() << std::endl;
+
     if(msg == monitoringMsg) {
         EV << "Monitoring message has been arrived. Evaluation started..." << std::endl;
         // First we logged the ego vehicle

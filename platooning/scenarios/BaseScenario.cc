@@ -29,6 +29,7 @@ void BaseScenario::initialize(int stage)
     if (stage == 0) {
         accHeadway = par("accHeadway").doubleValue();
         leaderHeadway = par("leaderHeadway").doubleValue();
+        caccSpacing = par("caccSpacing").doubleValue();     // ahad
         caccXi = par("caccXi").doubleValue();
         caccOmegaN = par("caccOmegaN").doubleValue();
         caccC1 = par("caccC1").doubleValue();
@@ -113,6 +114,7 @@ void BaseScenario::initializeControllers()
     traciVehicle->setParameter(CC_PAR_UMIN, uMin);
     traciVehicle->setParameter(CC_PAR_UMAX, uMax);
     // PATH's CACC parameters
+    traciVehicle->setCACCConstantSpacing(caccSpacing);          // ahad
     traciVehicle->setParameter(CC_PAR_CACC_C1, caccC1);
     traciVehicle->setParameter(CC_PAR_CACC_OMEGA_N, caccOmegaN);
     traciVehicle->setParameter(CC_PAR_CACC_XI, caccXi);

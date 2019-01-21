@@ -30,6 +30,9 @@ moduleinterface BaseScenario extends IBaseApplLayer
         double accHeadway @unit("s");
         //headway time for leaders using ACC
         double leaderHeadway @unit("s");
+        // ahad: caccConstantSpacing (default in Plexe: 5m)
+        double caccSpacing @unit("m");
+        
         //cacc and engine related parameters
         double caccXi;
         double caccOmegaN @unit("Hz");

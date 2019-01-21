@@ -49,6 +49,7 @@ protected:
     // headway time for ACC of leaders
     double leaderHeadway;
     // cacc and engine related parameters
+    double caccSpacing;     // ahad
     double caccXi;
     double caccOmegaN;
     double caccC1;
