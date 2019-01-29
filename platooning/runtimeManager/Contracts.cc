@@ -92,7 +92,7 @@ void Contracts::evaluate(RM::RMLog_Own &state) {
 }
 
 
-template <typename A, typename G> void Contracts::addContract(const A &a, const G *g) {
+template <typename A, typename G> void Contracts::addContract(const A a, const std::shared_ptr<G> g) {
     auto cgList = rmContractsList.find(a.getType());
     if(cgList != rmContractsList.end()) {
         // CG list for this contractType already created
@@ -133,18 +133,28 @@ void Contracts::initContractList(RuntimeManager *rm) {
 
     // ================================================== Guarantees ==================================================
     // Guarantees (ChangeController)
-    Guarantee *g2acc   = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::ACC);
-    Guarantee *g2ploeg = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
-    Guarantee *g2cacc  = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::CACC);
+//    Guarantee *g2acc   = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::ACC);
+//    Guarantee *g2ploeg = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
+//    Guarantee *g2cacc  = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::CACC);
+
+    std::shared_ptr<Guarantee> g2acc   = std::make_shared<ChangeController>(rm, Plexe::ACTIVE_CONTROLLER::ACC);
+    std::shared_ptr<Guarantee> g2ploeg = std::make_shared<ChangeController>(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
+    std::shared_ptr<Guarantee> g2cacc  = std::make_shared<ChangeController>(rm, Plexe::ACTIVE_CONTROLLER::CACC);
 
     // Guarantees (Gap2Front)
-    Guarantee *g2d_df = new AdjustGap2Front(rm, GAP2FRONT::DEFAULT);
-    Guarantee *g2d_i  = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
+//    Guarantee *g2d_df = new AdjustGap2Front(rm, GAP2FRONT::DEFAULT);
+//    Guarantee *g2d_i  = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
+
+    std::shared_ptr<Guarantee> g2d_df = std::make_shared<AdjustGap2Front>(rm, GAP2FRONT::DEFAULT);
+    std::shared_ptr<Guarantee> g2d_i  = std::make_shared<AdjustGap2Front>(rm, GAP2FRONT::INCREASE);
 
 
     // Guarantees (ChangeControllerAndDecelerate)
-    Guarantee *g2ploegN2d_i = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::PLOEG, GAP2FRONT::INCREASE);
-    Guarantee *g2caccN2d_i  = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::CACC, GAP2FRONT::INCREASE);
+//    Guarantee *g2ploegN2d_i = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::PLOEG, GAP2FRONT::INCREASE);
+//    Guarantee *g2caccN2d_i  = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::CACC, GAP2FRONT::INCREASE);
+
+    std::shared_ptr<Guarantee> g2ploegN2d_i = std::make_shared<ChangeControllerAndAdjustGap2Front>(rm, Plexe::ACTIVE_CONTROLLER::PLOEG, GAP2FRONT::INCREASE);
+    std::shared_ptr<Guarantee> g2caccN2d_i  = std::make_shared<ChangeControllerAndAdjustGap2Front>(rm, Plexe::ACTIVE_CONTROLLER::CACC, GAP2FRONT::INCREASE);
 
 
 

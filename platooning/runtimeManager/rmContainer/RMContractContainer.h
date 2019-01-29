@@ -39,16 +39,25 @@ template <typename A, typename G> std::ostream &operator<<(std::ostream &os, con
 template <typename A, typename G> class RMContractContainer : public RMContainer{
     friend std::ostream &operator<<<A,G>(std::ostream &os, const RMContractContainer<A,G> &container);
 public:
-    using container_type = std::unordered_map<const A, const G *>;
-    RMContractContainer(const A &a, const G *g, ASSUMPTION_TYPE atype);
+    //using container_type = std::unordered_map<const A, const G *>;
+    using container_type = std::unordered_map<const A, const std::shared_ptr<G>>;
+
+    //RMContractContainer(const A &a, const G *g, ASSUMPTION_TYPE atype);
+    RMContractContainer(const A a, const std::shared_ptr<G> g, ASSUMPTION_TYPE atype);
     ~RMContractContainer();
-    void addContract(const A &a, const G *g);
+//    void addContract(const A &a, const G *g);
+    void addContract(const A a, std::shared_ptr<G> g);
     void provideGuarantee(std::shared_ptr<A> a) const;
 //private:
     std::shared_ptr<container_type> contractsContainer;
 };
 
-template <typename A, typename G> RMContractContainer<A,G>::RMContractContainer(const A &a, const G *g, ASSUMPTION_TYPE atype) : RMContainer(atype) ,
+//template <typename A, typename G> RMContractContainer<A,G>::RMContractContainer(const A &a, const G *g, ASSUMPTION_TYPE atype) : RMContainer(atype) ,
+//        contractsContainer(std::make_shared<container_type>()){
+//    contractsContainer->insert(std::make_pair(a,g));
+//}
+
+template <typename A, typename G> RMContractContainer<A,G>::RMContractContainer(const A a, const std::shared_ptr<G> g, ASSUMPTION_TYPE atype) : RMContainer(atype) ,
         contractsContainer(std::make_shared<container_type>()){
     contractsContainer->insert(std::make_pair(a,g));
 }
@@ -72,7 +81,11 @@ template <typename A, typename G> RMContractContainer<A,G>::~RMContractContainer
 
 }
 
-template <typename A, typename G> void RMContractContainer<A,G>::addContract(const A &a, const G *g) {
+//template <typename A, typename G> void RMContractContainer<A,G>::addContract(const A &a, const G *g) {
+//    contractsContainer->insert(std::make_pair(a,g));
+//}
+
+template <typename A, typename G> void RMContractContainer<A,G>::addContract(const A a, const std::shared_ptr<G> g) {
     contractsContainer->insert(std::make_pair(a,g));
 }
 

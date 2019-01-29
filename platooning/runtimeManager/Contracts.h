@@ -45,7 +45,9 @@ public:
     void evaluate(RM::RMLog_Own &state);
 private:
     void initContractList(RuntimeManager *rm);
-    template <typename A, typename G> void addContract(const A &a, const G *g);
+//    template <typename A, typename G> void addContract(const A a, const G *g);
+    template <typename A, typename G> void addContract(const A a, const std::shared_ptr<G> g);
+
 
     // We need to make RMCGContainer shared_ptr to be destroyed automatically and will be shared
     std::map<ASSUMPTION_TYPE, std::shared_ptr<RMContainer>> rmContractsList;
