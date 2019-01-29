@@ -20,7 +20,7 @@ RMContainer::RMContainer() {
 
 }
 
-RMContainer::RMContainer(CONTRACT_TYPE ctype) : ctype(ctype){
+RMContainer::RMContainer(ASSUMPTION_TYPE atype) : atype(atype){
 
 }
 

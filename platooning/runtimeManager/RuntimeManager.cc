@@ -130,10 +130,10 @@ void RuntimeManager::initialize(int stage) {
 
 
         // initialize contract list
-        initializeContracts();
+        initializeDefaultAssumptions();
 
         // Initialize the Contracts + Guarantees
-        contractGuarantees = std::make_shared<Contract_Guarantee>(this);
+        rmContracts = std::make_shared<Contracts>(this);
 
         // Schedule the monitoring self message
         monitoringMsg = new cMessage("monitoringMsg");
@@ -147,12 +147,12 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
     if(msg == monitoringMsg) {
         EV << "Monitoring message has been arrived. Evaluation started..." << std::endl;
         // First we logged the ego vehicle
-        ownLog();
+        egoLog();
         // Now we evaluate the current status of the vehicle
         evaluate();
 
         // Sanity Check for now (WIFIContract only) TODO: need to generalize this
-        ASSERT(traciVehicle->getActiveController() == (std::get<0>(rmLog).contracts)->front()->getController());
+        ASSERT(traciVehicle->getActiveController() == (std::get<0>(rmLog).assumptions)->front()->getController());
 
 #if DEBUG_RM && DEBUG_RM1
         if(traciVehicle->getActiveController() == Plexe::CACC) {
@@ -175,7 +175,7 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
     }
 }
 
-void RuntimeManager::ownLog() {
+void RuntimeManager::egoLog() {
     Plexe::VEHICLE_DATA vdata;
     traciVehicle->getVehicleData(&vdata);
     RM::RMLog_Own &ego = std::get<0>(rmLog);
@@ -246,10 +246,10 @@ void RuntimeManager::onPlatoonBeacon(const PlatooningBeacon *pb, const SimTime c
 
 
 
-void RuntimeManager::initializeContracts() {
+void RuntimeManager::initializeDefaultAssumptions() {
     RM::RMLog_Own &ego = std::get<0>(rmLog);
-    ego.contracts  = std::make_shared<std::vector<std::shared_ptr<Contract>>>();
-    (ego.contracts)->push_back(std::make_shared<WIFIContract>(CONTRACT_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2F(), C2L()));
+    ego.assumptions  = std::make_shared<std::vector<std::shared_ptr<Assumption>>>();
+    (ego.assumptions)->push_back(std::make_shared<WIFIAssumption>(ASSUMPTION_TYPE::WIFI, (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController(), C2F(), C2L()));
 
     // TODO other Contracts, if there is any
 
@@ -257,13 +257,13 @@ void RuntimeManager::initializeContracts() {
 
     std::cout << std::setw(110) << std::setfill('#') << "" << std::setfill(' ') << std::endl;
     std::cout << std::setw(40) << ""
-              << "VEHICLE " << positionHelper->getId() << " :: DEFAULT CONTRACTS"
+              << "VEHICLE " << positionHelper->getId() << " :: DEFAULT ASSUMPTIONS"
               << std::setw(40) << ""
               << std::endl;
     std::cout << std::setw(110) << std::setfill('#') << "" << std::setfill(' ') << std::endl;
 
-    // Currently we are having only only contractStart
-    std::cout << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0])) << std::endl;
+    // Currently we are having only only Assumption
+    std::cout << *(std::static_pointer_cast<WIFIAssumption>((*ego.assumptions)[0])) << std::endl;
 
     std::cout << std::setw(110) << std::setfill('-') << "" << std::setfill(' ') << std::endl;
 
@@ -278,7 +278,7 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
     ASSERT2(onPlatoonBeacon ? index >= 0 : index < 0, "Problem with default argument in evaluate() methods in RuntimeManager");
 
     RM::RMLog_Own &ego = std::get<0>(rmLog);
-    for(auto it = (ego.contracts)->begin(); it != (ego.contracts)->end(); ++it) {
+    for(auto it = (ego.assumptions)->begin(); it != (ego.assumptions)->end(); ++it) {
         if(onPlatoonBeacon) {
             (*it)->evaluate(rmParam, rmLog, onPlatoonBeacon, index);
         } else {
@@ -288,18 +288,18 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
 
 #if DEBUG_RM && DEBUG_RM1
     if(positionHelper->getId() == 7) {
-        std::cerr << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(std::static_pointer_cast<WIFIContract>((*ego.contracts)[0])) << std::endl;
+        std::cerr << "Vehicle Id : " << positionHelper->getId() << "\n\t" << *(std::static_pointer_cast<WIFIAssumption>((*ego.assumptions)[0])) << std::endl;
     }
 #endif
 
 
 
-    // Vehicles StateParameters related to the provided contract has been evaluated,
-    // Now, we need to match the current state of the vehicle's contract with the Contracts-Guarantee
+    // Vehicles StateParameters related to the provided Assumption has been evaluated,
+    // Now, we need to match the current state of the vehicle's Assumption with the ContractsList
     // to ensure the appropriate Guarantee
 
     if(!onPlatoonBeacon) {
-        contractGuarantees->evaluate(std::get<0>(rmLog));
+        rmContracts->evaluate(std::get<0>(rmLog));
     }
 }
 

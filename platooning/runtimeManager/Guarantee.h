@@ -13,21 +13,21 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_H_
-#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_H_
+#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEE_H_
+#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEE_H_
 
+#include "Assumption.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 #include "veins/modules/application/platooning/utilities/BasePositionHelper.h"
 #include "veins/modules/application/platooning/CC_Const.h"
-#include "veins/modules/application/platooning/runtimeManager/Contract.h"
 
 class RuntimeManager;
 
-class Guarantees {
+class Guarantee {
 public:
-    Guarantees(RuntimeManager *rm);
-    virtual ~Guarantees();
-    virtual void operator()(std::shared_ptr<Contract> contract) const;
+    Guarantee(RuntimeManager *rm);
+    virtual ~Guarantee();
+    virtual void operator()(std::shared_ptr<Assumption> assumption) const;
 protected:
 //    virtual void actionOnTransition() const;
 
@@ -41,4 +41,4 @@ protected:
     RM::rm_log &rmLog;
 };
 
-#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_H_ */
+#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEE_H_ */

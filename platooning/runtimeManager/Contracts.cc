@@ -13,9 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
-#include "ContractGuarantee.h"
+#include "Contracts.h"
 
+#include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
 #include <iostream>
 
 
@@ -24,26 +24,26 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : rmcg(std::make_shared<std::map<CONTRACT_TYPE, std::shared_ptr<RMContainer>>()){
-Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : rm(rm) {
+Contracts::Contracts(RuntimeManager *rm) : rm(rm) {
     initContractList(rm);
 }
 
-Contract_Guarantee::~Contract_Guarantee() {
+Contracts::~Contracts() {
 }
 
 
-void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
+void Contracts::evaluate(RM::RMLog_Own &state) {
     // TRYING WITH new RMContainer
-    for(auto start = (state.contracts)->begin(); start != (state.contracts)->end(); ++start) {
+    for(auto start = (state.assumptions)->begin(); start != (state.assumptions)->end(); ++start) {
         if((*start)->isChanged()) {
-            if(std::shared_ptr<WIFIContract> contract = std::dynamic_pointer_cast<WIFIContract>(*start)) {
+            if(std::shared_ptr<WIFIAssumption> contract = std::dynamic_pointer_cast<WIFIAssumption>(*start)) {
                 // Sanity check
-                ASSERT(contract->getContractType() == CONTRACT_TYPE::WIFI);
+                ASSERT(contract->getContractType() == ASSUMPTION_TYPE::WIFI);
                 // get the all contract-guarantee list from rmcg for CONTRACT_TYPE::WIFI
-                auto match = rmcg.find(CONTRACT_TYPE::WIFI);
-                if(match != rmcg.end()){
+                auto match = rmContractsList.find(ASSUMPTION_TYPE::WIFI);
+                if(match != rmContractsList.end()){
                     // We found a list of contract-guarantee for WIFI contract type
-                    auto matchedCGContainer = std::static_pointer_cast<RMCGContainer<WIFIContract, Guarantees>>(match->second);
+                    auto matchedCGContainer = std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(match->second);
 
                     matchedCGContainer->provideGuarantee(contract);
                 }
@@ -58,7 +58,7 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
             bool decelViolated = false;
             if(state.dist2pred < rm->rmParam.minSafetyDistance && rm->positionHelper->getId() != 0) {
                 distViolated = true;
-#if DEBUG_RM
+#if DEBUG_RM1
                std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
                          << state.dist2pred << " < " << rm->rmParam.minSafetyDistance
                          << " ===> MinSafetyDistance violated!!!" << std::endl;
@@ -74,7 +74,7 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
 
             if(state.maxDeceleration < rm->rmParam.maxDeceleration && rm->positionHelper->getId() != 0) {
                 decelViolated = true;
-#if DEBUG_RM
+#if DEBUG_RM1
                 std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
                                          << "state.maxDeceleration : " << state.maxDeceleration
                                          << " ===> Deceleration condition violated!!!" << std::endl;
@@ -92,30 +92,30 @@ void Contract_Guarantee::evaluate(RM::RMLog_Own &state) {
 }
 
 
-template <typename C, typename G> void Contract_Guarantee::addCG(const C &c, const G *g) {
-    auto cgList = rmcg.find(c.getContractType());
-    if(cgList != rmcg.end()) {
+template <typename A, typename G> void Contracts::addContract(const A &a, const G *g) {
+    auto cgList = rmContractsList.find(a.getType());
+    if(cgList != rmContractsList.end()) {
         // CG list for this contractType already created
-        if(c.getContractType() == CONTRACT_TYPE::WIFI) {
+        if(a.getType() == ASSUMPTION_TYPE::WIFI) {
             // add the new element to the match
-            (std::static_pointer_cast<RMCGContainer<WIFIContract, Guarantees>>(cgList->second))->addCG(c, g);
-        } else if(c.getContractType() == CONTRACT_TYPE::INTERNAL_ERROR) {
-            std::cout<<"Only CONTRACT_TYPE::WIFI is available right now..." << std::endl;
+            (std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(cgList->second))->addContract(a, g);
+        } else if(a.getType() == ASSUMPTION_TYPE::INTERNAL_ERROR) {
+            std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
         }
         // TODO add for other contract type
     } else {
         // CG list for this contractType not exists, needs to be created
-        if(c.getContractType() == CONTRACT_TYPE::WIFI) {
-            rmcg.insert(std::make_pair(CONTRACT_TYPE::WIFI, std::make_shared<RMCGContainer<WIFIContract, Guarantees>>(c, g, CONTRACT_TYPE::WIFI)));
-        } else if(c.getContractType() == CONTRACT_TYPE::INTERNAL_ERROR) {
-            std::cout<<"Only CONTRACT_TYPE::WIFI is available right now..." << std::endl;
+        if(a.getType() == ASSUMPTION_TYPE::WIFI) {
+            rmContractsList.insert(std::make_pair(ASSUMPTION_TYPE::WIFI, std::make_shared<RMContractContainer<WIFIAssumption, Guarantee>>(a, g, ASSUMPTION_TYPE::WIFI)));
+        } else if(a.getType() == ASSUMPTION_TYPE::INTERNAL_ERROR) {
+            std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
         }
         // TODO add for other contract type
     }
 }
 
 
-void Contract_Guarantee::initContractList(RuntimeManager *rm) {
+void Contracts::initContractList(RuntimeManager *rm) {
 
     // TODO all dynamically allocated object should use smart pointer rather that built-in pointer :: Later
 
@@ -133,71 +133,71 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 
     // ================================================== Guarantees ==================================================
     // Guarantees (ChangeController)
-    Guarantees *g2acc   = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::ACC);
-    Guarantees *g2ploeg = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
-    Guarantees *g2cacc  = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::CACC);
+    Guarantee *g2acc   = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::ACC);
+    Guarantee *g2ploeg = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::PLOEG);
+    Guarantee *g2cacc  = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::CACC);
 
     // Guarantees (Gap2Front)
-    Guarantees *g2d_df = new AdjustGap2Front(rm, GAP2FRONT::DEFAULT);
-    Guarantees *g2d_i  = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
+    Guarantee *g2d_df = new AdjustGap2Front(rm, GAP2FRONT::DEFAULT);
+    Guarantee *g2d_i  = new AdjustGap2Front(rm, GAP2FRONT::INCREASE);
 
 
     // Guarantees (ChangeControllerAndDecelerate)
-    Guarantees *g2ploegN2d_i = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::PLOEG, GAP2FRONT::INCREASE);
-    Guarantees *g2caccN2d_i  = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::CACC, GAP2FRONT::INCREASE);
+    Guarantee *g2ploegN2d_i = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::PLOEG, GAP2FRONT::INCREASE);
+    Guarantee *g2caccN2d_i  = new ChangeControllerAndAdjustGap2Front(rm, Plexe::ACTIVE_CONTROLLER::CACC, GAP2FRONT::INCREASE);
 
 
 
 
     // ======================================== WIFIContract for ACC controller ========================================
     // Upgrade
-    WIFIContract acc2cacc(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
-    WIFIContract acc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, critical_c2l);
+    WIFIAssumption acc2cacc(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
+    WIFIAssumption acc2ploeg(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, critical_c2l);
     // degrade
     // ChangeController and Gap2Front
-    WIFIContract acc2ploegN2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, ok_c2l);
-    WIFIContract acc2ploegN2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, poor_c2l);
-    WIFIContract acc2ploegN2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, critical_c2l);
+    WIFIAssumption acc2ploegN2d1(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, ok_c2l);
+    WIFIAssumption acc2ploegN2d2(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, poor_c2l);
+    WIFIAssumption acc2ploegN2d3(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, poor_c2f, critical_c2l);
 
-    WIFIContract acc2caccN2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, poor_c2l);
+    WIFIAssumption acc2caccN2d1(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, poor_c2l);
 
     // default
 
 
     // ======================================== WIFIContract for PLOEG controller =======================================
     // Upgrade
-    WIFIContract ploeg2cacc(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, ok_c2l);
+    WIFIAssumption ploeg2cacc(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, ok_c2l);
     // degrade
-    WIFIContract ploeg2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, ok_c2l);
-    WIFIContract ploeg2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, poor_c2l);
-    WIFIContract ploeg2acc3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, critical_c2l);
+    WIFIAssumption ploeg2acc1(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, ok_c2l);
+    WIFIAssumption ploeg2acc2(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, poor_c2l);
+    WIFIAssumption ploeg2acc3(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, critical_c2f, critical_c2l);
     // Gap2Front
-    WIFIContract ploeg2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, ok_c2l);
-    WIFIContract ploeg2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, poor_c2l);
-    WIFIContract ploeg2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, critical_c2l);
+    WIFIAssumption ploeg2d1(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, ok_c2l);
+    WIFIAssumption ploeg2d2(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, poor_c2l);
+    WIFIAssumption ploeg2d3(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, poor_c2f, critical_c2l);
 
     // default Gap2Front
-    WIFIContract ploeg2d_default(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, critical_c2l);
+    WIFIAssumption ploeg2d_default(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, critical_c2l);
     // ChangeController and Gap2Front
-    WIFIContract ploeg2caccN2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, poor_c2l);
+    WIFIAssumption ploeg2caccN2d1(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::PLOEG, ok_c2f, poor_c2l);
 
 
     // ======================================== WIFIContract for CACC controller ========================================
     // Degrade
-    WIFIContract cacc2ploeg(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, critical_c2l);
+    WIFIAssumption cacc2ploeg(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, critical_c2l);
     // TODO The following three should be combined in one based on WIFI_QUALITY::ALL
-    WIFIContract cacc2acc1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, ok_c2l);
-    WIFIContract cacc2acc2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, poor_c2l);
-    WIFIContract cacc2acc3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, critical_c2l);
+    WIFIAssumption cacc2acc1(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, ok_c2l);
+    WIFIAssumption cacc2acc2(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, poor_c2l);
+    WIFIAssumption cacc2acc3(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, critical_c2f, critical_c2l);
     // Gap2Front
-    WIFIContract cacc2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, poor_c2l);
+    WIFIAssumption cacc2d1(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, poor_c2l);
 
     // default Gap2Front
-    WIFIContract cacc2d_default(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, ok_c2l);
+    WIFIAssumption cacc2d_default(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, ok_c2f, ok_c2l);
     // ChangeController and Gap2Front
-    WIFIContract cacc2ploegN2d1(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, ok_c2l);
-    WIFIContract cacc2ploegN2d2(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, poor_c2l);
-    WIFIContract cacc2ploegN2d3(CONTRACT_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, critical_c2l);
+    WIFIAssumption cacc2ploegN2d1(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, ok_c2l);
+    WIFIAssumption cacc2ploegN2d2(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, poor_c2l);
+    WIFIAssumption cacc2ploegN2d3(ASSUMPTION_TYPE::WIFI, Plexe::ACTIVE_CONTROLLER::CACC, poor_c2f, critical_c2l);
 
 
 
@@ -209,27 +209,28 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
     if(rm->rmParam.upgradationEnabled) {
         // ==================== acc ====================
         // acc -> ploeg
-        addCG(acc2ploeg, g2ploeg);
+        addContract(acc2ploeg, g2ploeg);
         // acc->cacc
-        addCG(acc2cacc, g2cacc);
+        addContract(acc2cacc, g2cacc);
         // =================== ploeg ===================
         // ploeg->cacc
-        addCG(ploeg2cacc, g2cacc);
+        addContract(ploeg2cacc, g2cacc);
     }
     // degrade
     if(rm->rmParam.degradationEnabled) {
         // =================== ploeg ===================
         // ploeg->acc
-        addCG(ploeg2acc1, g2acc);
-        addCG(ploeg2acc2, g2acc);
-        addCG(ploeg2acc3, g2acc);
+        addContract(ploeg2acc1, g2acc);
+        addContract(ploeg2acc2, g2acc);
+        addContract(ploeg2acc3, g2acc);
         // ===================  cacc ===================
         // cacc->ploeg
-        addCG(cacc2ploeg, g2ploeg);
+        addContract(cacc2ploeg, g2ploeg);
+
         // cacc->acc
-        addCG(cacc2acc1, g2acc);
-        addCG(cacc2acc2, g2acc);
-        addCG(cacc2acc3, g2acc);
+        addContract(cacc2acc1, g2acc);
+        addContract(cacc2acc2, g2acc);
+        addContract(cacc2acc3, g2acc);
     }
 
     // gapcontrol
@@ -237,37 +238,37 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
         // ==================== acc ====================
         if(rm->rmParam.upgradationEnabled) {
             // acc->ploeg->gapControl
-            addCG(acc2ploegN2d1, g2ploegN2d_i);
-            addCG(acc2ploegN2d2, g2ploegN2d_i);
-            addCG(acc2ploegN2d3, g2ploegN2d_i);
+            addContract(acc2ploegN2d1, g2ploegN2d_i);
+            addContract(acc2ploegN2d2, g2ploegN2d_i);
+            addContract(acc2ploegN2d3, g2ploegN2d_i);
             // acc->cacc->gapControl
-            addCG(acc2caccN2d1, g2caccN2d_i);
+            addContract(acc2caccN2d1, g2caccN2d_i);
         }
         // =================== ploeg ===================
         // ploeg->gapControl(Default)
-        addCG(ploeg2d_default, g2d_df);
+        addContract(ploeg2d_default, g2d_df);
 
         // ploeg->gapControl
-        addCG(ploeg2d1, g2d_i);
-        addCG(ploeg2d2, g2d_i);
-        addCG(ploeg2d3, g2d_i);
+        addContract(ploeg2d1, g2d_i);
+        addContract(ploeg2d2, g2d_i);
+        addContract(ploeg2d3, g2d_i);
 
         // ploeg->cacc->gapControl
         if(rm->rmParam.upgradationEnabled) {
-            addCG(ploeg2caccN2d1, g2caccN2d_i);
+            addContract(ploeg2caccN2d1, g2caccN2d_i);
         }
         // ===================  cacc ===================
         // cacc->gapControl(Default)
-        addCG(cacc2d_default, g2d_df);
+        addContract(cacc2d_default, g2d_df);
 
         // cacc->gapControl
-        addCG(cacc2d1, g2d_i);
+        addContract(cacc2d1, g2d_i);
 
         // cacc->ploeg->gapControl
         if(rm->rmParam.degradationEnabled) {
-            addCG(cacc2ploegN2d1,g2ploegN2d_i);
-            addCG(cacc2ploegN2d2,g2ploegN2d_i);
-            addCG(cacc2ploegN2d3,g2ploegN2d_i);
+            addContract(cacc2ploegN2d1,g2ploegN2d_i);
+            addContract(cacc2ploegN2d2,g2ploegN2d_i);
+            addContract(cacc2ploegN2d3,g2ploegN2d_i);
         }
 
     }
@@ -277,21 +278,21 @@ void Contract_Guarantee::initContractList(RuntimeManager *rm) {
 #if DEBUG_RM2
 
      // ============== Test: CHECKING WITH ADDING DUPLICATE element
-    addCG(acc2cacc, g2cacc);     // test OK
+    addContract(acc2cacc, g2cacc);     // test OK
 
 
     // ============== Test: try with add different type of contract: Test OK
-    WIFIContract acc2caccC(CONTRACT_TYPE::INTERNAL_ERROR, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
-    Guarantees *g2accC = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::ACC);
+    WIFIAssumption acc2caccC(ASSUMPTION_TYPE::INTERNAL_ERROR, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
+    Guarantee *g2accC = new ChangeController(rm, Plexe::ACTIVE_CONTROLLER::ACC);
 //    addCG(acc2caccC, g2accC);
 
-    auto sz = ((std::static_pointer_cast<RMCGContainer<WIFIContract, Guarantees>>(rmcg.find(CONTRACT_TYPE::WIFI)->second))->cgs)->size();
-    auto sz2 = rmcg.size();
+    auto sz = ((std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(rmContractsList.find(ASSUMPTION_TYPE::WIFI)->second))->contractsContainer)->size();
+    auto sz2 = rmContractsList.size();
 
     ASSERT(sz == 24);
     ASSERT(sz2 == 1);
 
-    auto cc = ((std::static_pointer_cast<RMCGContainer<WIFIContract, Guarantees>>(rmcg.find(CONTRACT_TYPE::WIFI)->second))->cgs)->find(acc2cacc);
+    auto cc = ((std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(rmContractsList.find(ASSUMPTION_TYPE::WIFI)->second))->contractsContainer)->find(acc2cacc);
     std::cout << "Testing find() on CG list: \n" << cc->first <<std::endl;
 
 #endif

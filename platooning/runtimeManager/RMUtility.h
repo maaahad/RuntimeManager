@@ -15,14 +15,14 @@
 #include "veins/modules/application/platooning/CC_Const.h"
 
 // These preprocessor variables are used for debugging purpose
-#define DEBUG_RM 0
-#define DEBUG_RM1 0
-#define DEBUG_RM2 0
+#define DEBUG_RM 1
+#define DEBUG_RM1 1
+#define DEBUG_RM2 1
 
 
 // Forward declaration
 class StateParameter;
-class Contract;
+class Assumption;
 
 std::ostream &operator<<(std::ostream &os, const Plexe::ACTIVE_CONTROLLER value);
 
@@ -91,7 +91,7 @@ namespace RM {
             double currentPloegH      = -1.0;        // ploeg headway time gap with a negative value : to output current value
             double currentCaccSpacing = -1.0;        // cacc spacing with a negative value : to output current value
 
-            std::shared_ptr<std::vector<std::shared_ptr<Contract>>> contracts;
+            std::shared_ptr<std::vector<std::shared_ptr<Assumption>>> assumptions;
         };
         /**
          * This is the log for the front vehicle

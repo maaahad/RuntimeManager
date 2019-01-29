@@ -13,21 +13,21 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_
-#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_
+#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_H_
+#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_H_
 
 #include <vector>
 #include <memory>
 #include <unordered_map>
 #include <map>
 
-#include "contracts/WIFIContract.h"
+#include "assumptions/WIFIAssumption.h"
 #include "guarantees/AdjustGap2Front.h"
 #include "guarantees/ChangeControllerAndAdjustGap2Front.h"
+#include "Guarantee.h"
+#include "rmContainer/RMContractContainer.h"
 #include "veins/modules/application/platooning/CC_Const.h"
 #include "veins/modules/application/platooning/runtimeManager/StateParameter.h"
-#include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
-#include "veins/modules/application/platooning/runtimeManager/rmContainer/RMCGContainer.h"
 #include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeController.h"
 
 
@@ -38,21 +38,19 @@
 
 class RuntimeManager;
 
-class Contract_Guarantee {
+class Contracts {
 public:
-    Contract_Guarantee(RuntimeManager *rm);
-    virtual ~Contract_Guarantee();
+    Contracts(RuntimeManager *rm);
+    virtual ~Contracts();
     void evaluate(RM::RMLog_Own &state);
 private:
     void initContractList(RuntimeManager *rm);
-    template <typename C, typename G> void addCG(const C &c, const G *g);
-
-    //std::shared_ptr<std::map<CONTRACT_TYPE, RMContainer *>> rmcg;   // Old
+    template <typename A, typename G> void addContract(const A &a, const G *g);
 
     // We need to make RMCGContainer shared_ptr to be destroyed automatically and will be shared
-    std::map<CONTRACT_TYPE, std::shared_ptr<RMContainer>> rmcg;
+    std::map<ASSUMPTION_TYPE, std::shared_ptr<RMContainer>> rmContractsList;
     const RuntimeManager *rm;
 
 };
 
-#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTGUARANTEE_H_ */
+#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_H_ */

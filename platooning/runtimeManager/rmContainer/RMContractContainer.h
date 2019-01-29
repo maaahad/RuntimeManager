@@ -13,46 +13,47 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCGCONTAINER_H_
-#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCGCONTAINER_H_
+#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCONTRACTCONTAINER_H_
+#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCONTRACTCONTAINER_H_
 
 #include <iostream>
 #include <unordered_map>
 #include <memory>
+
+#include "../assumptions/WIFIAssumption.h"
+#include "../Assumption.h"
+#include "../Guarantee.h"
 #include "veins/modules/application/platooning/runtimeManager/rmContainer/RMContainer.h"
-#include "veins/modules/application/platooning/runtimeManager/Contract.h"
-#include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
-#include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
 #include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeController.h"
 
 
 
 
 
-template <typename C, typename G> class RMCGContainer;
+template <typename A, typename G> class RMContractContainer;
 
-template <typename C, typename G> std::ostream &operator<<(std::ostream &os, const RMCGContainer<C,G> &container) {
+template <typename A, typename G> std::ostream &operator<<(std::ostream &os, const RMContractContainer<A,G> &container) {
     return os << "Will add later..........";
 }
 
-template <typename C, typename G> class RMCGContainer : public RMContainer{
-    friend std::ostream &operator<<<C,G>(std::ostream &os, const RMCGContainer<C,G> &container);
+template <typename A, typename G> class RMContractContainer : public RMContainer{
+    friend std::ostream &operator<<<A,G>(std::ostream &os, const RMContractContainer<A,G> &container);
 public:
-    using container_type = std::unordered_map<const C, const G *>;
-    RMCGContainer(const C &c, const G *g, CONTRACT_TYPE ctype);
-    ~RMCGContainer();
-    void addCG(const C &c, const G *g);
-    void provideGuarantee(std::shared_ptr<C> c) const;
+    using container_type = std::unordered_map<const A, const G *>;
+    RMContractContainer(const A &a, const G *g, ASSUMPTION_TYPE atype);
+    ~RMContractContainer();
+    void addContract(const A &a, const G *g);
+    void provideGuarantee(std::shared_ptr<A> a) const;
 //private:
-    std::shared_ptr<container_type> cgs;
+    std::shared_ptr<container_type> contractsContainer;
 };
 
-template <typename C, typename G> RMCGContainer<C,G>::RMCGContainer(const C &c, const G *g, CONTRACT_TYPE ctype) : RMContainer(ctype) ,
-        cgs(std::make_shared<container_type>()){
-    cgs->insert(std::make_pair(c,g));
+template <typename A, typename G> RMContractContainer<A,G>::RMContractContainer(const A &a, const G *g, ASSUMPTION_TYPE atype) : RMContainer(atype) ,
+        contractsContainer(std::make_shared<container_type>()){
+    contractsContainer->insert(std::make_pair(a,g));
 }
 
-template <typename C, typename G> RMCGContainer<C,G>::~RMCGContainer() {
+template <typename A, typename G> RMContractContainer<A,G>::~RMContractContainer() {
     // TODO need to destroy the dynamically allocated G objects
     // This is not possible, as the lists may contain the same pointer to G object for multiple entries
     // TODO replace with shared pointer,,, It's not possible to delete where they were created, as they were created locally
@@ -71,17 +72,17 @@ template <typename C, typename G> RMCGContainer<C,G>::~RMCGContainer() {
 
 }
 
-template <typename C, typename G> void RMCGContainer<C,G>::addCG(const C &c, const G *g) {
-    cgs->insert(std::make_pair(c,g));
+template <typename A, typename G> void RMContractContainer<A,G>::addContract(const A &a, const G *g) {
+    contractsContainer->insert(std::make_pair(a,g));
 }
 
-template <typename C, typename G> void RMCGContainer<C,G>::provideGuarantee(std::shared_ptr<C> c) const {
-    auto match = cgs->find(*c);
-    if(match != cgs->end()) {
-        (*(match->second))(c);
+template <typename A, typename G> void RMContractContainer<A,G>::provideGuarantee(std::shared_ptr<A> a) const {
+    auto match = contractsContainer->find(*a);
+    if(match != contractsContainer->end()) {
+        (*(match->second))(a);
     } else {
         //std::cout << "Not matched contract found. No action needs to be taken...." << std::endl;
     }
 }
 
-#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCGCONTAINER_H_ */
+#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCONTRACTCONTAINER_H_ */

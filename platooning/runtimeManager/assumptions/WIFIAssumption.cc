@@ -13,36 +13,36 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "../contracts/WIFIContract.h"
+#include "WIFIAssumption.h"
 
 #include <iostream>
 
-WIFIContract::WIFIContract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2F c2f, C2L c2l) : Contract(type, controller), c2f(c2f), c2l(c2l) {
+WIFIAssumption::WIFIAssumption(ASSUMPTION_TYPE type, Plexe::ACTIVE_CONTROLLER controller, C2F c2f, C2L c2l) : Assumption(type, controller), c2f(c2f), c2l(c2l) {
     // TODO Auto-generated constructor stub
 
 }
 
-WIFIContract::~WIFIContract() {
+WIFIAssumption::~WIFIAssumption() {
     //std::cout << "Contract is destroyed successfully." << std::endl;
 }
 
-void WIFIContract::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
-    contractChanged = c2f.evaluate(rmParam, rmLog, onPlatoonBeacon, index) ||
+void WIFIAssumption::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+    assumptionChanged = c2f.evaluate(rmParam, rmLog, onPlatoonBeacon, index) ||
                       c2l.evaluate(rmParam, rmLog, onPlatoonBeacon, index);
 }
 
-bool WIFIContract::equal(const Contract &contract) const {
-    auto rhs = dynamic_cast<const WIFIContract &>(contract);
+bool WIFIAssumption::equal(const Assumption &assumption) const {
+    auto rhs = dynamic_cast<const WIFIAssumption &>(assumption);
     return (c2f == rhs.c2f) &&
            (c2l == rhs.c2l);
 }
 
 
-void WIFIContract::updateOnTransition(Plexe::ACTIVE_CONTROLLER to) {
+void WIFIAssumption::updateOnTransition(Plexe::ACTIVE_CONTROLLER to) {
     controller = to;
 }
 
-std::ostream &operator<<(std::ostream &os, const WIFIContract &contract) {
-    return os << contract.type << "\n\t\tActiveController : " << contract.controller << "\n\t\t" << contract.c2f << "\n\t\t" << contract.c2l;
+std::ostream &operator<<(std::ostream &os, const WIFIAssumption &assumption) {
+    return os << assumption.type << "\n\t\tActiveController : " << assumption.controller << "\n\t\t" << assumption.c2f << "\n\t\t" << assumption.c2l;
 }
 

@@ -17,8 +17,9 @@
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_ADJUSTGAP2FRONT_H_
 
 #include <iostream>
-#include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
-#include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
+
+#include "../assumptions/WIFIAssumption.h"
+#include "../Guarantee.h"
 
 
 enum class GAP2FRONT {
@@ -30,11 +31,11 @@ enum class GAP2FRONT {
 std::ostream &operator<<(std::ostream &os, const GAP2FRONT gap2front);
 
 
-class AdjustGap2Front : virtual public Guarantees {
+class AdjustGap2Front : virtual public Guarantee {
 public:
     AdjustGap2Front(RuntimeManager *rm, GAP2FRONT gap2front);
     virtual ~AdjustGap2Front();
-    virtual void operator()(std::shared_ptr<Contract> contract) const override;
+    virtual void operator()(std::shared_ptr<Assumption> assumption) const override;
 private:
     GAP2FRONT gap2front;
 };

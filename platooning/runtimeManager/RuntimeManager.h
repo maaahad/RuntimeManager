@@ -19,8 +19,8 @@
 #include<iostream>
 #include<fstream>
 
-#include "contracts/WIFIContract.h"
-#include "ContractGuarantee.h"
+#include "assumptions/WIFIAssumption.h"
+#include "Contracts.h"
 #include "veins/base/modules/BaseApplLayer.h"
 #include "veins/modules/application/platooning/messages/PlatooningBeacon_m.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
@@ -58,7 +58,7 @@ private:
     /**
      * This method is used to logged the own vehicle data
      */
-    void ownLog();
+    void egoLog();
 
     /**
      * This template function is used to perform log for both the front and the leader vehicle
@@ -74,19 +74,19 @@ private:
     /**
      * This method initialize all vehicle related StateParameters
      */
-    void initializeStateParameters();
+    //void initializeStateParameters();
 
     /**
-     * This method initialize all contracts for the vehicle
+     * This method initialize all assumptions for the vehicle
      */
-    void initializeContracts();
+    void initializeDefaultAssumptions();
 
     // RuntimeManager's parameter
     RM::RMParameters rmParam;
     // Log to be done by RuntimeManager
     RM::rm_log rmLog;
     // Reference to the full list of Contract::Guarantees map
-    std::shared_ptr<Contract_Guarantee> contractGuarantees;
+    std::shared_ptr<Contracts> rmContracts;
 
     // TraCI Interface used to communicate with the SUMO
     Veins::TraCIMobility *mobility;
@@ -104,8 +104,8 @@ private:
 
 
     // friend declaration
-    friend class Guarantees;
-    friend class Contract_Guarantee;
+    friend class Guarantee;
+    friend class Contracts;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RUNTIMEMANAGER_H_ */

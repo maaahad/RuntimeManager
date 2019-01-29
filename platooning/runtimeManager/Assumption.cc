@@ -13,18 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <iostream>
-#include "Contract.h"
+#include "Assumption.h"
 
-Contract::Contract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller) : type(type), controller(controller), contractChanged(false) {
+#include <iostream>
+
+Assumption::Assumption(ASSUMPTION_TYPE type, Plexe::ACTIVE_CONTROLLER controller) : type(type), controller(controller), assumptionChanged(false) {
 
 }
 
-Contract::~Contract() {
+Assumption::~Assumption() {
     // TODO Auto-generated destructor stub
 }
 
-void Contract::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
+void Assumption::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
               << "\n\tCompiled on: " << __DATE__
@@ -35,12 +36,12 @@ void Contract::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog
 }
 
 
-bool Contract::equal(const Contract &contract) const {
-    return (type == contract.type) &&
-           (controller == contract.controller);
+bool Assumption::equal(const Assumption &assumption) const {
+    return (type == assumption.type) &&
+           (controller == assumption.controller);
 }
 
-void Contract::updateOnTransition(Plexe::ACTIVE_CONTROLLER to) {
+void Assumption::updateOnTransition(Plexe::ACTIVE_CONTROLLER to) {
     std::cerr << "Error: " << __FILE__
               << "\n\tLine: " << __LINE__
               << "\n\tCompiled on: " << __DATE__
@@ -50,32 +51,32 @@ void Contract::updateOnTransition(Plexe::ACTIVE_CONTROLLER to) {
               << std::endl;
 }
 
-Plexe::ACTIVE_CONTROLLER Contract::getController() const {
+Plexe::ACTIVE_CONTROLLER Assumption::getController() const {
     return controller;
 }
 
-CONTRACT_TYPE Contract::getContractType() const {
+ASSUMPTION_TYPE Assumption::getType() const {
     return type;
 }
 
-bool Contract::isChanged() const {
-    return contractChanged;
+bool Assumption::isChanged() const {
+    return assumptionChanged;
 }
 
 // Contract free == operator
-bool operator==(const Contract &cr1, const Contract &cr2 ) {
-    return (typeid(cr1) == typeid(cr2)) && cr1.equal(cr2);
+bool operator==(const Assumption &asm1, const Assumption &asm2 ) {
+    return (typeid(asm1) == typeid(asm2)) && asm1.equal(asm2);
 }
 
 
 // output (<<) for enum CONTRACT_TYPE
-std::ostream &operator<<(std::ostream &os, const CONTRACT_TYPE cType) {
-    std::map<CONTRACT_TYPE, std::string> enum2string;
+std::ostream &operator<<(std::ostream &os, const ASSUMPTION_TYPE aType) {
+    std::map<ASSUMPTION_TYPE, std::string> enum2string;
     if(enum2string.size() == 0) {
 #define INSERT(v) enum2string[v] = #v
-        INSERT(CONTRACT_TYPE::WIFI);
-        INSERT(CONTRACT_TYPE::INTERNAL_ERROR);
+        INSERT(ASSUMPTION_TYPE::WIFI);
+        INSERT(ASSUMPTION_TYPE::INTERNAL_ERROR);
 #undef INSERT
     }
-    return os << enum2string[cType];
+    return os << enum2string[aType];
 }

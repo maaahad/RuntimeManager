@@ -18,7 +18,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ChangeController's methods implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-ChangeController::ChangeController(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to) : Guarantees(rm), to(to){
+ChangeController::ChangeController(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to) : Guarantee(rm), to(to){
     // TODO Auto-generated constructor stub
 
 }
@@ -48,13 +48,13 @@ void ChangeController::actionOnTransition() const {
     }
 }
 
-void ChangeController::operator()(std::shared_ptr<Contract> contract) const {
+void ChangeController::operator()(std::shared_ptr<Assumption> assumption) const {
 #if DEBUG_RM
     std::cout << std::setw(30) << std::setfill('#') << ""
               << " VEHICLE " << positionHelper->getId() << " ::: "
               << "Contract's Status BEFORE Transition "
               << std::setw(30) << std::setfill('#') << "" << "\n"
-              << *(std::static_pointer_cast<WIFIContract>(contract))
+              << *(std::static_pointer_cast<WIFIAssumption>(assumption))
               << std::setfill(' ') << std::endl;
 #endif
 
@@ -69,7 +69,7 @@ void ChangeController::operator()(std::shared_ptr<Contract> contract) const {
 #endif
     // update the vehicle's current contract status for the Active controller
     // As the consecutive Guarantee requires the current active controller (included in the key_type of the Contract-Guarantee unordered_map )
-    contract->updateOnTransition(to);
+    assumption->updateOnTransition(to);
 
     // perform actionOnTransition by default.
     // Do it before transition, so that new controller can use it straight away
@@ -84,7 +84,7 @@ void ChangeController::operator()(std::shared_ptr<Contract> contract) const {
               << " VEHICLE " << positionHelper->getId() << " :::: "
               << "Contract's Status AFTER Transition "
               << std::setw(30) << std::setfill('#') << "" << "\n"
-              << *(std::static_pointer_cast<WIFIContract>(contract))
+              << *(std::static_pointer_cast<WIFIAssumption>(assumption))
               << std::setfill(' ') << std::endl;
 #endif
 }

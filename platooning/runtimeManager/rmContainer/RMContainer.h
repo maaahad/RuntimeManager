@@ -16,16 +16,16 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCONTAINER_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCONTAINER_H_
 
-#include "veins/modules/application/platooning/runtimeManager/Contract.h"
+#include "../Assumption.h"
 
 class RMContainer {
 public:
     RMContainer();
-    RMContainer(CONTRACT_TYPE ctype);
+    RMContainer(ASSUMPTION_TYPE ctype);
     virtual ~RMContainer();
 private:
     // TODO:: we might not require this variable
-    CONTRACT_TYPE ctype;
+    ASSUMPTION_TYPE atype;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_RMCONTAINER_RMCONTAINER_H_ */

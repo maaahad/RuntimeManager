@@ -23,7 +23,7 @@ class ChangeControllerAndAdjustGap2Front : public AdjustGap2Front, public Change
 public:
     ChangeControllerAndAdjustGap2Front(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to, GAP2FRONT gap2front);
     virtual ~ChangeControllerAndAdjustGap2Front();
-    virtual void operator()(std::shared_ptr<Contract> contract) const override;
+    virtual void operator()(std::shared_ptr<Assumption> assumption) const override;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_CHANGECONTROLLERANDADJUSTGAP2FRONT_H_ */

@@ -22,7 +22,7 @@
 // AdjustGap2Front's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-AdjustGap2Front::AdjustGap2Front(RuntimeManager *rm, GAP2FRONT gap2front) : Guarantees(rm), gap2front(gap2front){
+AdjustGap2Front::AdjustGap2Front(RuntimeManager *rm, GAP2FRONT gap2front) : Guarantee(rm), gap2front(gap2front){
     // TODO Auto-generated constructor stub
 
 }
@@ -31,13 +31,13 @@ AdjustGap2Front::~AdjustGap2Front() {
     // TODO Auto-generated destructor stub
 }
 
-void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
+void AdjustGap2Front::operator()(std::shared_ptr<Assumption> assumption) const {
 #if DEBUG_RM
     std::cout << std::setw(30) << std::setfill('#') << ""
               << " VEHICLE " << positionHelper->getId() << " ::: "
               << "Contract's Status BEFORE GapControl "
               << std::setw(30) << std::setfill('#') << "" << "\n"
-              << *(std::static_pointer_cast<WIFIContract>(contract))
+              << *(std::static_pointer_cast<WIFIAssumption>(assumption))
               << std::setfill(' ') << std::endl;
 #endif
     // We need to store the current headway +/ spacing for output file
@@ -129,7 +129,7 @@ void AdjustGap2Front::operator()(std::shared_ptr<Contract> contract) const {
               << " VEHICLE " << positionHelper->getId() << " ::: "
               << "Contract's Status AFTER GapControl "
               << std::setw(31) << std::setfill('#') << "" << "\n"
-              << *(std::static_pointer_cast<WIFIContract>(contract))
+              << *(std::static_pointer_cast<WIFIAssumption>(assumption))
               << std::setfill(' ') << std::endl;
 #endif
 }

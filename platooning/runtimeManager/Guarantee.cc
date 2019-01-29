@@ -13,15 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include "Guarantee.h"
+
 #include <iostream>
-#include "Guarantees.h"
 #include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Guarantees's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Guarantees::Guarantees(RuntimeManager *rm) : rmParam(rm->rmParam), rmLog(rm->rmLog){
+Guarantee::Guarantee(RuntimeManager *rm) : rmParam(rm->rmParam), rmLog(rm->rmLog){
     // TODO Auto-generated constructor stub
     mobility = rm->mobility;
     traci = rm->traci;
@@ -44,7 +45,7 @@ Guarantees::Guarantees(RuntimeManager *rm) : rmParam(rm->rmParam), rmLog(rm->rmL
 //        positionHelper = rm->positionHelper;
 //}
 
-Guarantees::~Guarantees() {
+Guarantee::~Guarantee() {
     // TODO Auto-generated destructor stub
     std::cout << "Guarantee is destroyed successfully." << std::endl;
 }
@@ -59,7 +60,7 @@ Guarantees::~Guarantees() {
 //              << std::endl;
 //}
 
-void Guarantees::operator()(std::shared_ptr<Contract> contract) const {
+void Guarantee::operator()(std::shared_ptr<Assumption> assumption) const {
         std::cerr << "Error: " << __FILE__
                   << "\n\tLine: " << __LINE__
                   << "\n\tCompiled on: " << __DATE__

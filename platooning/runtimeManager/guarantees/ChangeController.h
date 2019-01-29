@@ -16,16 +16,16 @@
 #ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_CHANGECONTROLLER_H_
 #define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEES_CHANGECONTROLLER_H_
 
-#include "veins/modules/application/platooning/runtimeManager/Guarantees.h"
-#include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
+#include "../assumptions/WIFIAssumption.h"
+#include "../Guarantee.h"
 
 
 
-class ChangeController : virtual public Guarantees {
+class ChangeController : virtual public Guarantee {
 public:
     ChangeController(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to);
     virtual ~ChangeController();
-    virtual void operator()(std::shared_ptr<Contract> contract) const override;
+    virtual void operator()(std::shared_ptr<Assumption> assumption) const override;
 protected:
     void actionOnTransition() const;
     Plexe::ACTIVE_CONTROLLER to;

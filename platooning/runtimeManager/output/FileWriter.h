@@ -20,8 +20,8 @@
 #include <fstream>
 #include <string>
 
+#include "../assumptions/WIFIAssumption.h"
 #include "veins/modules/application/platooning/runtimeManager/RMUtility.h"
-#include "veins/modules/application/platooning/runtimeManager/contracts/WIFIContract.h"
 
 
 /**

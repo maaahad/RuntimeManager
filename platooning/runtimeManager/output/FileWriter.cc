@@ -51,9 +51,9 @@ void FileWriter::addEntries(const RM::RMParameters &rmParam, const RM::RMLog_Own
     output << "|" << std::setw(14) << std::left << rmParam.emergencyPloegHeadwayTimeGapFactor << "|" << std::right;
 
     // contracts
-    for(auto it = (ego.contracts)->cbegin(); it != (ego.contracts)->cend(); ++it) {
+    for(auto it = (ego.assumptions)->cbegin(); it != (ego.assumptions)->cend(); ++it) {
         // c2x
-        if(std::shared_ptr<WIFIContract> wificontract = std::dynamic_pointer_cast<WIFIContract>(*it)) {
+        if(std::shared_ptr<WIFIAssumption> wificontract = std::dynamic_pointer_cast<WIFIAssumption>(*it)) {
             output << "|" << std::setw(9) << std::left << (wificontract->c2f).quality << "|" << std::right;
             output << "|" << std::setw(9) << std::left << (wificontract->c2l).quality << "|" << std::right;
         }

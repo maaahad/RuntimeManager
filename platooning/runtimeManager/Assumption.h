@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_H_
-#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_H_
+#ifndef SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_ASSUMPTION_H_
+#define SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_ASSUMPTION_H_
 
 #include <iostream>
 #include <map>
@@ -26,31 +26,31 @@
  */
 
 
-enum CONTRACT_TYPE{
+enum ASSUMPTION_TYPE{
     WIFI,
     INTERNAL_ERROR,
 };
 
-std::ostream &operator<<(std::ostream &os, const CONTRACT_TYPE cType);
+std::ostream &operator<<(std::ostream &os, const ASSUMPTION_TYPE aType);
 
-class Contract {
-    friend bool operator==(const Contract &cr1, const Contract &cr2 );
+class Assumption {
+    friend bool operator==(const Assumption &asm1, const Assumption &asm2 );
 public:
-    Contract(CONTRACT_TYPE type, Plexe::ACTIVE_CONTROLLER controller);
-    virtual ~Contract();
+    Assumption(ASSUMPTION_TYPE type, Plexe::ACTIVE_CONTROLLER controller);
+    virtual ~Assumption();
     virtual void evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) = 0;
-    virtual bool equal(const Contract &contract) const;
+    virtual bool equal(const Assumption &assumption) const;
     virtual void updateOnTransition(Plexe::ACTIVE_CONTROLLER to) = 0;
     Plexe::ACTIVE_CONTROLLER getController() const;
-    CONTRACT_TYPE getContractType() const;
+    ASSUMPTION_TYPE getType() const;
     bool isChanged() const;
 
 protected:
-    CONTRACT_TYPE type;
+    ASSUMPTION_TYPE type;
     Plexe::ACTIVE_CONTROLLER controller;
-    bool contractChanged;
+    bool assumptionChanged;
 };
 
 
 
-#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACT_H_ */
+#endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_ASSUMPTION_H_ */
