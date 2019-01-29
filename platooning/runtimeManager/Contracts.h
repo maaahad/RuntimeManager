@@ -31,12 +31,9 @@
 #include "veins/modules/application/platooning/runtimeManager/guarantees/ChangeController.h"
 
 
-
-
-
-
-
+// Forward declaration
 class RuntimeManager;
+class RMParser;
 
 class Contracts {
 public:
@@ -48,11 +45,39 @@ private:
 //    template <typename A, typename G> void addContract(const A a, const G *g);
     template <typename A, typename G> void addContract(const A a, const std::shared_ptr<G> g);
 
-
     // We need to make RMCGContainer shared_ptr to be destroyed automatically and will be shared
     std::map<ASSUMPTION_TYPE, std::shared_ptr<RMContainer>> rmContractsList;
     const RuntimeManager *rm;
 
+    // friend decleration
+    friend class RMParser;
 };
+
+// Template definition
+template <typename A, typename G> void Contracts::addContract(const A a, const std::shared_ptr<G> g) {
+
+    std::cout << "Adding contract ... " << std::endl;
+
+    auto cgList = rmContractsList.find(a.getType());
+    if(cgList != rmContractsList.end()) {
+        // CG list for this contractType already created
+        if(a.getType() == ASSUMPTION_TYPE::WIFI) {
+            // add the new element to the match
+            // Do not need this cast (Check)
+            (std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(cgList->second))->addContract(a, g);
+        } else if(a.getType() == ASSUMPTION_TYPE::INTERNAL_ERROR) {
+            std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
+        }
+        // TODO add for other contract type
+    } else {
+        // CG list for this contractType not exists, needs to be created
+        if(a.getType() == ASSUMPTION_TYPE::WIFI) {
+            rmContractsList.insert(std::make_pair(ASSUMPTION_TYPE::WIFI, std::make_shared<RMContractContainer<WIFIAssumption, Guarantee>>(a, g, ASSUMPTION_TYPE::WIFI)));
+        } else if(a.getType() == ASSUMPTION_TYPE::INTERNAL_ERROR) {
+            std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
+        }
+        // TODO add for other contract type
+    }
+}
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_H_ */

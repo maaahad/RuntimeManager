@@ -16,8 +16,8 @@
 
 // These preprocessor variables are used for debugging purpose
 #define DEBUG_RM 1
-#define DEBUG_RM1 1
-#define DEBUG_RM2 1
+#define DEBUG_RM1 0
+#define DEBUG_RM2 0
 
 
 // Forward declaration

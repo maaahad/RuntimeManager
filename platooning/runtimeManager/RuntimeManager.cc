@@ -148,6 +148,7 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
         EV << "Monitoring message has been arrived. Evaluation started..." << std::endl;
         // First we logged the ego vehicle
         egoLog();
+
         // Now we evaluate the current status of the vehicle
         evaluate();
 

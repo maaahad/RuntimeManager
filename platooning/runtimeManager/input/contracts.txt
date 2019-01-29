@@ -1,0 +1,101 @@
+################################################# RM CONTRACT ########################################################
+#                                                                                                                    #
+# This is the input file to specify Contracts for Runtime Manager                                                    #
+#                                                                                                                    #
+# ------------------------------------------------------------------------------------------------------------------ #
+#                                                                                                                    #
+# Developed by : Muhammed Abdullah Al Ahad                                                                           #
+# E-mail       : maaahad@kth.se; ahad3112@yahoo.com                                                                  #
+#                                                                                                                    #
+# ------------------------------------------------------------------------------------------------------------------ #
+#                                                                                                                    #
+# Rules :                                                                                                            #
+#       * Anything following # in a line will be regarded as comments                                                #
+#       * To make the parser simpler, only small case will be considered                                             #
+#       * spaces between word, word and [,],:,; are optional                                                         #
+#                                                                                                                    #
+# ------------------------------------------------------------------------------------------------------------------ #
+#                                                                                                                    #
+# Format for Contract :                                                                                              #
+#                    ::contract[Type : comma/space separated Assumptions : comma/space separated Guarantees]         #
+#                                                                                                                    #
+# ------------------------------------------------------------------------------------------------------------------ #
+#                                                                                                                    #
+# Type : Type is read as name=value pair                                                                             #
+#      * Required only one type=value                                                                                #
+#                                                                                                                    #
+#          Type Pair's name and value                                                                              #
+#       -------------------------------                                                                              #
+#       name                      value                                                                              #
+#       ----                      -----                                                                              #
+#       ctype                     wifi                                                                               #
+#                                                                                                                    #
+# ------------------------------------------------------------------------------------------------------------------ #
+#                                                                                                                    #
+# Assumption : Assumptions are read as name=value pair                                                               #
+#      * Must provide all parameters (name=value)                                                                    #
+#      * In case of multiple assumptions, pairs are separated using any combination of comma and space               #
+#      * At least one comma or space required between two assumptions                                                #
+#      * Pair's orders are: c2f=value ; c2l=value ; mode=value                                                       #
+#                                                                                                                    #
+#          Assumption Pair's name and value                                                                          #
+#       -------------------------------------                                                                        #
+#       name                      value                                                                              #
+#       ----                      -----                                                                              #
+#       c2f                       ok/poor/critical                                                                   #
+#       c2l                       ok/poor/critical                                                                   #
+#       mode                      acc/ploeg/cacc                                                                     #
+#                                                                                                                    #
+# ------------------------------------------------------------------------------------------------------------------ #
+#                                                                                                                    #
+# Guarantee : Guarantees are read as name=value pair                                                                 #
+#      * Must provide at least one parameters (name=value)                                                           #
+#      * In case of multiple guarantees, pairs are separated using any combination of comma and space                #
+#      * At least one comma or space required between two guarantees                                                 #
+#      * Pair's orders are: transition2mode=value ; dist2pred=value                                                  #
+#                                                                                                                    #
+#        Guarantee Pair's name and value                                                                             #
+#       -----------------------------------                                                                          #
+#       name                      value                                                                              #
+#       ----                      -----                                                                              #
+#       transition2mode           acc/ploeg/cacc                                                                     #
+#       dist2pred                 default/increase                                                                   #
+#                                                                                                                    #
+# ------------------------------------------------------------------------------------------------------------------ #
+#                                                                                                                    #
+# HINTS: Choose any of the following two combinations, just change to ay possible value of parameter as you want     #
+#      * ::contract[ctype=value : c2f=value ; c2l=value; mode=value : transition2mode=value]                         #
+#      * ::contract[ctype=value : c2f=value ; c2l=value; mode=value : transition2mode=value ; dist2pred=value]       #
+#                                                                                                                    #
+# ------------------------------------------------------------------------------------------------------------------ #
+#                                                                                                                    #
+# EXAMPLE:                                                                                                           #
+# Examples 1:                                                                                                        #
+#      ::contract[ctype=wifi : c2f=ok ; c2l=ok ; mode=acc : transition2mode=cacc]                                    #
+# Examples 2:                                                                                                        #
+#      ::contract[ctype=wifi : c2f=ok ; c2l=critical ; mode=cacc : transition2mode=acc]                              #
+# Examples 3:                                                                                                        #
+#      ::contract[ctype=wifi : c2f=ok  c2l=poor  mode=cacc : dist2pred=increase]                                     #
+# Examples 4:                                                                                                        #
+#      ::contract[ctype=wifi : c2f=poor ; c2l=ok ; mode=cacc : transition2mode=ploeg ; dist2pred=increase]           #
+#                                                                                                                    #
+# ------------------------------------------------------------------------------------------------------------------ #
+#                                                                                                                    #
+# NOTE:                                                                                                              #
+#      * value for mode and transitionTo in a contract should not be same                                            #
+#                                                                                                                    #
+######################################################################################################################
+
+# ::contract[type : comma/space separated assumptions : comma/space separated guarantees]
+############### Test ##############
+#::contract[ctype=wifi :c2f=ok c2l=critical mode=cacc : transition2mode=acc]
+#::contract[ctype=wifi :c2f=ok ;c2l=poor ;mode=cacc : dist2pred=increase]
+#::contract[ctype=wifi :c2f=poor   ;;;  ;c2l=ok;    mode=cacc  :::    transition2mode=ploeg     ;dist2pred=increase  ]
+#::contract[ ctype=wifi :c2f=poor   ;;;  ;c2l=ok;    mode=cacc  :::    transition2mode=ploeg     ;dist2pred= default  ]
+
+#::contract[ctype=wifi:c2f=ok; c2l=ok; mode=acc : transition2mode=cacc; dist2pred=default]
+
+# ::contract[Type : comma/space separated Assumptions : comma/space separated Guarantees]
+::contract[ctype=wifi : c2f=ok ; c2l=ok; mode=acc : transition2mode=cacc]
+::contract[ctype=wifi : c2f=critical  c2l=poor  mode=cacc : dist2pred=increase]
+::contract[ctype=wifi : c2f=poor ; c2l=critical ; mode=cacc : transition2mode=ploeg ; dist2pred=default]
