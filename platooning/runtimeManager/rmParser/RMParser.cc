@@ -59,12 +59,12 @@ void RMParser::initGrammars() {
     // ==================== Debug ]
 
     // TODO :: add more grammars if required (For further extension)
-    // Right now we are only parsing contract from the input
+    // Right now we are only parsing Contract from the input
 }
 
 void RMParser::parse(RuntimeManager *rm) {
 
-    std::cout << "RMParser start parsing the input file ...." << std::endl;
+    std::cout << "RMParser start parsing the Contracts from input file ...." << std::endl;
     // parse(std::string &line) from the appropriate Grammar class will be called after reading every line
     std::string line;
     unsigned lineNo = 0;
@@ -84,7 +84,7 @@ void RMParser::parse(RuntimeManager *rm) {
         // TODO: extension if there is any other Grammars available
     }
 
-    std::cout << "RMParser finished parsing the input file successfully." << std::endl;
+    std::cout << "RMParser finished parsing the Contracts from input file successfully." << std::endl;
 
 }
 

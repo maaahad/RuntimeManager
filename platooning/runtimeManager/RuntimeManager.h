@@ -99,8 +99,8 @@ private:
 
     // output file
     std::shared_ptr<FileWriter> fileWriter;
-    std::string outputFilename;
-    bool write2file;
+//    std::string outputFilename;
+//    bool write2file;
 
 
     // friend declaration

@@ -27,6 +27,10 @@ simple BaseRuntimeManager like IBaseApplLayer {
         double rmMonitorInterval @unit("s") 	= default(.10s);  
         double expectedBeconInterval @unit("s") = default(.05s);
         
+        // input
+        bool readContractsFromInputFile = default(false);
+        string contractInputFilename = default("");
+        
         // record
         string outputFilename = default("output/output.txt");
         bool write2file 	  = default(true);

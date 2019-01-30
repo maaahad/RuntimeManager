@@ -36,6 +36,14 @@ namespace RM {
             double rmMonitorInterval;
             double expectedBeconInterval;
 
+            // Contract InputFile
+            bool readContractsFromInputFile;
+            std::string contractInputFilename;
+
+            // output
+            std::string outputFilename;
+            bool write2file;
+
             int nPacketLossPoor;
             int nPacketLossCritical;
 

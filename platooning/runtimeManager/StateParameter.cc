@@ -30,24 +30,26 @@ StateParameter::~StateParameter() {
 
 
 bool StateParameter::equal(const StateParameter &stateParameter) const {
-    std::cerr << "Error: " << __FILE__
-              << "\n\tLine: " << __LINE__
-              << "\n\tCompiled on: " << __DATE__
-              << " at " << __TIME__
-              << "\n\tfunction " << __func__
-              << " This method should never be called!!!"
-              << std::endl;
+    throw std::runtime_error("This method should be overriden by the Derived classes...");
+//    std::cerr << "Error: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " This method should never be called!!!"
+//              << std::endl;
     return true;
 }
 
 bool StateParameter::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
-    std::cerr << "Error: " << __FILE__
-              << "\n\tLine: " << __LINE__
-              << "\n\tCompiled on: " << __DATE__
-              << " at " << __TIME__
-              << "\n\tfunction " << __func__
-              << " must have to be overriden by the derived class!!!"
-              << std::endl;
+    throw std::runtime_error("This method should be overriden by the Derived classes...");
+//    std::cerr << "Error: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " must have to be overriden by the derived class!!!"
+//              << std::endl;
     return false;
 }
 
@@ -105,38 +107,14 @@ template <typename T> void C2X::c2xQualityCheck(const RM::RMParameters &rmParam,
 }
 
 bool C2X::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
-//    if(onPlatoonBeacon) {
-//        // Right now there is nothing to do here!!!
-//    } else {
-//        // This is called during monitoring from self message
-//        if(role == ROLE::FRONT) {
-////            const auto &other = std::get<1>(rmLog);
-//            const RM::RMLog_Front &other = std::get<1>(rmLog);
-//            c2xQualityCheck(rmParam, other);
-//
-//            // TODO In case of c2f, we need to check the distance to the front vehicle
-//        } else if (role == ROLE::LEADER) {
-////            const auto &other = std::get<2>(rmLog);
-//            const RM::RMLog_Leader &other = std::get<2>(rmLog);
-//            c2xQualityCheck(rmParam, other);
-//        } else {
-//            std::cerr << "Error: " << __FILE__
-//                      << "\n\tLine: " << __LINE__
-//                      << "\n\tCompiled on: " << __DATE__
-//                      << " at " << __TIME__
-//                      << "\n\tfunction " << __func__
-//                      << " Wrong vehicle type!!!"
-//                      << std::endl;
-//        }
-//    }
-
-    std::cerr << "Error: " << __FILE__
-                          << "\n\tLine: " << __LINE__
-                          << "\n\tCompiled on: " << __DATE__
-                          << " at " << __TIME__
-                          << "\n\tfunction " << __func__
-                          << " Should be overriden by the derived class C2F and C2L!!!"
-                          << std::endl;
+    throw std::runtime_error("This method should be overriden by the Derived classes...");
+//    std::cerr << "Error: " << __FILE__
+//                          << "\n\tLine: " << __LINE__
+//                          << "\n\tCompiled on: " << __DATE__
+//                          << " at " << __TIME__
+//                          << "\n\tfunction " << __func__
+//                          << " Should be overriden by the derived class C2F and C2L!!!"
+//                          << std::endl;
     return false;
 }
 

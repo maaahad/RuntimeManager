@@ -25,14 +25,16 @@ Assumption::~Assumption() {
     // TODO Auto-generated destructor stub
 }
 
-void Assumption::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {
-    std::cerr << "Error: " << __FILE__
-              << "\n\tLine: " << __LINE__
-              << "\n\tCompiled on: " << __DATE__
-              << " at " << __TIME__
-              << "\n\tfunction " << __func__
-              << " must have to be overriden by the derived class!!!"
-              << std::endl;
+void Assumption::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon, const int index) {//    virtual void actionOnTransition() const;
+
+    throw std::runtime_error("This method should be overriden by the Derived classes...");
+//    std::cerr << "Error: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " must have to be overriden by the derived class!!!"
+//              << std::endl;
 }
 
 
@@ -42,13 +44,14 @@ bool Assumption::equal(const Assumption &assumption) const {
 }
 
 void Assumption::updateOnTransition(Plexe::ACTIVE_CONTROLLER to) {
-    std::cerr << "Error: " << __FILE__
-              << "\n\tLine: " << __LINE__
-              << "\n\tCompiled on: " << __DATE__
-              << " at " << __TIME__
-              << "\n\tfunction " << __func__
-              << " must have to be overriden by the derived class!!!"
-              << std::endl;
+    throw std::runtime_error("This method should be overriden by the Derived classes...");
+//    std::cerr << "Error: " << __FILE__
+//              << "\n\tLine: " << __LINE__
+//              << "\n\tCompiled on: " << __DATE__
+//              << " at " << __TIME__
+//              << "\n\tfunction " << __func__
+//              << " must have to be overriden by the derived class!!!"
+//              << std::endl;
 }
 
 Plexe::ACTIVE_CONTROLLER Assumption::getController() const {

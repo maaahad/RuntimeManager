@@ -15,10 +15,10 @@
 
 #include "RMContainer.h"
 
-RMContainer::RMContainer() {
-    // TODO Auto-generated constructor stub
-
-}
+//RMContainer::RMContainer() {
+//    // TODO Auto-generated constructor stub
+//
+//}
 
 RMContainer::RMContainer(ASSUMPTION_TYPE atype) : atype(atype){
 

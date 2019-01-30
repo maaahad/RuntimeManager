@@ -51,6 +51,13 @@ void RuntimeManager::initialize(int stage) {
             rmParam.rmMonitorInterval     = par("rmMonitorInterval").doubleValue();
             rmParam.expectedBeconInterval = par("expectedBeconInterval").doubleValue();
 
+            // input
+            rmParam.readContractsFromInputFile = par("readContractsFromInputFile").boolValue();
+            rmParam.contractInputFilename      = par("contractInputFilename").stdstringValue();
+            // output
+            rmParam.write2file = par("write2file").boolValue();
+            rmParam.outputFilename = par("outputFilename").stdstringValue();
+
             rmParam.nPacketLossPoor     = par("nPacketLossPoor").intValue();
             rmParam.nPacketLossCritical = par("nPacketLossCritical").intValue();
 
@@ -96,6 +103,12 @@ void RuntimeManager::initialize(int stage) {
             std::cout << std::left;
             std::cout << std::setw(40) << "rmMonitorInterval: " << std::setw(10) << rmParam.rmMonitorInterval << std::endl;
             std::cout << std::setw(40) << "expectedBeconInterval: " << std::setw(10) << rmParam.expectedBeconInterval << std::endl;
+
+            std::cout << std::setw(40) << "readContractsFromInputFile: " << std::setw(10) << rmParam.readContractsFromInputFile << std::endl;
+            std::cout << std::setw(40) << "contractInputFilename: " << std::setw(10) << rmParam.contractInputFilename << std::endl;
+            std::cout << std::setw(40) << "write2file: " << std::setw(10) << rmParam.write2file << std::endl;
+            std::cout << std::setw(40) << "outputFilename: " << std::setw(10) << rmParam.outputFilename << std::endl;
+
             std::cout << std::setw(40) << "nPacketLossPoor: " << std::setw(10) << rmParam.nPacketLossPoor << std::endl;
             std::cout << std::setw(40) << "nPacketLossCritical: " << std::setw(10) << rmParam.nPacketLossCritical << std::endl;
             std::cout << std::setw(40) << "upgradationEnabled: " << std::setw(10) << std::boolalpha << rmParam.upgradationEnabled << std::endl;
@@ -124,10 +137,12 @@ void RuntimeManager::initialize(int stage) {
 #endif
 
         // output file
-        write2file = par("write2file").boolValue();
-        outputFilename = par("outputFilename").stdstringValue() + std::to_string(positionHelper->getId()) + ".txt";
-        if(write2file) fileWriter = std::make_shared<FileWriter>(positionHelper->getId(), outputFilename, write2file);
+//        write2file = par("write2file").boolValue();
+//        outputFilename = par("outputFilename").stdstringValue() + std::to_string(positionHelper->getId()) + ".txt";
+//        if(write2file) fileWriter = std::make_shared<FileWriter>(positionHelper->getId(), outputFilename, write2file);
 
+        std::string outputFile = rmParam.outputFilename + std::to_string(positionHelper->getId()) + ".txt";
+        if(rmParam.write2file) fileWriter = std::make_shared<FileWriter>(positionHelper->getId(), outputFile, rmParam.write2file);
 
         // initialize contract list
         initializeDefaultAssumptions();

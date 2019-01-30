@@ -29,8 +29,6 @@ public:
     virtual ~Guarantee();
     virtual void operator()(std::shared_ptr<Assumption> assumption) const;
 protected:
-//    virtual void actionOnTransition() const;
-
     // These are required for taking action
     Veins::TraCIMobility *mobility;
     Veins::TraCICommandInterface *traci;

@@ -20,7 +20,7 @@
 
 class RMContainer {
 public:
-    RMContainer();
+    //RMContainer();
     RMContainer(ASSUMPTION_TYPE ctype);
     virtual ~RMContainer();
 private:

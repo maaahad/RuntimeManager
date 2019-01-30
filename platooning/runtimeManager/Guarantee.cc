@@ -31,42 +31,20 @@ Guarantee::Guarantee(RuntimeManager *rm) : rmParam(rm->rmParam), rmLog(rm->rmLog
 }
 
 
-
-//Guarantees::Guarantees(RuntimeManager *rm) : changeController(false), accelerate(false), decelerate(false), rmParam(rm->rmParam){
-//    // TODO Auto-generated constructor stub
-//}
-
-//Guarantees::Guarantees(RuntimeManager *rm, bool changeController, Plexe::ACTIVE_CONTROLLER to) :changeController(changeController), to(to),
-//        accelerate(false), decelerate(false), rmParam(rm->rmParam){
-//
-//        mobility = rm->mobility;
-//        traci = rm->traci;
-//        traciVehicle = rm->traciVehicle;
-//        positionHelper = rm->positionHelper;
-//}
-
 Guarantee::~Guarantee() {
-    // TODO Auto-generated destructor stub
+    // This is for checking memory release
     std::cout << "Guarantee is destroyed successfully." << std::endl;
 }
 
-//void Guarantees::actionOnTransition() const {
-//    std::cerr << "Error: " << __FILE__
-//              << "\n\tLine: " << __LINE__
-//              << "\n\tCompiled on: " << __DATE__
-//              << " at " << __TIME__
-//              << "\n\tfunction " << __func__
-//              << " This method should be implemented by the derived method!!!"
-//              << std::endl;
-//}
 
 void Guarantee::operator()(std::shared_ptr<Assumption> assumption) const {
-        std::cerr << "Error: " << __FILE__
-                  << "\n\tLine: " << __LINE__
-                  << "\n\tCompiled on: " << __DATE__
-                  << " at " << __TIME__
-                  << "\n\tfunction " << __func__
-                  << " This function should be implemented by the derived class!!!"
-                  << std::endl;
+    throw std::runtime_error("This method should be override by the Derived classes...");
+//        std::cerr << "Error: " << __FILE__
+//                  << "\n\tLine: " << __LINE__
+//                  << "\n\tCompiled on: " << __DATE__
+//                  << " at " << __TIME__
+//                  << "\n\tfunction " << __func__
+//                  << " This function should be implemented by the derived class!!!"
+//                  << std::endl;
 }
 

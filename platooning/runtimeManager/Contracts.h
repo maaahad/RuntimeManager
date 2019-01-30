@@ -55,9 +55,6 @@ private:
 
 // Template definition
 template <typename A, typename G> void Contracts::addContract(const A a, const std::shared_ptr<G> g) {
-
-    std::cout << "Adding contract ... " << std::endl;
-
     auto cgList = rmContractsList.find(a.getType());
     if(cgList != rmContractsList.end()) {
         // CG list for this contractType already created
@@ -78,6 +75,8 @@ template <typename A, typename G> void Contracts::addContract(const A a, const s
         }
         // TODO add for other contract type
     }
+
+    std::cout << "A Contract added." << std::endl;
 }
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_CONTRACTS_H_ */

@@ -32,6 +32,6 @@ RMParserGrammar::~RMParserGrammar() {
 // Member function
 ////////////////////////////////////////////////////
 void RMParserGrammar::parse(RuntimeManager *rm, RMParser *rmParser, std::string &s, unsigned lineNo) {
-    std::cerr << "This method should not be called...." << std::endl;
+    throw std::runtime_error("This method should not be called....");
 }
 

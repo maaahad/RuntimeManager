@@ -64,7 +64,7 @@ void RMContractParserGrammar::initParametersValueMap() {
 
 void RMContractParserGrammar::parse(RuntimeManager *rm, RMParser *rmParser, std::string &s, unsigned lineNo) {
     for(std::sregex_iterator it(s.begin(), s.end(), expression), end; it != end; ++it) {
-        std::cout << "LineNo: " << lineNo << "\n" << it->str() << std::endl;
+        //std::cout << "LineNo: " << lineNo << "\n" << it->str() << std::endl;
         //std::cout << "Found:::::: " << (*it)[4].str() << std::endl;
         evaluate(rm, rmParser, *it, lineNo);
     }
@@ -100,13 +100,13 @@ void RMContractParserGrammar::evaluate(RuntimeManager *rm, RMParser *rmParser, c
             std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
         }
 
-        std::cout << "ctype : " << atype->second
-                  << " c2l : " << c2l->second
-                  << " c2f : " << c2f->second
-                  << " mode : " << mode->second
-                  << " transition2mode : " << transition2mode->second
-                  << " dist2pred : " << dist2pred->second
-                  << std::endl;
+//        std::cout << "ctype : " << atype->second
+//                  << " c2l : " << c2l->second
+//                  << " c2f : " << c2f->second
+//                  << " mode : " << mode->second
+//                  << " transition2mode : " << transition2mode->second
+//                  << " dist2pred : " << dist2pred->second
+//                  << std::endl;
 
     } else if (match[9].matched) {
         // Sanity checking, if passed, generate the Contract instance
@@ -126,18 +126,17 @@ void RMContractParserGrammar::evaluate(RuntimeManager *rm, RMParser *rmParser, c
             std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
         }
 
-        std::cout << "ctype : " << atype->second
-                  << " c2l : " << c2l->second
-                  << " c2f : " << c2f->second
-                  << " mode : " << mode->second
-                  << " transition2mode : " << transition2mode->second
-                  << std::endl;
+//        std::cout << "ctype : " << atype->second
+//                  << " c2l : " << c2l->second
+//                  << " c2f : " << c2f->second
+//                  << " mode : " << mode->second
+//                  << " transition2mode : " << transition2mode->second
+//                  << std::endl;
     } else if (match[12].matched) {
         auto dist2pred = dist2predMap.find(match[14]);
         if (dist2pred == dist2predMap.end()) throw std::runtime_error("missing dist2pred!!!");
 
         // add contract
-        //rmParser->addContract();
         if(atype->second == ASSUMPTION_TYPE::WIFI) {
             WIFIAssumption assumption(atype->second, mode->second, c2f->second, c2l->second);
             std::shared_ptr<Guarantee> guarantee  = std::make_shared<AdjustGap2Front>(rm, dist2pred->second);
@@ -145,13 +144,12 @@ void RMContractParserGrammar::evaluate(RuntimeManager *rm, RMParser *rmParser, c
         } else {
             std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
         }
-
-        std::cout << "ctype : " << atype->second
-                  << " c2l : " << c2l->second
-                  << " c2f : " << c2f->second
-                  << " mode : " << mode->second
-                  << " dist2pred : " << dist2pred->second
-                  << std::endl;
+//        std::cout << "ctype : " << atype->second
+//                  << " c2l : " << c2l->second
+//                  << " c2f : " << c2f->second
+//                  << " mode : " << mode->second
+//                  << " dist2pred : " << dist2pred->second
+//                  << std::endl;
     } else {
         throw std::runtime_error("missing guarantee!!!");
     }
