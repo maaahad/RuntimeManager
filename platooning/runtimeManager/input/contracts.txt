@@ -24,7 +24,7 @@
 # Type : Type is read as name=value pair                                                                             #
 #      * Required only one type=value                                                                                #
 #                                                                                                                    #
-#          Type Pair's name and value                                                                              #
+#          Type Pair's name and value                                                                                #
 #       -------------------------------                                                                              #
 #       name                      value                                                                              #
 #       ----                      -----                                                                              #
@@ -63,20 +63,20 @@
 #                                                                                                                    #
 # ------------------------------------------------------------------------------------------------------------------ #
 #                                                                                                                    #
-# HINTS: Choose any of the following two combinations, just change to ay possible value of parameter as you want     #
+# HINTS: Choose any of the following two combinations, just change to any possible value of parameter as you want    #
 #      * ::contract[ctype=value : c2f=value ; c2l=value; mode=value : transition2mode=value]                         #
 #      * ::contract[ctype=value : c2f=value ; c2l=value; mode=value : transition2mode=value ; dist2pred=value]       #
 #                                                                                                                    #
 # ------------------------------------------------------------------------------------------------------------------ #
 #                                                                                                                    #
-# EXAMPLE:                                                                                                           #
-# Examples 1:                                                                                                        #
+# EXAMPLES:                                                                                                          #
+# Example 1:                                                                                                         #
 #      ::contract[ctype=wifi : c2f=ok ; c2l=ok ; mode=acc : transition2mode=cacc]                                    #
-# Examples 2:                                                                                                        #
+# Example 2:                                                                                                         #
 #      ::contract[ctype=wifi : c2f=ok ; c2l=critical ; mode=cacc : transition2mode=acc]                              #
-# Examples 3:                                                                                                        #
+# Example 3:                                                                                                         #
 #      ::contract[ctype=wifi : c2f=ok  c2l=poor  mode=cacc : dist2pred=increase]                                     #
-# Examples 4:                                                                                                        #
+# Example 4:                                                                                                         #
 #      ::contract[ctype=wifi : c2f=poor ; c2l=ok ; mode=cacc : transition2mode=ploeg ; dist2pred=increase]           #
 #                                                                                                                    #
 # ------------------------------------------------------------------------------------------------------------------ #
@@ -100,24 +100,47 @@
 #::contract[ctype=wifi : c2f=poor ; c2l=critical ; mode=cacc : transition2mode=ploeg ; dist2pred=default]
 ############### Test  End ##############
 
+######################### Contracts for Runtime Manager ########################
 ############### uppgrade ###############
 ############### acc -> ploeg
 ::contract[ctype=wifi : c2f=ok ; c2l=critical; mode=acc : transition2mode=ploeg]            
 ############### acc->cacc
-#::contract[ctype=wifi : c2f=ok ; c2l=ok; mode=acc : transition2mode=cacc]            
+::contract[ctype=wifi : c2f=ok ; c2l=ok; mode=acc : transition2mode=cacc]            
 ############### ploeg->cacc
-#::contract[ctype=wifi : c2f=ok ; c2l=ok; mode=ploeg : transition2mode=cacc]            
+::contract[ctype=wifi : c2f=ok ; c2l=ok; mode=ploeg : transition2mode=cacc]            
 
 ############### degrade ###############
 ############### ploeg->acc
-#::contract[ctype=wifi : c2f=critical ; c2l=ok; mode=ploeg : transition2mode=acc] 
-#::contract[ctype=wifi : c2f=critical ; c2l=poor; mode=ploeg : transition2mode=acc]            
-#::contract[ctype=wifi : c2f=critical ; c2l=critical; mode=ploeg : transition2mode=acc]                       
+::contract[ctype=wifi : c2f=critical ; c2l=ok; mode=ploeg : transition2mode=acc] 
+::contract[ctype=wifi : c2f=critical ; c2l=poor; mode=ploeg : transition2mode=acc]            
+::contract[ctype=wifi : c2f=critical ; c2l=critical; mode=ploeg : transition2mode=acc]                       
 ############### cacc->ploeg
-#::contract[ctype=wifi : c2f=ok ; c2l=critical; mode=cacc : transition2mode=ploeg]            
+::contract[ctype=wifi : c2f=ok ; c2l=critical; mode=cacc : transition2mode=ploeg]            
 ############### cacc->acc
-#::contract[ctype=wifi : c2f=critical ; c2l=ok; mode=cacc : transition2mode=acc] 
-#::contract[ctype=wifi : c2f=critical ; c2l=poor; mode=cacc : transition2mode=acc]            
-#::contract[ctype=wifi : c2f=critical ; c2l=critical; mode=cacc : transition2mode=acc]
+::contract[ctype=wifi : c2f=critical ; c2l=ok; mode=cacc : transition2mode=acc] 
+::contract[ctype=wifi : c2f=critical ; c2l=poor; mode=cacc : transition2mode=acc]            
+::contract[ctype=wifi : c2f=critical ; c2l=critical; mode=cacc : transition2mode=acc]
 
 ############### gapcontrol ###############
+############### acc->ploeg->gapControl
+::contract[ctype=wifi : c2f=poor ; c2l=ok ; mode=acc : transition2mode=ploeg ; dist2pred=increase]
+::contract[ctype=wifi : c2f=poor ; c2l=poor ; mode=acc : transition2mode=ploeg ; dist2pred=increase]
+::contract[ctype=wifi : c2f=poor ; c2l=critical ; mode=acc : transition2mode=ploeg ; dist2pred=increase]
+############### acc->cacc->gapControl
+::contract[ctype=wifi : c2f=ok ; c2l=poor ; mode=acc : transition2mode=cacc ; dist2pred=increase]
+
+############### ploeg->gapControl
+::contract[ctype=wifi : c2f=ok  c2l=critical  mode=ploeg : dist2pred=default]
+::contract[ctype=wifi : c2f=poor  c2l=ok  mode=ploeg : dist2pred=increase]
+::contract[ctype=wifi : c2f=poor  c2l=poor  mode=ploeg : dist2pred=increase]
+::contract[ctype=wifi : c2f=poor  c2l=critical  mode=ploeg : dist2pred=increase]
+############### ploeg->cacc->gapControl
+::contract[ctype=wifi : c2f=ok ; c2l=poor ; mode=ploeg : transition2mode=cacc ; dist2pred=increase]
+
+############### cacc->gapControl
+::contract[ctype=wifi : c2f=ok  c2l=ok  mode=cacc : dist2pred=default]
+::contract[ctype=wifi : c2f=ok  c2l=poor  mode=cacc : dist2pred=increase]
+############### cacc->ploeg->gapControl
+::contract[ctype=wifi : c2f=poor ; c2l=ok ; mode=cacc : transition2mode=ploeg ; dist2pred=increase]
+::contract[ctype=wifi : c2f=poor ; c2l=poor ; mode=cacc : transition2mode=ploeg ; dist2pred=increase]
+::contract[ctype=wifi : c2f=poor ; c2l=critical ; mode=cacc : transition2mode=ploeg ; dist2pred=increase]

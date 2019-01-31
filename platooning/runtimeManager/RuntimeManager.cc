@@ -318,6 +318,24 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
     if(!onPlatoonBeacon) {
         rmContracts->evaluate(std::get<0>(rmLog));
     }
+
+
+//#if DEBUG_RM
+//
+//    std::cout << std::setw(110) << std::setfill('#') << "" << std::setfill(' ') << std::endl;
+//    std::cout << std::setw(40) << ""
+//              << "VEHICLE " << positionHelper->getId() << " :: DEFAULT ASSUMPTIONS AFTER TRANSITION .."
+//              << std::setw(40) << ""
+//              << std::endl;
+//    std::cout << std::setw(110) << std::setfill('#') << "" << std::setfill(' ') << std::endl;
+//
+//    // Currently we are having only only Assumption
+//    std::cout << *(std::static_pointer_cast<WIFIAssumption>((*ego.assumptions)[0])) << std::endl;
+//
+//    std::cout << std::setw(110) << std::setfill('-') << "" << std::setfill(' ') << std::endl;
+//
+//#endif
+
 }
 
 

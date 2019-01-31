@@ -17,18 +17,17 @@
 
 ChangeControllerAndAdjustGap2Front::ChangeControllerAndAdjustGap2Front(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to, GAP2FRONT gap2front) :
 Guarantee(rm), AdjustGap2Front(rm, gap2front), ChangeController(rm, to) {
-    // TODO Auto-generated constructor stub
 
 }
 
 ChangeControllerAndAdjustGap2Front::~ChangeControllerAndAdjustGap2Front() {
-    // TODO Auto-generated destructor stub
+
 }
 
 void ChangeControllerAndAdjustGap2Front::operator()(std::shared_ptr<Assumption> assumption) const {
-    // Guarantees are performed through the base classes
+    // Guarantees are performed through the two direct base classes
     ChangeController::operator ()(assumption);
-    AdjustGap2Front::operator ()(assumption);   // This is not done for ploeg yet
+    AdjustGap2Front::operator ()(assumption);
 }
 
 

@@ -23,12 +23,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 AdjustGap2Front::AdjustGap2Front(RuntimeManager *rm, GAP2FRONT gap2front) : Guarantee(rm), gap2front(gap2front){
-    // TODO Auto-generated constructor stub
 
 }
 
 AdjustGap2Front::~AdjustGap2Front() {
-    // TODO Auto-generated destructor stub
+
 }
 
 void AdjustGap2Front::operator()(std::shared_ptr<Assumption> assumption) const {
@@ -56,7 +55,7 @@ void AdjustGap2Front::operator()(std::shared_ptr<Assumption> assumption) const {
             traciVehicle->setParameter(CC_PAR_PLOEG_H, ego.currentPloegH);
 #if DEBUG_RM
 //            double ploegH = 200;
-//            traciVehicle->getParameter(CC_PAR_PLOEG_H, ploegH);     // This method does nto work
+//            traciVehicle->getParameter(CC_PAR_PLOEG_H, ploegH);     // This method does not work
 
             std::cout << std::setw(34) << std::setfill('#') << ""
                       << " VEHICLE " << positionHelper->getId() << " ::: " << "PERFORMED " << gap2front << " "
