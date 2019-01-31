@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+/**************************************************************************
+* This module is Developed by: Muhammed Ahad                              *
+* E-mail                     : maaahad@kth.se; ahad3112@yahoo.com         *
+***************************************************************************/
+
 #include <iostream>
 #include <iomanip>
 #include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
@@ -137,12 +142,8 @@ void RuntimeManager::initialize(int stage) {
 #endif
 
         // output file
-//        write2file = par("write2file").boolValue();
-//        outputFilename = par("outputFilename").stdstringValue() + std::to_string(positionHelper->getId()) + ".txt";
-//        if(write2file) fileWriter = std::make_shared<FileWriter>(positionHelper->getId(), outputFilename, write2file);
-
-        std::string outputFile = rmParam.outputFilename + std::to_string(positionHelper->getId()) + ".txt";
-        if(rmParam.write2file) fileWriter = std::make_shared<FileWriter>(positionHelper->getId(), outputFile, rmParam.write2file);
+        std::string myOutputFilename      = rmParam.outputFilename + std::to_string(positionHelper->getId()) + ".txt";
+        if(rmParam.write2file) fileWriter = std::make_shared<FileWriter>(positionHelper->getId(), myOutputFilename, rmParam.write2file);
 
         // initialize contract list
         initializeDefaultAssumptions();

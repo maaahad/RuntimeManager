@@ -31,6 +31,10 @@
 
 
 
+/**************************************************************************
+* This module is Developed by: Muhammed Ahad                              *
+* E-mail                     : maaahad@kth.se; ahad3112@yahoo.com         *
+***************************************************************************/
 
 class RuntimeManager : public Veins::BaseApplLayer {
 public:
@@ -72,11 +76,6 @@ private:
     void evaluate(bool onPlatoonBeacon = false, int index = -1);
 
     /**
-     * This method initialize all vehicle related StateParameters
-     */
-    //void initializeStateParameters();
-
-    /**
      * This method initialize all assumptions for the vehicle
      */
     void initializeDefaultAssumptions();
@@ -94,14 +93,11 @@ private:
     Veins::TraCICommandInterface::Vehicle *traciVehicle;
     BasePositionHelper* positionHelper;
 
-    // Self message to monitor periodically
+    // Self message to monitor vehicle state periodically
     cMessage *monitoringMsg;
 
-    // output file
+    // output file writer
     std::shared_ptr<FileWriter> fileWriter;
-//    std::string outputFilename;
-//    bool write2file;
-
 
     // friend declaration
     friend class Guarantee;

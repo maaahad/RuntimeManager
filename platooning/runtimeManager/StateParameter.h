@@ -70,7 +70,6 @@ protected:
 //    ROLE role;
 
     // friend decleration
-    friend class FileWriter;
     friend std::ostream &operator<<(std::ostream &os, const C2X &c2x);
     friend std::hash<C2X>;
 };
@@ -99,6 +98,8 @@ public:
 private:
     bool atSafeDistance;
 
+    // friend decleration
+    friend class FileWriter;
     friend std::ostream &operator<<(std::ostream &os, const C2F &c2f);
     friend std::hash<C2F>;
 };
@@ -127,6 +128,8 @@ public:
     virtual bool evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
 
     friend std::ostream &operator<<(std::ostream &os, const C2L &c2l);
+    // friend decleration
+    friend class FileWriter;
     friend std::hash<C2L>;
 };
 

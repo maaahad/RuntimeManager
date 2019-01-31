@@ -86,8 +86,8 @@
 #                                                                                                                    #
 ######################################################################################################################
 
+############### Test Start ##############
 # ::contract[type : comma/space separated assumptions : comma/space separated guarantees]
-############### Test ##############
 #::contract[ctype=wifi :c2f=ok c2l=critical mode=cacc : transition2mode=acc]
 #::contract[ctype=wifi :c2f=ok ;c2l=poor ;mode=cacc : dist2pred=increase]
 #::contract[ctype=wifi :c2f=poor   ;;;  ;c2l=ok;    mode=cacc  :::    transition2mode=ploeg     ;dist2pred=increase  ]
@@ -95,7 +95,29 @@
 
 #::contract[ctype=wifi:c2f=ok; c2l=ok; mode=acc : transition2mode=cacc; dist2pred=default]
 
-# ::contract[Type : comma/space separated Assumptions : comma/space separated Guarantees]
-::contract[ctype=wifi : c2f=ok ; c2l=ok; mode=acc : transition2mode=cacc]
-::contract[ctype=wifi : c2f=critical  c2l=poor  mode=cacc : dist2pred=increase]
-::contract[ctype=wifi : c2f=poor ; c2l=critical ; mode=cacc : transition2mode=ploeg ; dist2pred=default]
+#::contract[ctype=wifi : c2f=ok ; c2l=ok; mode=acc : transition2mode=cacc]
+#::contract[ctype=wifi : c2f=critical  c2l=poor  mode=cacc : dist2pred=increase]
+#::contract[ctype=wifi : c2f=poor ; c2l=critical ; mode=cacc : transition2mode=ploeg ; dist2pred=default]
+############### Test  End ##############
+
+############### uppgrade ###############
+############### acc -> ploeg
+::contract[ctype=wifi : c2f=ok ; c2l=critical; mode=acc : transition2mode=ploeg]            
+############### acc->cacc
+#::contract[ctype=wifi : c2f=ok ; c2l=ok; mode=acc : transition2mode=cacc]            
+############### ploeg->cacc
+#::contract[ctype=wifi : c2f=ok ; c2l=ok; mode=ploeg : transition2mode=cacc]            
+
+############### degrade ###############
+############### ploeg->acc
+#::contract[ctype=wifi : c2f=critical ; c2l=ok; mode=ploeg : transition2mode=acc] 
+#::contract[ctype=wifi : c2f=critical ; c2l=poor; mode=ploeg : transition2mode=acc]            
+#::contract[ctype=wifi : c2f=critical ; c2l=critical; mode=ploeg : transition2mode=acc]                       
+############### cacc->ploeg
+#::contract[ctype=wifi : c2f=ok ; c2l=critical; mode=cacc : transition2mode=ploeg]            
+############### cacc->acc
+#::contract[ctype=wifi : c2f=critical ; c2l=ok; mode=cacc : transition2mode=acc] 
+#::contract[ctype=wifi : c2f=critical ; c2l=poor; mode=cacc : transition2mode=acc]            
+#::contract[ctype=wifi : c2f=critical ; c2l=critical; mode=cacc : transition2mode=acc]
+
+############### gapcontrol ###############

@@ -55,7 +55,9 @@ template <typename A, typename G> RMContractContainer<A,G>::RMContractContainer(
 
 template <typename A, typename G> RMContractContainer<A,G>::~RMContractContainer() {
     // This is to check whether the container is destroyed
+#if DEBUG_RM1
     std::cout << "RMCGContainer is destroyed...." << std::endl;
+#endif
 
 }
 

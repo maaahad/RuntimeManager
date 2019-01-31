@@ -16,24 +16,28 @@
 #include "ChangeController.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ChangeController's methods implementation
+// ChangeController's Constructor
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ChangeController::ChangeController(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to) : Guarantee(rm), to(to){
-    // TODO Auto-generated constructor stub
 
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ChangeController's Destructor
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ChangeController::~ChangeController() {
-    // TODO Auto-generated destructor stub
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ChangeController's methods implementation
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ChangeController::actionOnTransition() const {
     RM::RMLog_Own &ego = std::get<0>(rmLog);
     if(to == Plexe::ACC) {
         traciVehicle->setACCHeadwayTime(rmParam.accHeadwaytimeGap);
         ego.currentAccH = traciVehicle->getACCHeadwayTime();
     } else if(to == Plexe::PLOEG){
-        traciVehicle->setACCHeadwayTime(rmParam.ploegHeadwayTimeGap);
+        traciVehicle->setParameter(CC_PAR_PLOEG_H, rmParam.ploegHeadwayTimeGap);
         ego.currentPloegH = rmParam.ploegHeadwayTimeGap;
     } else if(to == Plexe::CACC) {
         traciVehicle->setCACCConstantSpacing(rmParam.caccConstantSpacing);
@@ -67,17 +71,17 @@ void ChangeController::operator()(std::shared_ptr<Assumption> assumption) const 
               << (Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController() << " => " << to << std::endl
               << std::setfill(' ');
 #endif
-    // update the vehicle's current contract status for the Active controller
-    // As the consecutive Guarantee requires the current active controller (included in the key_type of the Contract-Guarantee unordered_map )
-    assumption->updateOnTransition(to);
-
     // perform actionOnTransition by default.
-    // Do it before transition, so that new controller can use it straight away
+    // Do it before transition, so that new controller can use the parameter value it straight away
     //if(rmParam.actionOnTransitionEnabled) actionOnTransition();
     actionOnTransition();
 
     // Perform the transition
     traciVehicle->setActiveController(to);
+
+    // update the vehicle's current contract status for the Active controller
+    // As the consecutive Guarantee requires the current active controller (included in the key_type of the Contract-Guarantee unordered_map )
+    assumption->updateOnTransition((Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController());
 
 #if DEBUG_RM
     std::cout << std::setw(30) << std::setfill('#') << ""

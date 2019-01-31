@@ -23,7 +23,6 @@
 // Contracts's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//Contract_Guarantee::Contract_Guarantee(RuntimeManager *rm) : rmcg(std::make_shared<std::map<CONTRACT_TYPE, std::shared_ptr<RMContainer>>()){
 Contracts::Contracts(RuntimeManager *rm) : rm(rm) {
     initContractList(rm);
 }
@@ -32,7 +31,6 @@ Contracts::~Contracts() {
 }
 
 void Contracts::evaluate(RM::RMLog_Own &state) {
-    // TRYING WITH new RMContainer
     for(auto start = (state.assumptions)->begin(); start != (state.assumptions)->end(); ++start) {
         if((*start)->isChanged()) {
             if(std::shared_ptr<WIFIAssumption> contract = std::dynamic_pointer_cast<WIFIAssumption>(*start)) {
@@ -91,10 +89,7 @@ void Contracts::evaluate(RM::RMLog_Own &state) {
 
 
 void Contracts::initContractList(RuntimeManager *rm) {
-
-    // ****************** Testing RMParser //
     if(rm->rmParam.readContractsFromInputFile) {
-//        RMParser(rm, this, "/home/ahad/plexe-veins-plexe-2.1/src/veins/modules/application/platooning/runtimeManager/input/contracts.txt");
         RMParser(rm, this, rm->rmParam.contractInputFilename);
     } else {
 
@@ -255,33 +250,34 @@ void Contracts::initContractList(RuntimeManager *rm) {
 
     }
 
-//        auto sz = ((std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(rmContractsList.find(ASSUMPTION_TYPE::WIFI)->second))->contractsContainer)->size();
-//        auto sz2 = rmContractsList.size();
-//        std::cout << "sz: " << sz << std::endl;
-
-#if DEBUG_RM2
-
-//     // ============== Test: CHECKING WITH ADDING DUPLICATE element
-//    addContract(acc2cacc, g2cacc);     // test OK
-//
-//
-//    // ============== Test: try with add different type of contract: Test OK
-//    WIFIAssumption acc2caccC(ASSUMPTION_TYPE::INTERNAL_ERROR, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
-//    std::shared_ptr<Guarantee> g2accC = std::make_shared<ChangeController>(rm, Plexe::ACTIVE_CONTROLLER::ACC);
-//    addContract(acc2caccC, g2accC);
-
+    // This is for checking the list of contracts
     auto sz = ((std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(rmContractsList.find(ASSUMPTION_TYPE::WIFI)->second))->contractsContainer)->size();
     auto sz2 = rmContractsList.size();
     std::cout << "sz: " << sz << std::endl;
 
-//    ASSERT(sz == 24);
-//    ASSERT(sz2 == 1);
-
-//    auto cc = ((std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(rmContractsList.find(ASSUMPTION_TYPE::WIFI)->second))->contractsContainer)->find(acc2cacc);
-
-//    std::cout << "Testing find() on CG list: \n" << cc->first <<std::endl;
-
-#endif
+//#if DEBUG_RM2
+//
+////     // ============== Test: CHECKING WITH ADDING DUPLICATE element
+////    addContract(acc2cacc, g2cacc);     // test OK
+////
+////
+////    // ============== Test: try with add different type of contract: Test OK
+////    WIFIAssumption acc2caccC(ASSUMPTION_TYPE::INTERNAL_ERROR, Plexe::ACTIVE_CONTROLLER::ACC, ok_c2f, ok_c2l);
+////    std::shared_ptr<Guarantee> g2accC = std::make_shared<ChangeController>(rm, Plexe::ACTIVE_CONTROLLER::ACC);
+////    addContract(acc2caccC, g2accC);
+//
+//    auto sz = ((std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(rmContractsList.find(ASSUMPTION_TYPE::WIFI)->second))->contractsContainer)->size();
+//    auto sz2 = rmContractsList.size();
+//    std::cout << "sz: " << sz << std::endl;
+//
+////    ASSERT(sz == 24);
+////    ASSERT(sz2 == 1);
+//
+////    auto cc = ((std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(rmContractsList.find(ASSUMPTION_TYPE::WIFI)->second))->contractsContainer)->find(acc2cacc);
+//
+////    std::cout << "Testing find() on CG list: \n" << cc->first <<std::endl;
+//
+//#endif
 
 }
 
