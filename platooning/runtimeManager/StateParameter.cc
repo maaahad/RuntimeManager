@@ -19,12 +19,10 @@
 // StateParameter's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 StateParameter::StateParameter() {
-    // TODO Auto-generated constructor stub
 
 }
 
 StateParameter::~StateParameter() {
-    // TODO Auto-generated destructor stub
 }
 
 
@@ -61,17 +59,11 @@ bool operator==(const StateParameter &sp1, const StateParameter &sp2) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // C2X's Member function's implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//C2X::C2X(ROLE role) : quality(WIFI_QUALITY::CRITICAL){
-//
-//}
 
 C2X::C2X(WIFI_QUALITY quality) : quality(quality){
 
 }
 
-//C2X::C2X(WIFI_QUALITY quality, ROLE role) : quality(quality), role(role) {
-//
-//}
 
 template <typename T> void C2X::c2xQualityCheck(const RM::RMParameters &rmParam, const T &other) {
     // c2xInitiated ensures that we have logged the last received beacon
@@ -89,16 +81,6 @@ template <typename T> void C2X::c2xQualityCheck(const RM::RMParameters &rmParam,
         } else {
             quality = WIFI_QUALITY::OK;
         }
-
-//        if(nBeaconMiss >= rmParam.nPacketLossCritical) {
-//            quality = WIFI_QUALITY::CRITICAL;
-//        } else if (nBeaconMiss < rmParam.nPacketLossCritical && nBeaconMiss >= rmParam.nPacketLossPoor) {
-//            quality = WIFI_QUALITY::POOR;
-//        } else if (nBeaconMiss < rmParam.nPacketLossPoor && nBeaconMiss >= rmParam.nPacketLossModerate) {
-//            quality = WIFI_QUALITY::MODERATE;
-//        } else {
-//            quality = WIFI_QUALITY::OK;
-//        }
 
     } else {
         // Sanity check
@@ -119,7 +101,6 @@ bool C2X::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
 }
 
 // Operator overloaded
-
 bool C2X::equal(const StateParameter &stateParameter) const {
     auto rhs = dynamic_cast<const C2X &>(stateParameter);
     return (quality == rhs.quality);
@@ -127,7 +108,6 @@ bool C2X::equal(const StateParameter &stateParameter) const {
 
 
 std::ostream &operator<<(std::ostream &os, const C2X &c2x){
-//    return os << "C2X: \n\tQuality : " << (int)c2x.quality << "\n\trole: " << (int)c2x.role;
     return os << "C2X: \n\tQuality : " << (WIFI_QUALITY)c2x.quality;
 }
 
@@ -153,14 +133,12 @@ bool C2F::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
     if(onPlatoonBeacon) {
         // Right now there is nothing to do here!!!
     } else {
-//      const auto &other = std::get<1>(rmLog);
         const RM::RMLog_Front &other = std::get<1>(rmLog);
 
         // This is required to check whether the state parameter is changed or not
         C2F temp = *this;
 
         c2xQualityCheck(rmParam, other);
-        // TODO we need to check the distance to the front vehicle
         if(!(temp == *this)) {
             // StataParameter has been changed
 //            std::cerr << "this: " << *this  << " \nOld" << temp << std::endl;
@@ -193,7 +171,6 @@ bool C2L::evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, con
     if(onPlatoonBeacon) {
         // Right now there is nothing to do here!!!
     } else {
-//      const auto &other = std::get<2>(rmLog);
         const RM::RMLog_Leader &other = std::get<2>(rmLog);
 
         // This is required to check whether the state parameter is changed or not
@@ -229,7 +206,6 @@ std::ostream &operator<<(std::ostream &os, const WIFI_QUALITY value) {
     INSERT(CRITICAL);
     INSERT(POOR);
     INSERT(OK);
-    INSERT(ALL);
 #undef INSERT
     }
     return os << enum2string[value];

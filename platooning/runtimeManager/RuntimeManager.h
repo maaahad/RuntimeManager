@@ -65,6 +65,11 @@ private:
     void egoLog();
 
     /**
+     * This method check for minSafetyDistance and maximum deceleration
+     */
+    void safetyViolationCheck() const;
+
+    /**
      * This template function is used to perform log for both the front and the leader vehicle
      */
     template <typename T> void commonLog(const PlatooningBeacon *pb, T &loggedVehicle, const SimTime currentTime);

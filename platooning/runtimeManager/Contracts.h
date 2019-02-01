@@ -41,7 +41,7 @@ public:
     virtual ~Contracts();
     void evaluate(RM::RMLog_Own &state);
 private:
-    void initContractList(RuntimeManager *rm);
+    void initContractsList(RuntimeManager *rm);
 //    template <typename A, typename G> void addContract(const A a, const G *g);
     template <typename A, typename G> void addContract(const A a, const std::shared_ptr<G> g);
 

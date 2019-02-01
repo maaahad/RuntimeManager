@@ -24,7 +24,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Contracts::Contracts(RuntimeManager *rm) : rm(rm) {
-    initContractList(rm);
+    initContractsList(rm);
 }
 
 Contracts::~Contracts() {
@@ -33,62 +33,26 @@ Contracts::~Contracts() {
 void Contracts::evaluate(RM::RMLog_Own &state) {
     for(auto start = (state.assumptions)->begin(); start != (state.assumptions)->end(); ++start) {
         if((*start)->isChanged()) {
-            if(std::shared_ptr<WIFIAssumption> contract = std::dynamic_pointer_cast<WIFIAssumption>(*start)) {
+            if(std::shared_ptr<WIFIAssumption> assumption = std::dynamic_pointer_cast<WIFIAssumption>(*start)) {
                 // Sanity check
-                ASSERT(contract->getType() == ASSUMPTION_TYPE::WIFI);
+                ASSERT(assumption->getType() == ASSUMPTION_TYPE::WIFI);
                 // get the all contract-guarantee list from rmcg for CONTRACT_TYPE::WIFI
                 auto match = rmContractsList.find(ASSUMPTION_TYPE::WIFI);
                 if(match != rmContractsList.end()){
                     // We found a list of contract-guarantee for WIFI contract type
                     auto matchedCGContainer = std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(match->second);
 
-                    matchedCGContainer->provideGuarantee(contract);
+                    matchedCGContainer->provideGuarantee(assumption);
                 }
                 continue;
             }
             // TODO check in other Contract_Gurantee list
-        } else {
-            // TODO If state does not change we need to check whether the current state is fulfilling the guarantees
-            // We need to log in case of violation in a txt file that contains all simulation parameters
-            // min safety distance
-            bool distViolated = false;
-            bool decelViolated = false;
-            if(state.dist2pred < rm->rmParam.minSafetyDistance && rm->positionHelper->getId() != 0) {
-                distViolated = true;
-#if DEBUG_RM1
-               std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
-                         << state.dist2pred << " < " << rm->rmParam.minSafetyDistance
-                         << " ===> MinSafetyDistance violated!!!" << std::endl;
-#endif
-            }
-            // maximum deceleration
-//            if((state.maxDeceleration > -5.0 || state.maxDeceleration < rm->rmParam.maxDeceleration) && rm->positionHelper->getId() != 0) {
-//            decelViolated = true;
-//                std::cerr << "Vehicle : " << rm->positionHelper->getId()
-//                                         << "state.maxDeceleration : " << state.maxDeceleration
-//                                         << " ===> Deceleration condition violated!!!" << std::endl;
-//            }
-
-            if(state.maxDeceleration < rm->rmParam.maxDeceleration && rm->positionHelper->getId() != 0) {
-                decelViolated = true;
-#if DEBUG_RM1
-                std::cerr << "Vehicle : " << rm->positionHelper->getId() << " :: "
-                                         << "state.maxDeceleration : " << state.maxDeceleration
-                                         << " ===> Deceleration condition violated!!!" << std::endl;
-#endif
-            }
-            // Report to the output file... CHECK AGAIN
-            if(rm->rmParam.write2file && (distViolated || decelViolated) && rm->positionHelper->getId() != 0) {
-                (rm->fileWriter)->addEntries(rm->rmParam, state, distViolated, decelViolated);
-            }
-
         }
-
     }
 }
 
 
-void Contracts::initContractList(RuntimeManager *rm) {
+void Contracts::initContractsList(RuntimeManager *rm) {
     if(rm->rmParam.readContractsFromInputFile) {
         RMParser(rm, this, rm->rmParam.contractInputFilename);
     } else {

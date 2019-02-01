@@ -165,6 +165,9 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
         // First we logged the ego vehicle
         egoLog();
 
+        // Check safety violation
+        safetyViolationCheck();
+
         // Now we evaluate the current status of the vehicle
         evaluate();
 
@@ -189,6 +192,40 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
         // after the current evaluation and transition (if there is any)
         SimTime callBackTime = simTime() + rmParam.rmMonitorInterval;
         scheduleAt(callBackTime, monitoringMsg);
+    }
+}
+
+void RuntimeManager::safetyViolationCheck() const {
+    const RM::RMLog_Own &state = std::get<0>(rmLog);
+    bool distViolated = false;
+    bool decelViolated = false;
+    if(state.dist2pred < rmParam.minSafetyDistance && positionHelper->getId() != 0) {
+        distViolated = true;
+#if DEBUG_RM1
+       std::cerr << "Vehicle : " << positionHelper->getId() << " :: "
+                 << state.dist2pred << " < " << rmParam.minSafetyDistance
+                 << " ===> MinSafetyDistance violated!!!" << std::endl;
+#endif
+    }
+    // maximum deceleration
+//            if((state.maxDeceleration > -5.0 || state.maxDeceleration < rmParam.maxDeceleration) && positionHelper->getId() != 0) {
+//            decelViolated = true;
+//                std::cerr << "Vehicle : " << positionHelper->getId()
+//                                         << "state.maxDeceleration : " << state.maxDeceleration
+//                                         << " ===> Deceleration condition violated!!!" << std::endl;
+//            }
+
+    if(state.maxDeceleration < rmParam.maxDeceleration && positionHelper->getId() != 0) {
+        decelViolated = true;
+#if DEBUG_RM1
+        std::cerr << "Vehicle : " << positionHelper->getId() << " :: "
+                                 << "state.maxDeceleration : " << state.maxDeceleration
+                                 << " ===> Deceleration condition violated!!!" << std::endl;
+#endif
+    }
+    // Report to the output file
+    if(rmParam.write2file && (distViolated || decelViolated) && positionHelper->getId() != 0) {
+        (fileWriter)->addEntries(rmParam, state, distViolated, decelViolated);
     }
 }
 
