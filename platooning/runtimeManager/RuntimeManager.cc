@@ -21,6 +21,8 @@
 #include <iostream>
 #include <iomanip>
 #include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
+#include "veins/modules/application/platooning/apps/BaseApp.h"
+
 
 using namespace Veins;
 Define_Module(RuntimeManager);
@@ -96,6 +98,10 @@ void RuntimeManager::initialize(int stage) {
         positionHelper = FindModule<BasePositionHelper*>::findSubModule(getParentModule());
 
 
+        // output vector
+        controllerOut = &(FindModule<BaseApp*>::findSubModule(getParentModule())->controllerOut);
+        // First record of the active controller
+        controllerOut->record(traciVehicle->getActiveController());
 
 #if DEBUG_RM
             std::cout << std::setw(110) << std::setfill('#') << "" << std::setfill(' ') << std::endl;
@@ -188,7 +194,7 @@ void RuntimeManager::handleSelfMsg(cMessage* msg) {
         }
 #endif
 
-        // Reschedule the monitoring message. TODO make sure to reschedule the self message
+        // Re-schedule the monitoring message. TODO make sure to reschedule the self message
         // after the current evaluation and transition (if there is any)
         SimTime callBackTime = simTime() + rmParam.rmMonitorInterval;
         scheduleAt(callBackTime, monitoringMsg);

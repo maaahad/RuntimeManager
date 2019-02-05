@@ -57,10 +57,10 @@ private:
 template <typename A, typename G> void Contracts::addContract(const A a, const std::shared_ptr<G> g) {
     auto cgList = rmContractsList.find(a.getType());
     if(cgList != rmContractsList.end()) {
-        // CG list for this contractType already created
+        // CG list for this contractType already been created
         if(a.getType() == ASSUMPTION_TYPE::WIFI) {
             // add the new element to the match
-            // Do not need this cast (Check)
+            // We need this cast as the base class does not defines virtual addContract() method
             (std::static_pointer_cast<RMContractContainer<WIFIAssumption, Guarantee>>(cgList->second))->addContract(a, g);
         } else if(a.getType() == ASSUMPTION_TYPE::INTERNAL_ERROR) {
             std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;

@@ -48,6 +48,8 @@ void BaseApp::initialize(int stage)
         // vehicle acceleration
         accelerationOut.setName("acceleration");
         controllerAccelerationOut.setName("controllerAcceleration");
+
+        controllerOut.setName("activeController");
     }
 
     if (stage == 1) {

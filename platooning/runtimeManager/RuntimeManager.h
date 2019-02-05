@@ -104,6 +104,9 @@ private:
     // output file writer
     std::shared_ptr<FileWriter> fileWriter;
 
+    // output vector to store the record of active controller as a function of time
+    cOutVector *controllerOut;
+
     // friend declaration
     friend class Guarantee;
     friend class Contracts;

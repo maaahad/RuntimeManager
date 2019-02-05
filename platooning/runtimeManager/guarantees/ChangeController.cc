@@ -79,6 +79,9 @@ void ChangeController::operator()(std::shared_ptr<Assumption> assumption) const 
     // Perform the transition
     traciVehicle->setActiveController(to);
 
+    // record the active controller to the output vector
+    controllerOut->record(traciVehicle->getActiveController());
+
     // update the vehicle's current contract status for the Active controller
     // As the consecutive Guarantee requires the current active controller (included in the key_type of the Contract-Guarantee unordered_map )
     assumption->updateOnTransition((Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController());

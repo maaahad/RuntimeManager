@@ -82,7 +82,7 @@
 # ------------------------------------------------------------------------------------------------------------------ #
 #                                                                                                                    #
 # NOTE:                                                                                                              #
-#      * value for mode and transitionTo in a contract should not be same                                            #
+#      * value for mode and transitionTomode in a contract should not be same                                        #
 #                                                                                                                    #
 ######################################################################################################################
 

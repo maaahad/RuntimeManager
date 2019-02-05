@@ -14,7 +14,6 @@
 // 
 
 #include "RMParser.h"
-//#include "parserGrammars/RMContractParserGrammar.h"
 
 ////////////////////////////////////////////////////
 // Constructor
@@ -34,11 +33,11 @@ RMParser::RMParser(RuntimeManager *rm, Contracts *contracts, std::string inputFi
 }
 
 ////////////////////////////////////////////////////
-// Desstructor
+// Destructor
 ////////////////////////////////////////////////////
 RMParser::~RMParser() {
     // The following close operation is not required, as this will be called automatically by the compiler once
-    // the iftream goes out of the scope
+    // the ifstream goes out of the scope
     input.close();
     // No dynamically allocated memory(using built in pointer) is used by the class
 }
@@ -46,9 +45,6 @@ RMParser::~RMParser() {
 ////////////////////////////////////////////////////
 // Member Function
 ////////////////////////////////////////////////////
-//void RMParser::addContract() {
-//    std::cout << "Contract is adding..." << std::endl;
-//}
 
 void RMParser::initGrammars() {
     // This will be hard coded

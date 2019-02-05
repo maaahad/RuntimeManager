@@ -37,6 +37,7 @@ protected:
 
     RM::RMParameters &rmParam;
     RM::rm_log &rmLog;
+    cOutVector *controllerOut;
 };
 
 #endif /* SRC_VEINS_MODULES_APPLICATION_PLATOONING_RUNTIMEMANAGER_GUARANTEE_H_ */

@@ -77,7 +77,7 @@ public:
     virtual bool equal(const StateParameter &stateParameter) const override;
     virtual bool evaluate(const RM::RMParameters &rmParam, const RM::rm_log &rmLog, const bool onPlatoonBeacon = false, const int index = -1) override;
 private:
-    bool atSafeDistance;
+    bool atSafeDistance; // We are not using this variable right now
 
     // friend decleration
     friend class FileWriter;

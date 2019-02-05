@@ -80,7 +80,7 @@ void RMContractParserGrammar::evaluate(RuntimeManager *rm, RMParser *rmParser, c
     auto mode = controllerMap.find(match[8]);
     if (mode == controllerMap.end()) throw std::runtime_error("missing mode!!!");
 
-    if(match[9].matched && match[12].matched) {
+    if(match[9].matched) {
         // Sanity checking, if passed, generate the Contract instance
         if(match[8] == match[11]) {
             std::string error = "Value for mode and transition2mode are equal on line no: " + std::to_string(lineNo);
@@ -88,51 +88,29 @@ void RMContractParserGrammar::evaluate(RuntimeManager *rm, RMParser *rmParser, c
         }
         auto transition2mode = controllerMap.find(match[11]);
         if (transition2mode == controllerMap.end()) throw std::runtime_error("missing transition2mode!!!");
-        auto dist2pred = dist2predMap.find(match[14]);
-        if (dist2pred == dist2predMap.end()) throw std::runtime_error("missing dist2pred!!!");
-
-        // add contract
-        if(atype->second == ASSUMPTION_TYPE::WIFI) {
-            WIFIAssumption assumption(atype->second, mode->second, c2f->second, c2l->second);
-            std::shared_ptr<Guarantee> guarantee  = std::make_shared<ChangeControllerAndAdjustGap2Front>(rm, transition2mode->second, dist2pred->second);
-            rmParser->addContract(assumption, guarantee);
+        // There is a possibility of matching match[12]
+        if(match[12].matched) {
+            auto dist2pred = dist2predMap.find(match[14]);
+            if (dist2pred == dist2predMap.end()) throw std::runtime_error("missing dist2pred!!!");
+            // add contract
+            if(atype->second == ASSUMPTION_TYPE::WIFI) {
+                WIFIAssumption assumption(atype->second, mode->second, c2f->second, c2l->second);
+                std::shared_ptr<Guarantee> guarantee  = std::make_shared<ChangeControllerAndAdjustGap2Front>(rm, transition2mode->second, dist2pred->second);
+                rmParser->addContract(assumption, guarantee);
+            } else {
+                std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
+            }
         } else {
-            std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
+            // add contract
+            if(atype->second == ASSUMPTION_TYPE::WIFI) {
+                WIFIAssumption assumption(atype->second, mode->second, c2f->second, c2l->second);
+                std::shared_ptr<Guarantee> guarantee  = std::make_shared<ChangeController>(rm, transition2mode->second);
+                rmParser->addContract(assumption, guarantee);
+            } else {
+                std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
+            }
         }
-
-//        std::cout << "ctype : " << atype->second
-//                  << " c2l : " << c2l->second
-//                  << " c2f : " << c2f->second
-//                  << " mode : " << mode->second
-//                  << " transition2mode : " << transition2mode->second
-//                  << " dist2pred : " << dist2pred->second
-//                  << std::endl;
-
-    } else if (match[9].matched) {
-        // Sanity checking, if passed, generate the Contract instance
-        if(match[8] == match[11]) {
-            std::string error = "Value for mode and transition2mode are equal on line no: " + std::to_string(lineNo);
-            throw std::runtime_error(error);
-        }
-        auto transition2mode = controllerMap.find(match[11]);
-        if (transition2mode == controllerMap.end()) throw std::runtime_error("missing transition2mode!!!");
-
-        // add contract
-        if(atype->second == ASSUMPTION_TYPE::WIFI) {
-            WIFIAssumption assumption(atype->second, mode->second, c2f->second, c2l->second);
-            std::shared_ptr<Guarantee> guarantee  = std::make_shared<ChangeController>(rm, transition2mode->second);
-            rmParser->addContract(assumption, guarantee);
-        } else {
-            std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
-        }
-
-//        std::cout << "ctype : " << atype->second
-//                  << " c2l : " << c2l->second
-//                  << " c2f : " << c2f->second
-//                  << " mode : " << mode->second
-//                  << " transition2mode : " << transition2mode->second
-//                  << std::endl;
-    } else if (match[12].matched) {
+    } else if(match[12].matched){
         auto dist2pred = dist2predMap.find(match[14]);
         if (dist2pred == dist2predMap.end()) throw std::runtime_error("missing dist2pred!!!");
 
@@ -144,15 +122,84 @@ void RMContractParserGrammar::evaluate(RuntimeManager *rm, RMParser *rmParser, c
         } else {
             std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
         }
-//        std::cout << "ctype : " << atype->second
-//                  << " c2l : " << c2l->second
-//                  << " c2f : " << c2f->second
-//                  << " mode : " << mode->second
-//                  << " dist2pred : " << dist2pred->second
-//                  << std::endl;
     } else {
-        throw std::runtime_error("missing guarantee!!!");
+        throw std::runtime_error("Missing guarantee!!!");
     }
+
+//
+//    if(match[9].matched && match[12].matched) {
+//        // Sanity checking, if passed, generate the Contract instance
+//        if(match[8] == match[11]) {
+//            std::string error = "Value for mode and transition2mode are equal on line no: " + std::to_string(lineNo);
+//            throw std::runtime_error(error);
+//        }
+//        auto transition2mode = controllerMap.find(match[11]);
+//        if (transition2mode == controllerMap.end()) throw std::runtime_error("missing transition2mode!!!");
+//        auto dist2pred = dist2predMap.find(match[14]);
+//        if (dist2pred == dist2predMap.end()) throw std::runtime_error("missing dist2pred!!!");
+//
+//        // add contract
+//        if(atype->second == ASSUMPTION_TYPE::WIFI) {
+//            WIFIAssumption assumption(atype->second, mode->second, c2f->second, c2l->second);
+//            std::shared_ptr<Guarantee> guarantee  = std::make_shared<ChangeControllerAndAdjustGap2Front>(rm, transition2mode->second, dist2pred->second);
+//            rmParser->addContract(assumption, guarantee);
+//        } else {
+//            std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
+//        }
+//
+////        std::cout << "ctype : " << atype->second
+////                  << " c2l : " << c2l->second
+////                  << " c2f : " << c2f->second
+////                  << " mode : " << mode->second
+////                  << " transition2mode : " << transition2mode->second
+////                  << " dist2pred : " << dist2pred->second
+////                  << std::endl;
+//
+//    } else if (match[9].matched) {
+//        // Sanity checking, if passed, generate the Contract instance
+//        if(match[8] == match[11]) {
+//            std::string error = "Value for mode and transition2mode are equal on line no: " + std::to_string(lineNo);
+//            throw std::runtime_error(error);
+//        }
+//        auto transition2mode = controllerMap.find(match[11]);
+//        if (transition2mode == controllerMap.end()) throw std::runtime_error("missing transition2mode!!!");
+//
+//        // add contract
+//        if(atype->second == ASSUMPTION_TYPE::WIFI) {
+//            WIFIAssumption assumption(atype->second, mode->second, c2f->second, c2l->second);
+//            std::shared_ptr<Guarantee> guarantee  = std::make_shared<ChangeController>(rm, transition2mode->second);
+//            rmParser->addContract(assumption, guarantee);
+//        } else {
+//            std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
+//        }
+//
+////        std::cout << "ctype : " << atype->second
+////                  << " c2l : " << c2l->second
+////                  << " c2f : " << c2f->second
+////                  << " mode : " << mode->second
+////                  << " transition2mode : " << transition2mode->second
+////                  << std::endl;
+//    } else if (match[12].matched) {
+//        auto dist2pred = dist2predMap.find(match[14]);
+//        if (dist2pred == dist2predMap.end()) throw std::runtime_error("missing dist2pred!!!");
+//
+//        // add contract
+//        if(atype->second == ASSUMPTION_TYPE::WIFI) {
+//            WIFIAssumption assumption(atype->second, mode->second, c2f->second, c2l->second);
+//            std::shared_ptr<Guarantee> guarantee  = std::make_shared<AdjustGap2Front>(rm, dist2pred->second);
+//            rmParser->addContract(assumption, guarantee);
+//        } else {
+//            std::cout<<"Only ASSUMPTION_TYPE::WIFI is available right now..." << std::endl;
+//        }
+////        std::cout << "ctype : " << atype->second
+////                  << " c2l : " << c2l->second
+////                  << " c2f : " << c2f->second
+////                  << " mode : " << mode->second
+////                  << " dist2pred : " << dist2pred->second
+////                  << std::endl;
+//    } else {
+//        throw std::runtime_error("missing guarantee!!!");
+//    }
 
 }
 
