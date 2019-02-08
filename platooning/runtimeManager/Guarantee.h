@@ -30,6 +30,7 @@ public:
     virtual void operator()(std::shared_ptr<Assumption> assumption) const;
 protected:
     // These are required for taking action
+    RuntimeManager *rm;
     Veins::TraCIMobility *mobility;
     Veins::TraCICommandInterface *traci;
     Veins::TraCICommandInterface::Vehicle *traciVehicle;

@@ -157,6 +157,9 @@ void RuntimeManager::initialize(int stage) {
         // Initialize the Contracts + Guarantees
         rmContracts = std::make_shared<Contracts>(this);
 
+        // set the vehicle color
+        setVehicleColor((Plexe::ACTIVE_CONTROLLER)traciVehicle->getActiveController());
+
         // Schedule the monitoring self message
         monitoringMsg = new cMessage("monitoringMsg");
         SimTime callBackTime = simTime() + rmParam.rmMonitorInterval;
@@ -381,4 +384,20 @@ void RuntimeManager::evaluate(bool onPlatoonBeacon, int index) {
 
 }
 
+
+/**
+ * Using different color for different controller
+ */
+void RuntimeManager::setVehicleColor(Plexe::ACTIVE_CONTROLLER controller) const {
+    if (controller == Plexe::ACC) {
+        TraCIColor color(0, 255, 0, 255);
+        traciVehicle->setColor(color);
+    } else if(controller == Plexe::PLOEG) {
+        TraCIColor color(0, 0, 255, 255);
+        traciVehicle->setColor(color);
+    } else if (controller == Plexe::CACC) {
+        TraCIColor color(255, 255, 0, 255);
+        traciVehicle->setColor(color);
+    }
+}
 

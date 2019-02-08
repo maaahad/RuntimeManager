@@ -55,10 +55,14 @@ public:
         return rmParam.rmEnabled;
     }
 
+    /**
+     * Using different color for different controller
+     */
+    void setVehicleColor(Plexe::ACTIVE_CONTROLLER controller) const;
+
 protected:
     virtual void handleSelfMsg(cMessage* msg) override;
 private:
-
     /**
      * This method is used to logged the own vehicle data
      */

@@ -14,6 +14,7 @@
 // 
 #include <iomanip>
 #include "ChangeController.h"
+#include "veins/modules/application/platooning/runtimeManager/RuntimeManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ChangeController's Constructor
@@ -52,6 +53,7 @@ void ChangeController::actionOnTransition() const {
     }
 }
 
+
 void ChangeController::operator()(std::shared_ptr<Assumption> assumption) const {
 #if DEBUG_RM
     std::cout << std::setw(30) << std::setfill('#') << ""
@@ -78,6 +80,9 @@ void ChangeController::operator()(std::shared_ptr<Assumption> assumption) const 
 
     // Perform the transition
     traciVehicle->setActiveController(to);
+
+    // changing the color of vehicle
+    rm->setVehicleColor(to);
 
     // record the active controller to the output vector
     controllerOut->record(traciVehicle->getActiveController());

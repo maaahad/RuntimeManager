@@ -22,7 +22,7 @@ RMParser::RMParser(RuntimeManager *rm, Contracts *contracts, std::string inputFi
     // open the input file, if succeed read line by line and create the list of Contracts to be considered by the runtime manager
     input.open(inputFilename, std::ios::in);
     if(!input) {
-        std::cerr << inputFilename << " could not opened..." << std::endl;
+        std::cerr << inputFilename << " could not opened. Terminating..." << std::endl;
         exit(-1);
     }
     // init the grammar list

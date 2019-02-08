@@ -60,12 +60,14 @@ void BaseApp::initialize(int stage)
         protocol = FindModule<BaseProtocol*>::findSubModule(getParentModule());
         myId = positionHelper->getId();
 
-        // [ =========== Ahad
-        // Setting color of the vehicle
-//        TraCIColor color(std::rand() % 255, std::rand() % 255, std::rand() % 255, 255);
-        TraCIColor color(255, 255, 255, 255);
-        traciVehicle->setColor(color);
-        // =========== Ahad ]
+//        // [ =========== Ahad
+//
+//        // Setting color of the vehicle
+////        TraCIColor color(std::rand() % 255, std::rand() % 255, std::rand() % 255, 255);
+//        TraCIColor color(255, 255, 255, 255);
+//        traciVehicle->setColor(color);
+//
+//        // =========== Ahad ]
 
 
         // connect application to protocol

@@ -22,7 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Guarantees's Constructor
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Guarantee::Guarantee(RuntimeManager *rm) : rmParam(rm->rmParam), rmLog(rm->rmLog), controllerOut(rm->controllerOut){
+Guarantee::Guarantee(RuntimeManager *rm) : rm(rm), rmParam(rm->rmParam), rmLog(rm->rmLog), controllerOut(rm->controllerOut){
     mobility = rm->mobility;
     traci = rm->traci;
     traciVehicle = rm->traciVehicle;

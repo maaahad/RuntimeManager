@@ -20,7 +20,6 @@
 #include "../Guarantee.h"
 
 
-
 class ChangeController : virtual public Guarantee {
 public:
     ChangeController(RuntimeManager *rm, Plexe::ACTIVE_CONTROLLER to);
